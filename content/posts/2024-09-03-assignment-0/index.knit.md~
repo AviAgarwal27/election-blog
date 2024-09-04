@@ -1,0 +1,115 @@
+---
+title: Assignment 0
+author: Avi Agarwal
+date: '2024-09-03'
+slug: assignment-0
+categories: []
+tags: []
+---
+
+
+This assignment is ungraded and is simply intended to give you a sense of what we will be doing in class and to be sure you have all the tools in place to successfully complete your blog posts. Whereas most of the programming you will do in this course is very open-ended, this assignment is designed to walk you step-by-step through some helpful functions. You should complete this assignment after you have successfully installed R/R Studio and set up your blog on GitHub. Feel free to publish your responses to this assignment on your blog as a test.  
+
+To get started, save this \texttt{.rmd} file and the data files `state_2pv_1948_2020.csv` and `nat_pv_1860_2020.csv` to the same directory (a folder) on your computer.  We suggest creating a directory specifically for this class, say "Gov1347" and then a directory for each week, say "Week1". Whatever you call it, save your \texttt{.rmd} and the data to the same location.  
+
+**Overview:**
+In this assignment, we will work with historical national popular vote and state-level popular vote data from presidential elections. We will restructure the two data sets and eventually merge them, before running basic linear models to predict the national popular vote from the vote in certain states.
+
+**Data Details:**
+
+* File Name: `state_2pv_1948_2020.csv`
+
+* These data contain the state-level popular vote from presidential elections from 1948 through 2020.
+
+Variable Name         | Variable Description
+--------------------- | --------------------------------------
+`year `        | election year
+`state`         | state
+`candidate`      | candidate
+`party`  | candidate's party
+`candidatevotes`    | votes received by the candidate in the state
+`totalvotes`   | total votes cast in the state
+`vote_share`  | proportion of total votes received by the candidate
+`two_party_votes`    | total votes cast for Republicans and Democrats in the state
+`two_party_vote_share`    | proportion of Democratic and Republican votes received by the candidate
+
+* File Name: `nat_pv_1860_2020.csv`
+
+* These data contain the national-level popular vote from presidential elections from 1860 through 2020.
+
+Variable Name         | Variable Description
+--------------------- | --------------------------------------
+`year`        | election year
+`npv_democrat`       | proportion of popular vote received by the Democratic presidential candidate
+`npv_republican`       | proportion of popular vote received by the Republican presidential candidate
+
+# Question 1: Loading Packages and Data
+
+**Loading packages:**
+
+Once you install R and R Studio, you can open R Studio, which uses R in the background. The first thing to do within RStudio is to install and load the packages you will be using. You can read about packages and how to install them on [Modern Dive Section 1.3](https://moderndive.netlify.app/1-getting-started.html#packages). You will need two packages for this problem set: \texttt{tidyverse} and \texttt{ggplot2}.  \footnote{One of the reasons R is such a widely used language is that there is a whole community that develops packages, which add functionality to the language. You can think of a package as just a collection of useful functions that aren't available in base R.}
+
+The instructions at that link are primarily for the point-and-click method of installing packages, but it's also important to know how to do it via the command line. Some may find it easier as well. To install packages via the command line, simply run `install.packages("package_name")` in RStudio, making sure the package name is in quotes. Note that there are multiple ways to run a command within RStudio: one way is to type the command in the "Console" pane of RStudio and press Return/Enter on your keyboard. Another is to open a .Rmd file, create a code chunk, and press the green play button in its top-right corner.
+
+Once you install the packages, you can run `library(package_name)` to load it into RStudio. Note that the package doesn't need to be in quotes inside the `library()` function, but it can be if you like.
+
+Load the packages `ggplot2` and `tidyverse` in the code below.
+
+
+```r
+library(ggplot2)
+library(tidyverse)
+```
+
+```
+## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
+## ✔ purrr     1.0.2     ✔ tidyr     1.3.0
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+```
+
+**Loading data:**
+
+After loading the packages we need, it's time to read the data into R. But there's one last step! Before you try to read data, it is a good idea to tell R where on your computer you're working. To do that, you need to set your working directory. Remember, "directory" is just a computer science term for a folder on your computer. By setting your working directory, you're telling R the folder in which to look for files. Usually it's best practice to set your working directory to the directory that your code is in. To do that, just go to the toolbar at the top of your screen, select "Session", hover over "Set Working Directory", and select "To Source File Location". 
+
+You can check your current working directory by running `getwd()` with nothing in the parentheses. Try running `getwd()` in the console to make sure your current working directory is the one where you have this file saved. Make sure that you have downloaded the data for this assignment into that same directory for the code below to work. This works because by setting the working directory you told R the folder where it will find the data.
+
+Note: If you set the correct working directory but still get an error running the code below, you may also need to click the downward arrow next to the "Knit" button on the top of the "Source" pane and set `Knit Directory` to either `Document Directory` or `Current Working Directory`.
+
+Load the data in the code chunk below:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

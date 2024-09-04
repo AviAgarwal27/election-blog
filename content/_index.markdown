@@ -8,4 +8,4 @@ title: Home
 
 
 
-[posts](/post/)
+[posts](/posts/)

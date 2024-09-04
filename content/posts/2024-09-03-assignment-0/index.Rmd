@@ -58,7 +58,8 @@ Once you install the packages, you can run `library(package_name)` to load it in
 Load the packages `ggplot2` and `tidyverse` in the code below.
 
 ```{r, echo = T, results = 'hide'}
-
+library(ggplot2)
+library(tidyverse)
 
 ```
 
@@ -74,6 +75,7 @@ Load the data in the code chunk below:
 
 ```{r, echo = T, results = 'hide'}
 
+state_pv = read.csv("state_2pv_1948_2020.csv")
 
 ```
 
@@ -86,6 +88,8 @@ The `select` function is used when we want to focus on only certain variables (i
 
 ```{r}
 
+state_select = state_pv |>
+  select(year, state, party, two_party_vote_share)
 ```
 
 ## (b) Arrange
@@ -95,6 +99,8 @@ The `arrange` function can be used to order the data set according to a given va
 
 ```{r}
 
+state_select = state_select |>
+  arrange(desc(year))
 ```
 
 ## (c) Mutate
@@ -105,19 +111,33 @@ The `mutate` function allows you to define new variables or redefine existing va
 
 ```{r}
 
+national <- read.csv("data/nat_pv_1860_2020.csv")
+
+national_mutate = national |>
+  mutate(dem_tpv = (npv_democrat / (npv_democrat + npv_republican)) * 100,
+         rep_tpv = (npv_republican / (npv_democrat + npv_republican)) * 100) |>
+  select(year, dem_tpv, rep_tpv)
+
 ```
 
 ## (d) Filter
 While the `select` function allows you to focus on certain columns in a dataframe, the `filter` function allows you to focus on certain rows. The state-level data set only includes data going back to 1948, whereas the national data dates to 1860. Since we plan to merge these data sets, use the `filter` function to subset your mutated national data to only elections after 1948 (including 1948 itself). Save this dataframe as `national_mutate_filter`.
 
 ```{r}
-
+national_mutate_filter = national_mutate |>
+  filter(year >= 1948)
 ```
 
 ## (e) Group_by and Summarize
 The `group_by` and `summarize` functions are great for quickly producing key summary information about your dataset. Suppose we want to compare the average Democratic two party vote share in 21st century elections between California and Massachusetts (note: consider the 2000 election as part of the 21st century). Which state, in recent years, has been more Democratic? Use the `filter` function to subset the data set to 21st century elections *and* subset the data to only consider the Democratic vote share. Then, use `group_by` and `summarize` to get the average two party vote share by state. Finally, use the `filter` function again to subset the summarized data set to only California and Massachusetts.
 
 ```{r}
+
+state_select |>
+  filter (year >= 2000 & party == "Democrat") |>
+  group_by(state) |>
+  summarize(mean = mean(two_party_vote_share)) |>
+  filter(state == "California" | state == "Massachusetts")
 
 ```
 # Question 3: Pivoting Data: Wide to Long
@@ -129,6 +149,11 @@ We're nearly ready to merge the national- and state-level data into a single dat
 
 
 ```{r}
+national_mutate_filter_long = national_mutate_filter |>
+  pivot_longer(cols = c(dem_tpv, rep_tpv), 
+               names_to = "party",
+               values_to = "national_two_party_vote_share") |>
+  mutate(party = ifelse(party == "dem_tpv", "Democrat", "Republican"))
 
 ```
 
@@ -144,6 +169,9 @@ Call this merged data set `combined_data`. It should contain 5 columns: the stat
 
 ```{r}
 
+combined_data = state_select |>
+  full_join(national_mutate_filter_long, by = c("year","party"))
+
 ```
 
 # Question 5: Pivoting Data: Long to Wide
@@ -155,6 +183,12 @@ Merge this with the `national_mutate_filter` dataframe so that you also have one
 
 ```{r}
 
+combined_data_wide = state_select |>
+  pivot_wider(names_from = c("party","state"), values_from = "two_party_vote_share")
+
+combined_data_wide = combined_data_wide |>
+  full_join(national_mutate_filter, by = "year")
+
 ```
 
 # Question 6: Running Some Very Basic Linear Models
@@ -163,6 +197,9 @@ Merge this with the `national_mutate_filter` dataframe so that you also have one
 With the wide combined data set, run a basic linear model using the `lm` function to predict the national two-party Democratic vote share from the two party Democratic vote share in Florida. Interpret the model coefficients and use the `summary` function to determine whether the relationship is statistically significant.
 
 ```{r}
+
+model = lm(data = combined_data_wide, dem_tpv ~ Democrat_Florida)
+summary(model)
 
 ```
 
@@ -173,6 +210,9 @@ With the wide combined data set, run a basic linear model using the `lm` functio
 Now run a model predicting the national two-party Democratic vote share from the two party Democratic vote share in Florida and New York. What do you notice about the magnitude of the coefficient on the Florida term relative to part (a)?
 
 ```{r}
+m_model = lm(data = combined_data_wide, dem_tpv ~ Democrat_Florida + `Democrat_New York`)
+
+summary(m_model)
 
 ```
 
@@ -187,12 +227,21 @@ Using the multivariate model above, use the `predict` function to predict the na
 
 ```{r}
 
+newdata <- data.frame(Democrat_Florida = 48, Democrat_New_York = 60) %>%
+rename("Democrat_New York" = Democrat_New_York)
+
+predict(m_model, newdata = newdata, type = "response")
+
 ```
 
 # Question 8: Saving `.csv` Files
 The combined data sets you've created may be useful in the future, so let's save them as `.csv` files to your directory so that you can reuse them in future assignments using the `write.csv` function.
 
 ```{r}
+
+write.csv(combined_data_wide, "data/combined_popular_vote_wide.csv")
+write.csv(combined_data, "data/combined_popular_vote_long.csv")
+
 
 ```
 
