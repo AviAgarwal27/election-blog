@@ -6,3 +6,4 @@ slug: assignment-0
 categories: []
 tags: []
 ---
+Hello!
