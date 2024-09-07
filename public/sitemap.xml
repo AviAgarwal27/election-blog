@@ -5,10 +5,10 @@
     <loc>https://example.org/</loc>
     <lastmod>2024-09-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/</loc>
+    <loc>https://example.org/post/</loc>
     <lastmod>2024-09-09T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://example.org/posts/post-1/</loc>
+    <loc>https://example.org/post/2024/09/06/post-1/</loc>
     <lastmod>2024-09-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://example.org/categories/</loc>

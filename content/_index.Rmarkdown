@@ -6,6 +6,4 @@ title: Home
 
 ## Avi Agarwala
 
-Hello
-
-[posts](/posts/)
+[posts](/post/)
