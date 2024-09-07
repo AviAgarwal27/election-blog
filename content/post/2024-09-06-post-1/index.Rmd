@@ -7,4 +7,34 @@ categories: []
 tags: []
 ---
 
-#hi
+This is the first of a series of blog posts in which I will be analyzing and prediciting the 2024 Presidential Election. 
+
+```{r}
+library(ggplot2)
+library(maps)
+library(tidyverse)
+```
+
+```{r}
+states_map <- map_data("state")
+d_pvstate_wide <- read_csv("clean_wide_state_2pv_1948_2020.csv")
+```
+
+```{r}
+d_pvstate_wide_pred_2024 <- d_pvstate_wide |>
+  filter(year == 2020) |> 
+  group_by(state) |>
+  summarize(D_vote2024 = 0.75*D_pv2p + 0.25*D_pv2p_lag1) |>
+  mutate(region = tolower(state), winner = if_else(D_vote2024 > 50, "D", "R"))
+```
+
+
+```{r}
+
+map <- d_pvstate_wide_pred_2024 |>
+  left_join(states_map, by = "region") |>
+  ggplot(mapping = aes(x = long, y = lat, group = group, fill = winner)) + geom_polygon() + theme_void() + scale_fill_manual(values = c("blue", "red")) 
+
+map 
+```
+

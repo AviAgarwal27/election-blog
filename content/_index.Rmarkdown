@@ -4,6 +4,6 @@ title: Home
 
 # Election Blog 
 
-## Avi Agarwala
+## Avi Agarwal
 
 [posts](/post/)
