@@ -30,7 +30,6 @@ library(tidyverse)
 ```
 
 
-
 ```r
 states_map <- map_data("state")
 d_pvstate_wide <- read_csv("clean_wide_state_2pv_1948_2020.csv")
