@@ -9,32 +9,117 @@ tags: []
 
 This is the first of a series of blog posts in which I will be analyzing and prediciting the 2024 Presidential Election. 
 
-```{r}
+#Using Swing States as a Predictor
+
+```{r include=FALSE}
 library(ggplot2)
 library(maps)
 library(tidyverse)
 ```
 
-```{r}
+```{r include=FALSE}
 states_map <- map_data("state")
 d_pvstate_wide <- read_csv("clean_wide_state_2pv_1948_2020.csv")
 ```
 
-```{r}
+```{r include=FALSE}
 d_pvstate_wide_pred_2024 <- d_pvstate_wide |>
   filter(year == 2020) |> 
   group_by(state) |>
   summarize(D_vote2024 = 0.75*D_pv2p + 0.25*D_pv2p_lag1) |>
-  mutate(region = tolower(state), winner = if_else(D_vote2024 > 50, "D", "R"))
+  mutate(region = tolower(state),
+         winner = if_else(D_vote2024 > 50, "D", "R"), 
+         margin = D_vote2024 - (100 - D_vote2024))
+```   
+
+
+```{r include=FALSE}
+
+predicted_map_2024 <- d_pvstate_wide_pred_2024 |>
+  left_join(states_map, by = "region") |>
+  ggplot(mapping = aes(x = long, y = lat, group = group, fill = margin)) + 
+  geom_polygon(color = "black") +  
+  geom_path(color = "black") + 
+  theme_void() + 
+  scale_fill_gradient2(low = "red",
+                       mid = "#F7F7F7",
+                       high = "blue",
+                       midpoint = 0,
+                       limits = c(-50, 50), #Used LLM/ChatGPT to learn how to add limits and breaks
+                       breaks = seq(-100, 100, by = 50),
+                       name = "Vote Margin") +
+  ggtitle("2024 Presdential Forecast (Simplified Electoral Cycle Model)")
+
+```
+
+```{r}
+predicted_map_2024
+```
+
+```{r include=FALSE}
+d_pvstate_wide_swing_2020 <- d_pvstate_wide |>
+  filter(year == 2020) |> 
+  group_by(state) |>
+  summarize(D_vote2020 = mean(D_pv2p), 
+            D_vote2016 = mean(D_pv2p_lag1))  
+```
+
+```{r include=FALSE}
+d_pvstate_wide_swing_2020 <- d_pvstate_wide_swing_2020 |>
+  mutate(swing = (D_vote2020 / (D_vote2020 + (100 - D_vote2020))) - 
+                (D_vote2016 / (D_vote2016 + (100 - D_vote2016))),
+         region = tolower(state))
+         
+```
+                       
+```{r include=FALSE}
+
+swing_map_2020 <- d_pvstate_wide_swing_2020 |>
+  left_join(states_map, by = "region") |>
+  ggplot(mapping = aes(x = long, y = lat, group = group, fill = swing)) + 
+  geom_polygon(color = "black") + 
+  geom_path(color = "black") +
+  theme_void() + 
+  scale_fill_gradient2(low = "red", mid = "#F7F7F7", high = "blue",
+                       midpoint = 0, limits = c(-0.15, 0.15), 
+                       breaks = seq(-0.2, 0.2, by = 0.1),
+                       name = "Change in Margin") +
+  ggtitle("Swing Map: Change in Vote Margin from 2020 vs 2016 Presidential Election")
 ```
 
 
 ```{r}
-
-map <- d_pvstate_wide_pred_2024 |>
-  left_join(states_map, by = "region") |>
-  ggplot(mapping = aes(x = long, y = lat, group = group, fill = winner)) + geom_polygon() + theme_void() + scale_fill_manual(values = c("blue", "red")) 
-
-map 
+swing_map_2020
 ```
+
+```{r include=FALSE}
+d_pvstate_wide_swing_2012 <- d_pvstate_wide |>
+  filter(year == 2020) |> 
+  group_by(state) |>
+  summarize(D_vote2020 = mean(D_pv2p), 
+            D_vote2012 = mean(D_pv2p_lag2)) 
+
+d_pvstate_wide_swing_2012 <- d_pvstate_wide_swing_2012 |>
+  mutate(swing = (D_vote2020 / (D_vote2020 + (100 - D_vote2020))) - 
+                (D_vote2012 / (D_vote2012 + (100 - D_vote2012))),
+         region = tolower(state))
+
+swing_map_2012 <- d_pvstate_wide_swing_2012 |>
+  left_join(states_map, by = "region") |>
+  ggplot(mapping = aes(x = long, y = lat, group = group, fill = swing)) + 
+  geom_polygon(color = "black") + 
+  geom_path(color = "black") +
+  theme_void() + 
+  scale_fill_gradient2(low = "red", mid = "#F7F7F7", high = "blue",
+                       midpoint = 0, limits = c(-0.15, 0.15), 
+                       breaks = seq(-0.2, 0.2, by = 0.1),
+                       name = "Change in Margin") +
+  ggtitle("Swing Map: Change in Vote Margin from 2020 vs 2012 Presidential Election")
+```
+
+```{r }
+swing_map_2012
+```
+
+
 
