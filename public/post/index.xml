@@ -6,14 +6,14 @@
     <description>Recent content in Posts on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 06 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 09 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Post 1</title>
-      <link>https://example.org/post/2024/09/06/post-1/</link>
-      <pubDate>Fri, 06 Sep 2024 00:00:00 +0000</pubDate>
-      <guid>https://example.org/post/2024/09/06/post-1/</guid>
-      <description>&lt;p&gt;This is the first of a series of blog posts in which I will be analyzing and prediciting the 2024 Presidential Election.&lt;/p&gt;&#xA;&lt;p&gt;#Using Swing States as a Predictor&lt;/p&gt;&#xA;&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;predicted_map_2024&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code&gt;## Warning: Removed 2 rows containing missing values (`geom_path()`).&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;img src=&#34;https://example.org/post/2024/09/06/post-1/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&#xD;&#xA;&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;swing_map_2020&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code&gt;## Warning: Removed 2 rows containing missing values (`geom_path()`).&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;img src=&#34;https://example.org/post/2024/09/06/post-1/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&#xD;&#xA;&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;swing_map_2012&#xD;&#xA;&lt;/code&gt;&lt;/pr</description>
+      <title>Blog Post 1</title>
+      <link>https://example.org/post/2024/09/09/post-1/</link>
+      <pubDate>Mon, 09 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/09/09/post-1/</guid>
+      <description>&lt;p&gt;##Introduction&lt;/p&gt;&#xA;&lt;p&gt;This is the first of a series of blog posts in which I will analyze and predict the 2024 Presidential Election. In my first post, I will analyze historical data from past presidential elections to determine how competitive presidential elections are, what states can be seen as reliable for either party, while what states are considered swing states.&lt;/p&gt;&#xA;&lt;p&gt;##What states are competitive?&lt;/p&gt;&#xA;&lt;p&gt;To begin, I will examine the vote margins for each state in the Democratic and Republican parties&amp;rsquo; presidential elections from 2000 to 2020. A brief overview shows that even the most partisan states had relatively close margins. Excluding D.C., every state was within 30 percentage points, and most were within 15 points. However, under the U.S. Electoral College system, whether state margins are 80-20 or 52-48, if they consistently vote for the same party, the margin does not affect the overall election outcome. The only states that genuinely impact the result are those with razor-thin margins capable of switching sides, and these states tend to be nearly white on the electoral map below.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
