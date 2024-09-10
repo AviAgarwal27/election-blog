@@ -52,7 +52,7 @@ Pennsylvania, Wisconsin, Nevada, and Michigan have consistently been swing state
 
 This map examines the change in vote margins in each state between 2016 and 2020. As expected, most of the map is blue since a Republican won in 2016 but lost in 2020. However, a few noteworthy trends emerge. First, while much of the country shifted towards the Democrats, Florida moved further towards the Republicans. In my opinion, this shift is significant enough to remove Florida's status as a swing state. Florida moved towards a Republican candidate even as Republicans underperformed nationwide.
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="768" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="864" />
 
 Another interesting point is that New York and California, two Democratic strongholds, also trended Republican. These two states represent major electoral college strongholds for the Democrats. Many argue that recent trends make it unlikely for Democrats to lose the popular vote but still win the Electoral College. While this is mainly true, if these states continue to trend Republican, it could become possible in future elections.
 
@@ -60,7 +60,7 @@ Another interesting point is that New York and California, two Democratic strong
 
 While the map comparing vote margins from 2016 to 2020 is interesting, there isn’t much detailed analysis to draw from it, as most of the country swung in favor of the party shift. A more fascinating comparison comes from looking at the 2012 and 2020 presidential elections, where Democratic candidates won both times. However, it’s important to note that the 2012 election was a more decisive victory for the Democrats. Obama won 126 more electoral votes than Romney, while Biden only won 74 more than Trump.
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="960" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="864" />
 
 This map supports earlier analysis. Arizona and Georgia stand out as they have become far more competitive for the Democratic Party, evolving into swing states. Conversely, Ohio, Iowa, and Florida have trended more Republican and are no longer considered swing states. Many traditional swing states in the Midwest and Nevada trended Republican, though this is expected, given that Obama won more significantly than Biden.
 
