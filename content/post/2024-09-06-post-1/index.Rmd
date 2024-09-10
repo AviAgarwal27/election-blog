@@ -156,7 +156,7 @@ Pennsylvania, Wisconsin, Nevada, and Michigan have consistently been swing state
 
 This map examines the change in vote margins in each state between 2016 and 2020. As expected, most of the map is blue since a Republican won in 2016 but lost in 2020. However, a few noteworthy trends emerge. First, while much of the country shifted towards the Democrats, Florida moved further towards the Republicans. In my opinion, this shift is significant enough to remove Florida's status as a swing state. Florida moved towards a Republican candidate even as Republicans underperformed nationwide.
 
-```{r, echo= FALSE, message = FALSE, warning=FALSE, fig.height=4, fig.width = 10}
+```{r, echo= FALSE, message = FALSE, warning=FALSE, fig.height=4, fig.width =8}
 swing_map_2020
 ```
 
