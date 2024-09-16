@@ -1,5 +1,5 @@
 ---
-title: Blog Post 1
+title: 'Post #1: Defining the Swing States'
 author: Avi Agarwal
 date: '2024-09-09'
 slug: post-1
