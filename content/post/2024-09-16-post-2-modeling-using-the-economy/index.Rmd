@@ -53,7 +53,7 @@ plot_unemp_quarterly <- ggplot(d_inc_econ, aes(x = unemployment_growth_quarterly
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Q2 Unemployment Growth (%)", 
        y = "Incumbent National Two Party Vote Share (%)",
-       title = "Model 5: Incumbent National Two Party Vote Share vs. Quarterely Unemployment Growth",
+       title = "Model 5: Incumbent Two Party Vote Share vs. Quarterely Unemployment Growth",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -67,7 +67,7 @@ plot_unemp_annually <- ggplot(d_inc_econ, aes(x = unemployment_growth_anually, y
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Annual Unemployment Growth (%)", 
        y = "Incumbent National Two Party Vote Share (%)",
-       title = "Model 6: Incumbent National Two Party Vote Share vs. Annual Unemployment Growth",
+       title = "Model 6: Incumbent Two Party Vote Share vs. Annual Unemployment Growth",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -81,7 +81,7 @@ plot_rdpi_quarterly <- ggplot(d_inc_econ, aes(x = RDPI_growth_quarterly, y = pv2
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Q2 RDPI Growth (%)", 
        y = "Incumbent National Two Party Vote Share (%)",
-       title ="Model 1: Incumbent National Two Party Vote Share vs. Quarterly RDPI Growth",
+       title ="Model 1: Incumbent Two Party Vote Share vs. Quarterly RDPI Growth",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -96,7 +96,7 @@ plot_rdpi_annually <- ggplot(d_inc_econ, aes(x = RDPI_growth_annually, y = pv2p,
   labs(x = "Annual RDPI Growth (%)", 
        y = "Incumbent
  National Two Party Vote Share (%)",
-       title = "Model 2: Incumbent National Two Party Vote Share vs. Annual RDPI Growth",
+       title = "Model 2: Incumbent Two Party Vote Share vs. Annual RDPI Growth",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -111,7 +111,7 @@ plot_sp500_quarterly <- ggplot(d_inc_econ, aes(x = sp500_growth_quarterly, y = p
   labs(x = "Q2 S&P 500 Growth (%)", 
        y = "Incumbent
  National Two Party Vote Share (%)",
-       title = "Model 3: Incumbent National Two Party Vote Share vs. Quarterly S&P 500 Growth",
+       title = "Model 3: Incumbent Two Party Vote Share vs. Quarterly S&P 500 Growth",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -127,7 +127,7 @@ plot_sp500_annually <- ggplot(d_inc_econ, aes(x = sp500_growth_anually, y = pv2p
   labs(x = "Annual S&P 500 Growth (%)", 
        y = "Incumbent
  National Two Party Vote Share (%)",
-       title = "Model 4: Incumbent National Two Party Vote Share vs. Annual S&P 500 Growth",
+       title = "Model 4: Incumbent Two Party Vote Share vs. Annual S&P 500 Growth",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -307,7 +307,7 @@ tab_model(model_unemp_annually, show.se = TRUE,
 
 # Predictions and Concluding Thoughts
 
-Given its poor in-sample model fit, I decided not to use the S&P 500 as a predictor for the election. All the economic predictors suggest a Donald Trump victory, but at a 95% confidence interval, an extremely wide range of outcomes is possible.
+Given its poor in-sample model fit, I decided not to use the S&P 500 as a predictor for the election. All the economic predictors suggest a Donald Trump popular vote victory, but at a 95% confidence interval, an extremely wide range of outcomes is possible.
 
 ```{r  , echo= FALSE, message = FALSE, warning=FALSE}
 kable(rdpi_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
@@ -328,7 +328,7 @@ kable(unemployment_predictions, col.names = c("Independent Variable", "Predicted
 ```
 
 
-Overall, I believe the best approach to using economic predictors is to aggregate multiple variables, such as RDPI growth and unemployment growth, and weigh them accordingly as part of a larger model that also incorporates polling and other fundamentals. It’s clear that no single economic factor is sufficient to predict an election, nor is there a strong preference between factors that affect personal wealth versus macroeconomic conditions. The highest R-squared any of the models achieved as 0.4, meaning around 60% of the variance in elections could not be accounted for. Of course, multicollinearity would be a significant issue in any model using multiple economic factors, so adjustments to account for it would be necessary
+Overall, I believe the best approach to using economic predictors is to aggregate multiple variables, such as RDPI growth and unemployment growth, and weigh them accordingly as part of a larger model that also incorporates polling and other fundamentals. It’s clear that no single economic factor is sufficient to predict an election, nor is there a strong preference between factors that affect personal wealth versus macroeconomic conditions. The highest R-squared any of the models achieved as 0.4, meaning around 60% of the variance in elections could not be accounted for. Of course, multicollinearity would be a significant issue in any model using multiple economic factors, so adjustments to account for it would be necessary.
 
 
 

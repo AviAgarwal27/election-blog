@@ -305,7 +305,7 @@ Both graphs show a strong inverse relationship between unemployment growth and t
 
 # Predictions and Concluding Thoughts
 
-Given its poor in-sample model fit, I decided not to use the S&P 500 as a predictor for the election. All the economic predictors suggest a Donald Trump victory, but at a 95% confidence interval, an extremely wide range of outcomes is possible.
+Given its poor in-sample model fit, I decided not to use the S&P 500 as a predictor for the election. All the economic predictors suggest a Donald Trump popular vote victory, but at a 95% confidence interval, an extremely wide range of outcomes is possible.
 
 
 Table: <span id="tab:unnamed-chunk-18"></span>Table 1: **Predicted 2024 Incumbent
@@ -326,7 +326,7 @@ Table: <span id="tab:unnamed-chunk-19"></span>Table 2: **Predicted 2024 Incumben
 |Annual Unemployment Growth    |                          48.45|                38.49|                58.42|
 
 
-Overall, I believe the best approach to using economic predictors is to aggregate multiple variables, such as RDPI growth and unemployment growth, and weigh them accordingly as part of a larger model that also incorporates polling and other fundamentals. It’s clear that no single economic factor is sufficient to predict an election, nor is there a strong preference between factors that affect personal wealth versus macroeconomic conditions. The highest R-squared any of the models achieved as 0.4, meaning around 60% of the variance in elections could not be accounted for. Of course, multicollinearity would be a significant issue in any model using multiple economic factors, so adjustments to account for it would be necessary
+Overall, I believe the best approach to using economic predictors is to aggregate multiple variables, such as RDPI growth and unemployment growth, and weigh them accordingly as part of a larger model that also incorporates polling and other fundamentals. It’s clear that no single economic factor is sufficient to predict an election, nor is there a strong preference between factors that affect personal wealth versus macroeconomic conditions. The highest R-squared any of the models achieved as 0.4, meaning around 60% of the variance in elections could not be accounted for. Of course, multicollinearity would be a significant issue in any model using multiple economic factors, so adjustments to account for it would be necessary.
 
 
 
