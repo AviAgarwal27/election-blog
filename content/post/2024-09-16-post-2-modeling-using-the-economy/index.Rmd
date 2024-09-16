@@ -15,6 +15,7 @@ library(tidyverse)
 library(stargazer)
 library(sjPlot) #learned about stargazer vs sjPlot from ChatGPT. Ended up using sjPlot since it looked nicer in the blog format. 
 library(knitr)
+knitr::opts_chunk$set(tab.num = NULL)
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -200,6 +201,11 @@ tab_model(model_rdpi_quarterly, show.se = TRUE,
 ```
 
 
+
+
+
+
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_rdpi_annually
 ```
@@ -212,10 +218,15 @@ tab_model(model_rdpi_annually, show.se = TRUE,
 ```
 
 
-```{r}
+
+
+
+
+
+```{r  , echo= FALSE, message = FALSE, warning=FALSE}
 kable(rdpi_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
                                       "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
-      caption = "Predicted National Popular Two Party Vote Share for RDPI Growth (2024)",
+      caption = "**Predicted 2024  National Popular Two Party Vote Share based on RDPI Growth**",
       format = "markdown")
 ```
 
@@ -232,6 +243,11 @@ tab_model(model_sp500_quarterly, show.se = TRUE,
           dv.labels = "National Popular Two Party Vote Share (%)",
           pred.labels = c("(Intercept)", "Quarterly S&P 500 Growth (%)"))
 ```
+
+
+
+
+
 
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -260,6 +276,11 @@ tab_model(model_unemp_quarterly, show.se = TRUE,
 
 
 
+
+
+
+
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_unemp_annually
 ```
@@ -272,10 +293,16 @@ tab_model(model_unemp_annually, show.se = TRUE,
 ```
 
 
-```{r}
+
+
+
+
+
+
+```{r  , echo= FALSE, message = FALSE, warning=FALSE}
 kable(unemployment_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
                                               "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
-      caption = "Predicted National Popular Two Party Vote Share for Unemployment Growth (2024)",
+      caption = "**Predicted 2024 National Popular Two Party Vote Share based on Unemployment Growth**",
       format = "markdown")
 
 ```

@@ -63,6 +63,11 @@ Data Limitations
 </table>
 
 
+
+
+
+
+
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
@@ -105,16 +110,12 @@ Data Limitations
 
 
 
-```r
-kable(rdpi_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
-                                      "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
-      caption = "Predicted National Popular Two Party Vote Share for RDPI Growth (2024)",
-      format = "markdown")
-```
 
 
 
-Table: <span id="tab:unnamed-chunk-10"></span>Table 1: Predicted National Popular Two Party Vote Share for RDPI Growth (2024)
+
+
+Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024  National Popular Two Party Vote Share based on RDPI Growth**
 
 |Independent Variable  | Predicted Two Party Vote Share| Lower Bound (95% CI)| Upper Bound (95% CI)|
 |:---------------------|------------------------------:|--------------------:|--------------------:|
@@ -163,6 +164,11 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: Predicted National Popula
 </tr>
 
 </table>
+
+
+
+
+
 
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
@@ -249,6 +255,11 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: Predicted National Popula
 
 
 
+
+
+
+
+
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
@@ -291,16 +302,13 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: Predicted National Popula
 
 
 
-```r
-kable(unemployment_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
-                                              "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
-      caption = "Predicted National Popular Two Party Vote Share for Unemployment Growth (2024)",
-      format = "markdown")
-```
 
 
 
-Table: <span id="tab:unnamed-chunk-19"></span>Table 2: Predicted National Popular Two Party Vote Share for Unemployment Growth (2024)
+
+
+
+Table: <span id="tab:unnamed-chunk-19"></span>Table 2: **Predicted 2024 National Popular Two Party Vote Share based on Unemployment Growth**
 
 |Independent Variable          | Predicted Two Party Vote Share| Lower Bound (95% CI)| Upper Bound (95% CI)|
 |:-----------------------------|------------------------------:|--------------------:|--------------------:|
