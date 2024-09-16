@@ -8,222 +8,16 @@ tags: []
 ---
 
 
-```r
-library(ggplot2)
-library(maps)
-library(tidyverse)
-```
-
-```
-## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ lubridate 1.9.3     ✔ tibble    3.2.1
-## ✔ purrr     1.0.2     ✔ tidyr     1.3.0
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ✖ purrr::map()    masks maps::map()
-## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-```
-
-```r
-#library(patchwork)
-library(stargazer)
-```
-
-```
-## 
-## Please cite as: 
-## 
-##  Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables.
-##  R package version 5.2.3. https://CRAN.R-project.org/package=stargazer
-```
-
-```r
-library(sjPlot)
-```
-
-```
-## Warning: package 'sjPlot' was built under R version 4.3.3
-```
-
-```
-## Learn more about sjPlot with 'browseVignettes("sjPlot")'.
-```
 
 
-```r
-d_popvote <- read_csv("popvote_1948-2020.csv")
-```
-
-```
-## Rows: 38 Columns: 9
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## chr (2): party, candidate
-## dbl (3): year, pv, pv2p
-## lgl (4): winner, incumbent, incumbent_party, prev_admin
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
-d_fred <- read_csv("fred_econ.csv")
-```
-
-```
-## Rows: 387 Columns: 14
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: ","
-## dbl (14): year, quarter, GDP, GDP_growth_quarterly, RDPI, RDPI_growth_quarte...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
-d_fred_adjusted <- d_fred |>
-  filter(year > 1958) |>
-  mutate(unemployment_growth_quarterly = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
-  filter(quarter == 2) |>
-  mutate(RDPI_growth_annually = (RDPI - lag(RDPI, 1)) / lag(RDPI, 1) * 100) |> #learned about lag from LLM/ChatGPT
-  mutate(sp500_growth_quarterly = ((sp500_adj_close - sp500_open)) / sp500_open * 100) |>
-  mutate(sp500_growth_anually = (sp500_adj_close - lag(sp500_adj_close, 1)) / lag(sp500_adj_close, 1) * 100) |> 
-  mutate(unemployment_growth_anually = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
-  filter(year >= 1960 & year != 2020) |> #exclude 2020 since it such an outlier
-  select(year, RDPI_growth_quarterly, RDPI_growth_annually, sp500_growth_quarterly, sp500_growth_anually, unemployment_growth_quarterly, unemployment_growth_anually)
 
 
-# Filter and merge data. 
-d_inc_econ <- d_popvote |> 
-  filter(incumbent_party == TRUE & year >= 1960 & year != 2020) |> 
-  select(year, pv2p, winner) |> 
-  left_join(d_fred_adjusted, by = "year")
-```
 
 
-```r
-plot_unemp_quarterly <- ggplot(d_inc_econ, aes(x = unemployment_growth_quarterly, y = pv2p, label = year)) + 
-  geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
-  geom_smooth(method = "lm", formula = y ~ x) +
-  geom_hline(yintercept = 50, lty = 2) + 
-  geom_vline(xintercept = 0, lty = 2) + 
-  labs(x = "Q2 Unemployment Growth (%)", 
-       y = "National Popular Two Party Vote Share (%)",
-       caption = "The years in the graph are from 1960 to 2016.") + 
-  theme_bw() + 
-  theme(plot.title = element_text(size = 14, hjust = 0.5),
-        axis.title = element_text(size = 12))
-#used LLM to replicate graphs
-plot_unemp_annually <- ggplot(d_inc_econ, aes(x = unemployment_growth_anually, y = pv2p, label = year)) + 
-  geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
-  geom_smooth(method = "lm", formula = y ~ x) +
-  geom_hline(yintercept = 50, lty = 2) + 
-  geom_vline(xintercept = 0, lty = 2) + 
-  labs(x = "Annual Unemployment Growth (%)", 
-       y = "National Popular Two Party Vote Share (%)",
-       caption = "The years in the graph are from 1960 to 2016.") + 
-  theme_bw() + 
-  theme(plot.title = element_text(size = 14, hjust = 0.5),
-        axis.title = element_text(size = 12))
 
-plot_rdpi_quarterly <- ggplot(d_inc_econ, aes(x = RDPI_growth_quarterly, y = pv2p, label = year)) + 
-  geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
-  geom_smooth(method = "lm", formula = y ~ x) +
-  geom_hline(yintercept = 50, lty = 2) + 
-  geom_vline(xintercept = 0, lty = 2) + 
-  labs(x = "Q2 RDPI Growth (%)", 
-       y = "National Popular Two Party Vote Share (%)",
-       caption = "The years in the graph are from 1960 to 2016.") + 
-  theme_bw() + 
-  theme(plot.title = element_text(size = 14, hjust = 0.5),
-        axis.title = element_text(size = 12))
-
-plot_rdpi_annually <- ggplot(d_inc_econ, aes(x = RDPI_growth_annually, y = pv2p, label = year)) + 
-  geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
-  geom_smooth(method = "lm", formula = y ~ x) +
-  geom_hline(yintercept = 50, lty = 2) + 
-  geom_vline(xintercept = 0, lty = 2) + 
-  labs(x = "Annual RDPI Growth (%)", 
-       y = "National Popular Two Party Vote Share (%)",
-       caption = "The years in the graph are from 1960 to 2016.") + 
-  theme_bw() + 
-  theme(plot.title = element_text(size = 14, hjust = 0.5),
-        axis.title = element_text(size = 12))
-
-plot_sp500_quarterly <- ggplot(d_inc_econ, aes(x = sp500_growth_quarterly, y = pv2p, label = year)) + 
-  geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
-  geom_smooth(method = "lm", formula = y ~ x) +
-  geom_hline(yintercept = 50, lty = 2) + 
-  geom_vline(xintercept = 0, lty = 2) + 
-  labs(x = "Q2 S&P 500 Growth (%)", 
-       y = "National Popular Two Party Vote Share (%)",
-       caption = "The years in the graph are from 1960 to 2016.") + 
-  theme_bw() + 
-  theme(plot.title = element_text(size = 14, hjust = 0.5),
-        axis.title = element_text(size = 12))
-
-
-plot_sp500_annually <- ggplot(d_inc_econ, aes(x = sp500_growth_anually, y = pv2p, label = year)) + 
-  geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
-  geom_smooth(method = "lm", formula = y ~ x) +
-  geom_hline(yintercept = 50, lty = 2) + 
-  geom_vline(xintercept = 0, lty = 2) + 
-  labs(x = "Annual S&P 500 Growth (%)", 
-       y = "National Popular Two Party Vote Share (%)",
-       caption = "The years in the graph are from 1960 to 2016.") + 
-  theme_bw() + 
-  theme(plot.title = element_text(size = 14, hjust = 0.5),
-        axis.title = element_text(size = 12))
-```
-
-
-```r
-model_unemp_quarterly <- lm(pv2p ~ unemployment_growth_quarterly, data = d_inc_econ)
-
-model_unemp_annually <- lm(pv2p ~ unemployment_growth_anually, data = d_inc_econ)
-
-model_rdpi_quarterly <- lm(pv2p ~ RDPI_growth_quarterly, data = d_inc_econ)
-
-model_rdpi_annually <- lm(pv2p ~ RDPI_growth_annually, data = d_inc_econ)
-
-model_sp500_quarterly <- lm(pv2p ~ sp500_growth_quarterly, data = d_inc_econ)
-
-model_sp500_annually <- lm(pv2p ~ sp500_growth_anually, data = d_inc_econ)
-```
-
-#Real Disposable Personal Income Growth
-
-
-```r
-plot_rdpi_quarterly
-```
-
-```
-## Warning: The following aesthetics were dropped during statistical transformation: label
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-```
+# Real Disposable Personal Income Growth
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
-
-
-```r
-tab_model(model_rdpi_quarterly, show.se = TRUE, 
-          title = "Regression Table for Quarterly RDPI Growth (1960-2016)", 
-          dv.labels = "National Popular Two Party Vote Share (%)",
-          pred.labels = c("(Intercept)", "Quarterly RDPI Growth (%)"))
-```
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly RDPI Growth (1960-2016)</caption>
@@ -264,28 +58,7 @@ tab_model(model_rdpi_quarterly, show.se = TRUE,
 </table>
 
 
-
-```r
-plot_rdpi_annually
-```
-
-```
-## Warning: The following aesthetics were dropped during statistical transformation: label
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
-
-
-```r
-tab_model(model_rdpi_annually, show.se = TRUE, 
-          title = "Regression Table for Annual RDPI Growth (1960-2016)", 
-          dv.labels = "National Popular Two Party Vote Share (%)",
-          pred.labels = c("(Intercept)", "Annual RDPI Growth (%)"))
-```
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual RDPI Growth (1960-2016)</caption>
@@ -325,30 +98,9 @@ tab_model(model_rdpi_annually, show.se = TRUE,
 
 </table>
 
-#S&P 500 Growth
-
-
-```r
-plot_sp500_quarterly
-```
-
-```
-## Warning: The following aesthetics were dropped during statistical transformation: label
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-```
+# S&P 500 Growth
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" />
-
-
-```r
-tab_model(model_sp500_quarterly, show.se = TRUE, 
-          title = "Regression Table for Quarterly S&P 500 Growth (1960-2016)", 
-          dv.labels = "National Popular Two Party Vote Share (%)",
-          pred.labels = c("(Intercept)", "Quarterly S&P 500 Growth (%)"))
-```
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly S&P 500 Growth (1960-2016)</caption>
@@ -389,28 +141,7 @@ tab_model(model_sp500_quarterly, show.se = TRUE,
 </table>
 
 
-
-```r
-plot_sp500_annually
-```
-
-```
-## Warning: The following aesthetics were dropped during statistical transformation: label
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
-
-
-```r
-tab_model(model_sp500_annually, show.se = TRUE, 
-          title = "Regression Table for Annual S&P 500 Growth (1960-2016)", 
-          dv.labels = "National Popular Two Party Vote Share (%)",
-          pred.labels = c("(Intercept)", "Annual S&P 500 Growth (%)"))
-```
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual S&P 500 Growth (1960-2016)</caption>
@@ -450,30 +181,9 @@ tab_model(model_sp500_annually, show.se = TRUE,
 
 </table>
 
-#Unemployment Growth
-
-
-```r
-plot_unemp_quarterly
-```
-
-```
-## Warning: The following aesthetics were dropped during statistical transformation: label
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-```
+# Unemployment Growth
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
-
-
-```r
-tab_model(model_unemp_quarterly, show.se = TRUE, 
-          title = "Regression Table for Quarterly Unemployment Growth (1960-2016)", 
-          dv.labels = "National Popular Two Party Vote Share (%)",
-          pred.labels = c("(Intercept)", "Quarterly Unemployment Growth (%)"))
-```
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly Unemployment Growth (1960-2016)</caption>
@@ -514,28 +224,7 @@ tab_model(model_unemp_quarterly, show.se = TRUE,
 </table>
 
 
-
-```r
-plot_unemp_annually
-```
-
-```
-## Warning: The following aesthetics were dropped during statistical transformation: label
-## ℹ This can happen when ggplot fails to infer the correct grouping structure in
-##   the data.
-## ℹ Did you forget to specify a `group` aesthetic or to convert a numerical
-##   variable into a factor?
-```
-
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
-
-
-```r
-tab_model(model_unemp_annually, show.se = TRUE, 
-          title = "Regression Table for Annual Unemployment Growth (1960-2016)", 
-          dv.labels = "National Popular Two Party Vote Share (%)",
-          pred.labels = c("(Intercept)", "Annual Unemployment Growth (%)"))
-```
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual Unemployment Growth (1960-2016)</caption>

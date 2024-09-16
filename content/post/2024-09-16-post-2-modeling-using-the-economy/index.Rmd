@@ -7,7 +7,7 @@ categories: []
 tags: []
 ---
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 library(ggplot2)
 library(maps)
 library(tidyverse)
@@ -16,7 +16,7 @@ library(stargazer)
 library(sjPlot)
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 
 d_popvote <- read_csv("popvote_1948-2020.csv")
 
@@ -42,7 +42,7 @@ d_inc_econ <- d_popvote |>
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 
 plot_unemp_quarterly <- ggplot(d_inc_econ, aes(x = unemployment_growth_quarterly, y = pv2p, label = year)) + 
   geom_point() +
@@ -125,7 +125,7 @@ plot_sp500_annually <- ggplot(d_inc_econ, aes(x = sp500_growth_anually, y = pv2p
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 model_unemp_quarterly <- lm(pv2p ~ unemployment_growth_quarterly, data = d_inc_econ)
 
 model_unemp_annually <- lm(pv2p ~ unemployment_growth_anually, data = d_inc_econ)
@@ -139,13 +139,13 @@ model_sp500_quarterly <- lm(pv2p ~ sp500_growth_quarterly, data = d_inc_econ)
 model_sp500_annually <- lm(pv2p ~ sp500_growth_anually, data = d_inc_econ)
 ```
 
-#Real Disposable Personal Income Growth
+# Real Disposable Personal Income Growth
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_rdpi_quarterly
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_rdpi_quarterly, show.se = TRUE, 
           title = "Regression Table for Quarterly RDPI Growth (1960-2016)", 
           dv.labels = "National Popular Two Party Vote Share (%)",
@@ -153,24 +153,24 @@ tab_model(model_rdpi_quarterly, show.se = TRUE,
 ```
 
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_rdpi_annually
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_rdpi_annually, show.se = TRUE, 
           title = "Regression Table for Annual RDPI Growth (1960-2016)", 
           dv.labels = "National Popular Two Party Vote Share (%)",
           pred.labels = c("(Intercept)", "Annual RDPI Growth (%)"))
 ```
 
-#S&P 500 Growth
+# S&P 500 Growth
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_sp500_quarterly
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_sp500_quarterly, show.se = TRUE, 
           title = "Regression Table for Quarterly S&P 500 Growth (1960-2016)", 
           dv.labels = "National Popular Two Party Vote Share (%)",
@@ -178,24 +178,24 @@ tab_model(model_sp500_quarterly, show.se = TRUE,
 ```
 
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_sp500_annually
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_sp500_annually, show.se = TRUE, 
           title = "Regression Table for Annual S&P 500 Growth (1960-2016)", 
           dv.labels = "National Popular Two Party Vote Share (%)",
           pred.labels = c("(Intercept)", "Annual S&P 500 Growth (%)"))
 ```
 
-#Unemployment Growth
+# Unemployment Growth
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_unemp_quarterly
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_unemp_quarterly, show.se = TRUE, 
           title = "Regression Table for Quarterly Unemployment Growth (1960-2016)", 
           dv.labels = "National Popular Two Party Vote Share (%)",
@@ -203,11 +203,11 @@ tab_model(model_unemp_quarterly, show.se = TRUE,
 ```
 
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_unemp_annually
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_unemp_annually, show.se = TRUE, 
           title = "Regression Table for Annual Unemployment Growth (1960-2016)", 
           dv.labels = "National Popular Two Party Vote Share (%)",
