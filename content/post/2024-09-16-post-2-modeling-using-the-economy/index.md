@@ -15,9 +15,14 @@ tags: []
 
 
 
+
+# Introduction
+
+Data Limitations
+
 # Real Disposable Personal Income Growth
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly RDPI Growth (1960-2016)</caption>
@@ -58,7 +63,7 @@ tags: []
 </table>
 
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual RDPI Growth (1960-2016)</caption>
@@ -98,9 +103,28 @@ tags: []
 
 </table>
 
+
+
+```r
+kable(rdpi_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
+                                      "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
+      caption = "Predicted National Popular Two Party Vote Share for RDPI Growth (2024)",
+      format = "markdown")
+```
+
+
+
+Table: <span id="tab:unnamed-chunk-10"></span>Table 1: Predicted National Popular Two Party Vote Share for RDPI Growth (2024)
+
+|Independent Variable  | Predicted Two Party Vote Share| Lower Bound (95% CI)| Upper Bound (95% CI)|
+|:---------------------|------------------------------:|--------------------:|--------------------:|
+|Quarterly RDPI Growth |                          49.91|                38.90|                60.91|
+|Annual RDPI Growth    |                          47.88|                37.73|                58.03|
+
+
 # S&P 500 Growth
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly S&P 500 Growth (1960-2016)</caption>
@@ -141,7 +165,7 @@ tags: []
 </table>
 
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual S&P 500 Growth (1960-2016)</caption>
@@ -183,7 +207,7 @@ tags: []
 
 # Unemployment Growth
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" />
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly Unemployment Growth (1960-2016)</caption>
@@ -224,7 +248,8 @@ tags: []
 </table>
 
 
-<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" />
+
+<img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" />
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual Unemployment Growth (1960-2016)</caption>
@@ -263,5 +288,23 @@ tags: []
 </tr>
 
 </table>
+
+
+
+```r
+kable(unemployment_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
+                                              "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
+      caption = "Predicted National Popular Two Party Vote Share for Unemployment Growth (2024)",
+      format = "markdown")
+```
+
+
+
+Table: <span id="tab:unnamed-chunk-19"></span>Table 2: Predicted National Popular Two Party Vote Share for Unemployment Growth (2024)
+
+|Independent Variable          | Predicted Two Party Vote Share| Lower Bound (95% CI)| Upper Bound (95% CI)|
+|:-----------------------------|------------------------------:|--------------------:|--------------------:|
+|Quarterly Unemployment Growth |                          48.97|                39.33|                58.61|
+|Annual Unemployment Growth    |                          48.45|                38.49|                58.42|
 
 

@@ -11,9 +11,10 @@ tags: []
 library(ggplot2)
 library(maps)
 library(tidyverse)
-#library(patchwork)
+#library(patchwork) 
 library(stargazer)
-library(sjPlot)
+library(sjPlot) #learned about stargazer vs sjPlot from ChatGPT. Ended up using sjPlot since it looked nicer in the blog format. 
+library(knitr)
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -32,9 +33,7 @@ d_fred_adjusted <- d_fred |>
   mutate(unemployment_growth_anually = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
   filter(year >= 1960 & year != 2020) |> #exclude 2020 since it such an outlier
   select(year, RDPI_growth_quarterly, RDPI_growth_annually, sp500_growth_quarterly, sp500_growth_anually, unemployment_growth_quarterly, unemployment_growth_anually)
-
-
-# Filter and merge data. 
+ 
 d_inc_econ <- d_popvote |> 
   filter(incumbent_party == TRUE & year >= 1960 & year != 2020) |> 
   select(year, pv2p, winner) |> 
@@ -44,9 +43,10 @@ d_inc_econ <- d_popvote |>
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 
+#Used ChatGPT to help adjust graph features like label size
 plot_unemp_quarterly <- ggplot(d_inc_econ, aes(x = unemployment_growth_quarterly, y = pv2p, label = year)) + 
   geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
+  geom_text(hjust = 1.2, size = 2.5) + 
   geom_smooth(method = "lm", formula = y ~ x) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
@@ -59,7 +59,7 @@ plot_unemp_quarterly <- ggplot(d_inc_econ, aes(x = unemployment_growth_quarterly
 #used LLM to replicate graphs
 plot_unemp_annually <- ggplot(d_inc_econ, aes(x = unemployment_growth_anually, y = pv2p, label = year)) + 
   geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
+  geom_text(hjust = 1.2, size = 2.5) + 
   geom_smooth(method = "lm", formula = y ~ x) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
@@ -72,7 +72,7 @@ plot_unemp_annually <- ggplot(d_inc_econ, aes(x = unemployment_growth_anually, y
 
 plot_rdpi_quarterly <- ggplot(d_inc_econ, aes(x = RDPI_growth_quarterly, y = pv2p, label = year)) + 
   geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
+  geom_text(hjust = 1.2, size = 2.5) + 
   geom_smooth(method = "lm", formula = y ~ x) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
@@ -85,7 +85,7 @@ plot_rdpi_quarterly <- ggplot(d_inc_econ, aes(x = RDPI_growth_quarterly, y = pv2
 
 plot_rdpi_annually <- ggplot(d_inc_econ, aes(x = RDPI_growth_annually, y = pv2p, label = year)) + 
   geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
+  geom_text(hjust = 1.2, size = 2.5) + 
   geom_smooth(method = "lm", formula = y ~ x) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
@@ -98,7 +98,7 @@ plot_rdpi_annually <- ggplot(d_inc_econ, aes(x = RDPI_growth_annually, y = pv2p,
 
 plot_sp500_quarterly <- ggplot(d_inc_econ, aes(x = sp500_growth_quarterly, y = pv2p, label = year)) + 
   geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
+  geom_text(hjust = 1.2, size = 2.5) + 
   geom_smooth(method = "lm", formula = y ~ x) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
@@ -112,7 +112,7 @@ plot_sp500_quarterly <- ggplot(d_inc_econ, aes(x = sp500_growth_quarterly, y = p
 
 plot_sp500_annually <- ggplot(d_inc_econ, aes(x = sp500_growth_anually, y = pv2p, label = year)) + 
   geom_point() +
-  geom_text(hjust = 1.2, size = 3) + 
+  geom_text(hjust = 1.2, size = 2.5) + 
   geom_smooth(method = "lm", formula = y ~ x) +
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
@@ -139,6 +139,53 @@ model_sp500_quarterly <- lm(pv2p ~ sp500_growth_quarterly, data = d_inc_econ)
 model_sp500_annually <- lm(pv2p ~ sp500_growth_anually, data = d_inc_econ)
 ```
 
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+Q_RDPI_new <- d_fred_adjusted |> 
+  filter(year == 2024) |> 
+  select(RDPI_growth_quarterly)
+
+A_RDPI_new <- d_fred_adjusted |> 
+  filter(year == 2024) |> 
+  select(RDPI_growth_annually)
+
+Q_Unemp_new <- d_fred_adjusted |> 
+  filter(year == 2024) |> 
+  select(unemployment_growth_quarterly)
+
+A_Unemp_new <- d_fred_adjusted |> 
+  filter(year == 2024) |> 
+  select(unemployment_growth_anually)
+
+pred_Q_RDPI <- predict(model_rdpi_quarterly, Q_RDPI_new, interval = "prediction")
+
+pred_A_RDPI <- predict(model_rdpi_annually, A_RDPI_new, interval = "prediction")
+
+pred_Q_Unemp <- predict(model_unemp_quarterly, Q_Unemp_new, interval = "prediction")
+
+pred_A_Unemp <- predict(model_unemp_annually, A_Unemp_new, interval = "prediction")
+
+
+#Used ChatGPT to help me make this table
+unemployment_predictions <- data.frame(
+  IV = c("Quarterly Unemployment Growth", "Annual Unemployment Growth"),
+  Point_Estimate = round(c(pred_Q_Unemp[1], pred_A_Unemp[1]), 2),
+  Lower_Bound_CI = round(c(pred_Q_Unemp[2], pred_A_Unemp[2]), 2),
+  Upper_Bound_CI = round(c(pred_Q_Unemp[3], pred_A_Unemp[3]), 2)
+)
+
+# RDPI Table
+rdpi_predictions <- data.frame(
+  IV = c("Quarterly RDPI Growth", "Annual RDPI Growth"),
+  Point_Estimate = round(c(pred_Q_RDPI[1], pred_A_RDPI[1]), 2),
+  Lower_Bound_CI = round(c(pred_Q_RDPI[2], pred_A_RDPI[2]), 2),
+  Upper_Bound_CI = round(c(pred_Q_RDPI[3], pred_A_RDPI[3]), 2)
+)
+
+```
+# Introduction
+
+Data Limitations
+
 # Real Disposable Personal Income Growth
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -163,6 +210,15 @@ tab_model(model_rdpi_annually, show.se = TRUE,
           dv.labels = "National Popular Two Party Vote Share (%)",
           pred.labels = c("(Intercept)", "Annual RDPI Growth (%)"))
 ```
+
+
+```{r}
+kable(rdpi_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
+                                      "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
+      caption = "Predicted National Popular Two Party Vote Share for RDPI Growth (2024)",
+      format = "markdown")
+```
+
 
 # S&P 500 Growth
 
@@ -203,6 +259,7 @@ tab_model(model_unemp_quarterly, show.se = TRUE,
 ```
 
 
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 plot_unemp_annually
 ```
@@ -212,6 +269,15 @@ tab_model(model_unemp_annually, show.se = TRUE,
           title = "Regression Table for Annual Unemployment Growth (1960-2016)", 
           dv.labels = "National Popular Two Party Vote Share (%)",
           pred.labels = c("(Intercept)", "Annual Unemployment Growth (%)"))
+```
+
+
+```{r}
+kable(unemployment_predictions, col.names = c("Independent Variable", "Predicted Two Party Vote Share", 
+                                              "Lower Bound (95% CI)", "Upper Bound (95% CI)"),
+      caption = "Predicted National Popular Two Party Vote Share for Unemployment Growth (2024)",
+      format = "markdown")
+
 ```
 
 
