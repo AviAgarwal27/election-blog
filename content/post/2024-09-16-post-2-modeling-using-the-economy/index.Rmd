@@ -1,0 +1,217 @@
+---
+title: 'Post #2: Modeling Using the Economy'
+author: Avi Agarwal
+date: '2024-09-16'
+slug: post-2-modeling-using-the-economy
+categories: []
+tags: []
+---
+
+```{r}
+library(ggplot2)
+library(maps)
+library(tidyverse)
+#library(patchwork)
+library(stargazer)
+library(sjPlot)
+```
+
+```{r}
+
+d_popvote <- read_csv("popvote_1948-2020.csv")
+
+d_fred <- read_csv("fred_econ.csv")
+
+d_fred_adjusted <- d_fred |>
+  filter(year > 1958) |>
+  mutate(unemployment_growth_quarterly = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(quarter == 2) |>
+  mutate(RDPI_growth_annually = (RDPI - lag(RDPI, 1)) / lag(RDPI, 1) * 100) |> #learned about lag from LLM/ChatGPT
+  mutate(sp500_growth_quarterly = ((sp500_adj_close - sp500_open)) / sp500_open * 100) |>
+  mutate(sp500_growth_anually = (sp500_adj_close - lag(sp500_adj_close, 1)) / lag(sp500_adj_close, 1) * 100) |> 
+  mutate(unemployment_growth_anually = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(year >= 1960 & year != 2020) |> #exclude 2020 since it such an outlier
+  select(year, RDPI_growth_quarterly, RDPI_growth_annually, sp500_growth_quarterly, sp500_growth_anually, unemployment_growth_quarterly, unemployment_growth_anually)
+
+
+# Filter and merge data. 
+d_inc_econ <- d_popvote |> 
+  filter(incumbent_party == TRUE & year >= 1960 & year != 2020) |> 
+  select(year, pv2p, winner) |> 
+  left_join(d_fred_adjusted, by = "year")
+
+```
+
+```{r}
+
+plot_unemp_quarterly <- ggplot(d_inc_econ, aes(x = unemployment_growth_quarterly, y = pv2p, label = year)) + 
+  geom_point() +
+  geom_text(hjust = 1.2, size = 3) + 
+  geom_smooth(method = "lm", formula = y ~ x) +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) + 
+  labs(x = "Q2 Unemployment Growth (%)", 
+       y = "National Popular Two Party Vote Share (%)",
+       caption = "The years in the graph are from 1960 to 2016.") + 
+  theme_bw() + 
+  theme(plot.title = element_text(size = 14, hjust = 0.5),
+        axis.title = element_text(size = 12))
+#used LLM to replicate graphs
+plot_unemp_annually <- ggplot(d_inc_econ, aes(x = unemployment_growth_anually, y = pv2p, label = year)) + 
+  geom_point() +
+  geom_text(hjust = 1.2, size = 3) + 
+  geom_smooth(method = "lm", formula = y ~ x) +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) + 
+  labs(x = "Annual Unemployment Growth (%)", 
+       y = "National Popular Two Party Vote Share (%)",
+       caption = "The years in the graph are from 1960 to 2016.") + 
+  theme_bw() + 
+  theme(plot.title = element_text(size = 14, hjust = 0.5),
+        axis.title = element_text(size = 12))
+
+plot_rdpi_quarterly <- ggplot(d_inc_econ, aes(x = RDPI_growth_quarterly, y = pv2p, label = year)) + 
+  geom_point() +
+  geom_text(hjust = 1.2, size = 3) + 
+  geom_smooth(method = "lm", formula = y ~ x) +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) + 
+  labs(x = "Q2 RDPI Growth (%)", 
+       y = "National Popular Two Party Vote Share (%)",
+       caption = "The years in the graph are from 1960 to 2016.") + 
+  theme_bw() + 
+  theme(plot.title = element_text(size = 14, hjust = 0.5),
+        axis.title = element_text(size = 12))
+
+plot_rdpi_annually <- ggplot(d_inc_econ, aes(x = RDPI_growth_annually, y = pv2p, label = year)) + 
+  geom_point() +
+  geom_text(hjust = 1.2, size = 3) + 
+  geom_smooth(method = "lm", formula = y ~ x) +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) + 
+  labs(x = "Annual RDPI Growth (%)", 
+       y = "National Popular Two Party Vote Share (%)",
+       caption = "The years in the graph are from 1960 to 2016.") + 
+  theme_bw() + 
+  theme(plot.title = element_text(size = 14, hjust = 0.5),
+        axis.title = element_text(size = 12))
+
+plot_sp500_quarterly <- ggplot(d_inc_econ, aes(x = sp500_growth_quarterly, y = pv2p, label = year)) + 
+  geom_point() +
+  geom_text(hjust = 1.2, size = 3) + 
+  geom_smooth(method = "lm", formula = y ~ x) +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) + 
+  labs(x = "Q2 S&P 500 Growth (%)", 
+       y = "National Popular Two Party Vote Share (%)",
+       caption = "The years in the graph are from 1960 to 2016.") + 
+  theme_bw() + 
+  theme(plot.title = element_text(size = 14, hjust = 0.5),
+        axis.title = element_text(size = 12))
+
+
+plot_sp500_annually <- ggplot(d_inc_econ, aes(x = sp500_growth_anually, y = pv2p, label = year)) + 
+  geom_point() +
+  geom_text(hjust = 1.2, size = 3) + 
+  geom_smooth(method = "lm", formula = y ~ x) +
+  geom_hline(yintercept = 50, lty = 2) + 
+  geom_vline(xintercept = 0, lty = 2) + 
+  labs(x = "Annual S&P 500 Growth (%)", 
+       y = "National Popular Two Party Vote Share (%)",
+       caption = "The years in the graph are from 1960 to 2016.") + 
+  theme_bw() + 
+  theme(plot.title = element_text(size = 14, hjust = 0.5),
+        axis.title = element_text(size = 12))
+
+```
+
+```{r}
+model_unemp_quarterly <- lm(pv2p ~ unemployment_growth_quarterly, data = d_inc_econ)
+
+model_unemp_annually <- lm(pv2p ~ unemployment_growth_anually, data = d_inc_econ)
+
+model_rdpi_quarterly <- lm(pv2p ~ RDPI_growth_quarterly, data = d_inc_econ)
+
+model_rdpi_annually <- lm(pv2p ~ RDPI_growth_annually, data = d_inc_econ)
+
+model_sp500_quarterly <- lm(pv2p ~ sp500_growth_quarterly, data = d_inc_econ)
+
+model_sp500_annually <- lm(pv2p ~ sp500_growth_anually, data = d_inc_econ)
+```
+
+#Real Disposable Personal Income Growth
+
+```{r}
+plot_rdpi_quarterly
+```
+
+```{r}
+tab_model(model_rdpi_quarterly, show.se = TRUE, 
+          title = "Regression Table for Quarterly RDPI Growth (1960-2016)", 
+          dv.labels = "National Popular Two Party Vote Share (%)",
+          pred.labels = c("(Intercept)", "Quarterly RDPI Growth (%)"))
+```
+
+
+```{r}
+plot_rdpi_annually
+```
+
+```{r}
+tab_model(model_rdpi_annually, show.se = TRUE, 
+          title = "Regression Table for Annual RDPI Growth (1960-2016)", 
+          dv.labels = "National Popular Two Party Vote Share (%)",
+          pred.labels = c("(Intercept)", "Annual RDPI Growth (%)"))
+```
+
+#S&P 500 Growth
+
+```{r}
+plot_sp500_quarterly
+```
+
+```{r}
+tab_model(model_sp500_quarterly, show.se = TRUE, 
+          title = "Regression Table for Quarterly S&P 500 Growth (1960-2016)", 
+          dv.labels = "National Popular Two Party Vote Share (%)",
+          pred.labels = c("(Intercept)", "Quarterly S&P 500 Growth (%)"))
+```
+
+
+```{r}
+plot_sp500_annually
+```
+
+```{r}
+tab_model(model_sp500_annually, show.se = TRUE, 
+          title = "Regression Table for Annual S&P 500 Growth (1960-2016)", 
+          dv.labels = "National Popular Two Party Vote Share (%)",
+          pred.labels = c("(Intercept)", "Annual S&P 500 Growth (%)"))
+```
+
+#Unemployment Growth
+
+```{r}
+plot_unemp_quarterly
+```
+
+```{r}
+tab_model(model_unemp_quarterly, show.se = TRUE, 
+          title = "Regression Table for Quarterly Unemployment Growth (1960-2016)", 
+          dv.labels = "National Popular Two Party Vote Share (%)",
+          pred.labels = c("(Intercept)", "Quarterly Unemployment Growth (%)"))
+```
+
+
+```{r}
+plot_unemp_annually
+```
+
+```{r}
+tab_model(model_unemp_annually, show.se = TRUE, 
+          title = "Regression Table for Annual Unemployment Growth (1960-2016)", 
+          dv.labels = "National Popular Two Party Vote Share (%)",
+          pred.labels = c("(Intercept)", "Annual Unemployment Growth (%)"))
+```
+
+
