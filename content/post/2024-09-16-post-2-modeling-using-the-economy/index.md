@@ -28,7 +28,8 @@ Data Limitations
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly RDPI Growth (1960-2016)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">National Popular Two Party Vote Share (%)</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">Incumbent
+ National Popular Two Party Vote Share (%)</th>
 </tr>
 <tr>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
@@ -74,7 +75,8 @@ Data Limitations
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual RDPI Growth (1960-2016)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">National Popular Two Party Vote Share (%)</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">Incumbent
+ National Popular Two Party Vote Share (%)</th>
 </tr>
 <tr>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
@@ -115,7 +117,8 @@ Data Limitations
 
 
 
-Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024  National Popular Two Party Vote Share based on RDPI Growth**
+Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024 Incumbent
+ National Popular Two Party Vote Share based on RDPI Growth**
 
 |Independent Variable  | Predicted Two Party Vote Share| Lower Bound (95% CI)| Upper Bound (95% CI)|
 |:---------------------|------------------------------:|--------------------:|--------------------:|
@@ -131,7 +134,8 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024  Nationa
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly S&P 500 Growth (1960-2016)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">National Popular Two Party Vote Share (%)</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">Incumbent
+ National Popular Two Party Vote Share (%)</th>
 </tr>
 <tr>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
@@ -177,7 +181,8 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024  Nationa
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual S&P 500 Growth (1960-2016)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">National Popular Two Party Vote Share (%)</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">Incumbent
+ National Popular Two Party Vote Share (%)</th>
 </tr>
 <tr>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
@@ -219,7 +224,8 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024  Nationa
 <caption style="font-weight: bold; text-align:left;">Regression Table for Quarterly Unemployment Growth (1960-2016)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">National Popular Two Party Vote Share (%)</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">Incumbent
+ National Popular Two Party Vote Share (%)</th>
 </tr>
 <tr>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
@@ -266,7 +272,8 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024  Nationa
 <caption style="font-weight: bold; text-align:left;">Regression Table for Annual Unemployment Growth (1960-2016)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">&nbsp;</th>
-<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">National Popular Two Party Vote Share (%)</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">Incumbent
+ National Popular Two Party Vote Share (%)</th>
 </tr>
 <tr>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">Predictors</td>
@@ -307,8 +314,8 @@ Table: <span id="tab:unnamed-chunk-10"></span>Table 1: **Predicted 2024  Nationa
 
 
 
-
-Table: <span id="tab:unnamed-chunk-19"></span>Table 2: **Predicted 2024 National Popular Two Party Vote Share based on Unemployment Growth**
+Table: <span id="tab:unnamed-chunk-19"></span>Table 2: **Predicted 2024 Incumbent
+ National Popular Two Party Vote Share based on Unemployment Growth**
 
 |Independent Variable          | Predicted Two Party Vote Share| Lower Bound (95% CI)| Upper Bound (95% CI)|
 |:-----------------------------|------------------------------:|--------------------:|--------------------:|
