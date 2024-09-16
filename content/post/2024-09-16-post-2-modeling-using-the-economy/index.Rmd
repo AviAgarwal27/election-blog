@@ -52,7 +52,7 @@ plot_unemp_quarterly <- ggplot(d_inc_econ, aes(x = unemployment_growth_quarterly
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Q2 Unemployment Growth (%)", 
-       y = "Incumbent National Popular Two Party Vote Share (%)",
+       y = "Incumbent National Two Party Vote Share (%)",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -65,7 +65,7 @@ plot_unemp_annually <- ggplot(d_inc_econ, aes(x = unemployment_growth_anually, y
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Annual Unemployment Growth (%)", 
-       y = "Incumbent National Popular Two Party Vote Share (%)",
+       y = "Incumbent National Two Party Vote Share (%)",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -78,7 +78,7 @@ plot_rdpi_quarterly <- ggplot(d_inc_econ, aes(x = RDPI_growth_quarterly, y = pv2
   geom_hline(yintercept = 50, lty = 2) + 
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Q2 RDPI Growth (%)", 
-       y = "Incumbent National Popular Two Party Vote Share (%)",
+       y = "Incumbent National Two Party Vote Share (%)",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -92,7 +92,7 @@ plot_rdpi_annually <- ggplot(d_inc_econ, aes(x = RDPI_growth_annually, y = pv2p,
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Annual RDPI Growth (%)", 
        y = "Incumbent
- National Popular Two Party Vote Share (%)",
+ National Two Party Vote Share (%)",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -106,7 +106,7 @@ plot_sp500_quarterly <- ggplot(d_inc_econ, aes(x = sp500_growth_quarterly, y = p
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Q2 S&P 500 Growth (%)", 
        y = "Incumbent
- National Popular Two Party Vote Share (%)",
+ National Two Party Vote Share (%)",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
@@ -121,7 +121,7 @@ plot_sp500_annually <- ggplot(d_inc_econ, aes(x = sp500_growth_anually, y = pv2p
   geom_vline(xintercept = 0, lty = 2) + 
   labs(x = "Annual S&P 500 Growth (%)", 
        y = "Incumbent
- National Popular Two Party Vote Share (%)",
+ National Two Party Vote Share (%)",
        caption = "The years in the graph are from 1960 to 2016.") + 
   theme_bw() + 
   theme(plot.title = element_text(size = 14, hjust = 0.5),
