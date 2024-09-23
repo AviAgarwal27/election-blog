@@ -32,7 +32,36 @@ tags: []
 
 
 
-Table: <span id="tab:unnamed-chunk-6"></span>Table 1: State Polling Model Coefficients, P-Values, and R-Squared
+
+
+
+
+
+
+
+
+
+
+
+
+Table: <span id="tab:unnamed-chunk-5"></span>Table 1: National Polling Model Coefficients, P-Values, and R-Squared for Republicans and Democrats
+
+|   Party    | Polling Coefficient |  P-Value  | R-Squared |
+|:----------:|:-------------------:|:---------:|:---------:|
+| Republican |      0.6699376      | 0.0001198 | 0.7218553 |
+|  Democrat  |      0.5008233      | 0.0059140 | 0.4814119 |
+
+
+Table: <span id="tab:unnamed-chunk-6"></span>Table 2: 2024 National Predicted 2-Party Vote Share with Prediction Intervals
+
+|   Party    | Predicted 2PV (2024) | Lower 95% Interval | Upper 95% Interval |
+|:----------:|:--------------------:|:------------------:|:------------------:|
+| Republican |       50.88708       |      44.78523      |      56.98894      |
+|  Democrat  |       50.23635       |      41.87147      |      58.60124      |
+
+
+
+Table: <span id="tab:unnamed-chunk-11"></span>Table 3: State Polling Model Coefficients, P-Values, and R-Squared
 
 |     State      | Polling Coefficient |  P-Value  | R-Squared |
 |:--------------:|:-------------------:|:---------:|:---------:|
@@ -45,7 +74,7 @@ Table: <span id="tab:unnamed-chunk-6"></span>Table 1: State Polling Model Coeffi
 |   Wisconsin    |      0.2237993      | 0.0650050 | 0.3635602 |
 
 
-Table: <span id="tab:unnamed-chunk-7"></span>Table 2: State Polling Model Coefficients, P-Values, and R-Squared for Republican Candidates
+Table: <span id="tab:unnamed-chunk-12"></span>Table 4: State Polling Model Coefficients, P-Values, and R-Squared for Republican Candidates
 
 |     State      | Polling Coefficient |  P-Value  | R-Squared |
 |:--------------:|:-------------------:|:---------:|:---------:|
@@ -58,7 +87,7 @@ Table: <span id="tab:unnamed-chunk-7"></span>Table 2: State Polling Model Coeffi
 |   Wisconsin    |      0.0970018      | 0.6602218 | 0.0253794 |
 
 
-Table: <span id="tab:unnamed-chunk-11"></span>Table 3: 2024 Democratic Predicted 2-Party Vote Share
+Table: <span id="tab:unnamed-chunk-16"></span>Table 5: 2024 Democratic Predicted 2-Party Vote Share
 
 |     State      | Predicted 2PV (Democratic) | Lower 95% Interval | Upper 95% Interval |
 |:--------------:|:--------------------------:|:------------------:|:------------------:|
@@ -66,7 +95,7 @@ Table: <span id="tab:unnamed-chunk-11"></span>Table 3: 2024 Democratic Predicted
 |   Wisconsin    |          52.28988          |      46.16889      |      58.41087      |
 
 
-Table: <span id="tab:unnamed-chunk-10"></span>Table 4: 2024 Republican Predicted 2-Party Vote Share
+Table: <span id="tab:unnamed-chunk-15"></span>Table 6: 2024 Republican Predicted 2-Party Vote Share
 
 |     State      | Predicted 2PV (Republican) | Lower 95% Interval | Upper 95% Interval |
 |:--------------:|:--------------------------:|:------------------:|:------------------:|

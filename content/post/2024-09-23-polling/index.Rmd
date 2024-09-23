@@ -12,6 +12,92 @@ library(tidyverse)
 library(knitr)
 ```
 
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_polls <- read.csv("national_polls_1968-2024.csv")
+nat_2pv <- read.csv("popvote_1948-2020.csv")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_2pv_rep <- nat_2pv |>
+ filter(party == "republican")
+
+nat_polls_avg_rep <- nat_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year <= 2020 & party == "REP") |>
+  group_by(year) |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE)) |>
+  ungroup() |> left_join(nat_2pv_rep, by = c("year"))
+
+nat_rep_model <- lm(pv2p ~ weekly_polling_average, data = nat_polls_avg_rep)
+
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_2pv_dem <- nat_2pv |> 
+  filter(party == "democrat")
+
+nat_polls_avg_dem <- nat_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year <= 2020 & party == "DEM") |>
+  group_by(year) |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE)) |>
+  ungroup() |>
+  left_join(nat_2pv_dem, by = c("year"))
+
+nat_dem_model <- lm(pv2p ~ weekly_polling_average, data = nat_polls_avg_dem)
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+rep_summary <- summary(nat_rep_model)
+dem_summary <- summary(nat_dem_model)
+
+combined_results <- tibble( #Used ChatGPT to extract data from models and gerenate a table
+
+  Party = c("Republican", "Democrat"),
+  Polling_Coefficient = c(rep_summary$coefficients[2, 1], dem_summary$coefficients[2, 1]),
+  P_Value = c(rep_summary$coefficients[2, 4], dem_summary$coefficients[2, 4]),
+  R_Squared = c(rep_summary$r.squared, dem_summary$r.squared)
+)
+
+nat_pred <- combined_results %>%
+  kable(
+    col.names = c("Party", "Polling Coefficient", "P-Value", "R-Squared"),
+    caption = "National Polling Model Coefficients, P-Values, and R-Squared for Republicans and Democrats",
+    align = "c"
+  )
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+nat_polls_2024_rep <- nat_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year == 2024 & party == "REP") |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE))
+
+nat_polls_2024_dem <- nat_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year == 2024 & party == "DEM") |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE))
+
+rep_prediction_2024 <- predict(nat_rep_model, newdata = nat_polls_2024_rep, interval = "prediction")
+dem_prediction_2024 <- predict(nat_dem_model, newdata = nat_polls_2024_dem, interval = "prediction")
+
+
+combined_predictions <- tibble(#Used ChatGPT to extract data from models and gerenate a table
+
+  Party = c("Republican", "Democrat"),
+  Predicted_2PV = c(rep_prediction_2024[1], dem_prediction_2024[1]),
+  Lower_Interval = c(rep_prediction_2024[2], dem_prediction_2024[2]),
+  Upper_Interval = c(rep_prediction_2024[3], dem_prediction_2024[3])
+)
+
+nat_24_pred <- combined_predictions %>%
+  kable(
+    col.names = c("Party", "Predicted 2PV (2024)", "Lower 95% Interval", "Upper 95% Interval"),
+    caption = "2024 National Predicted 2-Party Vote Share with Prediction Intervals",
+    align = "c"
+  )
+```
+
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 state_polls <- read.csv("state_polls_1968-2024.csv") 
 state_2pv <- read.csv("clean_wide_state_2pv_1948_2020.csv")
@@ -138,6 +224,8 @@ wi_model_data_rep <- state_polls_avg_rep |> filter(state == "Wisconsin")
 wi_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = wi_model_data_rep)
 wi_summary_rep <- summary(wi_model_rep)
 
+#Used ChatGPT to extract data from models and gerenate a table
+
 combined_results_rep <- tibble(
   State = c("Arizona", "Georgia", "Michigan", "North Carolina", "Pennsylvania", "Nevada", "Wisconsin"),
   Polling_Coefficient = c(az_summary_rep$coefficients[2, 1], ga_summary_rep$coefficients[2, 1], mi_summary_rep$coefficients[2, 1],
@@ -195,7 +283,8 @@ rep_2pv_24_nc <- predict(nc_model_rep, NC_rep_pred, interval = "prediction")
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-combined_predictions <- tibble( #Used ChatGPT
+combined_predictions <- tibble( #Used ChatGPT to extract data from models and gerenate a table
+
   State = c("Arizona", "Georgia", "North Carolina"),
   Predicted_2PV = c(rep_2pv_24_az[1], rep_2pv_24_ga[1], rep_2pv_24_nc[1]),
   Lower_Interval = c(rep_2pv_24_az[2], rep_2pv_24_ga[2], rep_2pv_24_nc[2]),
@@ -212,7 +301,8 @@ rep_preds <- combined_predictions %>%
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-combined_predictions_dem <- tibble( #Used ChatGPT
+combined_predictions_dem <- tibble( #Used ChatGPT to extract data from models and gerenate a table
+
   State = c("North Carolina", "Wisconsin"),
   Predicted_2PV = c(dem_2pv_24_nc[1], dem_2pv_24_wi[1]),
   Lower_Interval = c(dem_2pv_24_nc[2], dem_2pv_24_wi[2]),
@@ -226,6 +316,14 @@ dem_preds <- combined_predictions_dem %>%
     caption = "2024 Democratic Predicted 2-Party Vote Share",
     align = "c"
   )
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_pred
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_24_pred
 ```
 
 
