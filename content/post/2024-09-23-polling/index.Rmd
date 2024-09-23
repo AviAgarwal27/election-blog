@@ -1,0 +1,247 @@
+---
+title: 'Post #3: Polling'
+author: Avi Agarwal
+date: '2024-09-23'
+slug: post-3-polling
+categories: []
+tags: []
+---
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_polls <- read.csv("state_polls_1968-2024.csv") 
+state_2pv <- read.csv("clean_wide_state_2pv_1948_2020.csv")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_states <- c("Arizona", "Georgia", "Michigan", "North Carolina", "Pennsylvania", "Nevada", "Wisconsin")
+state_polls <- state_polls |>
+  filter(state %in% swing_states) 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_polls_avg_rep <- state_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year <= 2020 & party == "REP") |>
+  group_by(state, year) |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE)) |>
+  ungroup() |> left_join(state_2pv, by = c("year", "state")) |>
+  select(state, year,R_pv2p, weekly_polling_average)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_polls_avg_dem <- state_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year <= 2020 & party == "DEM") |>
+  group_by(state, year) |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE)) |>
+  ungroup() |> left_join(state_2pv, by = c("year", "state")) |>
+  select(state, year,D_pv2p, weekly_polling_average)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+
+# Arizona
+az_model_data <- state_polls_avg_dem |> filter(state == "Arizona")
+az_model <- lm(D_pv2p ~ weekly_polling_average, data = az_model_data)
+az_summary <- summary(az_model)
+
+# Georgia
+ga_model_data <- state_polls_avg_dem |> filter(state == "Georgia")
+ga_model <- lm(D_pv2p ~ weekly_polling_average, data = ga_model_data)
+ga_summary <- summary(ga_model)
+
+# Michigan
+mi_model_data <- state_polls_avg_dem |> filter(state == "Michigan")
+mi_model <- lm(D_pv2p ~ weekly_polling_average, data = mi_model_data)
+mi_summary <- summary(mi_model)
+
+# North Carolina
+nc_model_data <- state_polls_avg_dem |> filter(state == "North Carolina")
+nc_model <- lm(D_pv2p ~ weekly_polling_average, data = nc_model_data)
+nc_summary <- summary(nc_model)
+
+# Pennsylvania
+pa_model_data <- state_polls_avg_dem |> filter(state == "Pennsylvania")
+pa_model <- lm(D_pv2p ~ weekly_polling_average, data = pa_model_data)
+pa_summary <- summary(pa_model)
+
+# Nevada
+nv_model_data <- state_polls_avg_dem |> filter(state == "Nevada")
+nv_model <- lm(D_pv2p ~ weekly_polling_average, data = nv_model_data)
+nv_summary <- summary(nv_model)
+
+# Wisconsin
+wi_model_data <- state_polls_avg_dem |> filter(state == "Wisconsin")
+wi_model <- lm(D_pv2p ~ weekly_polling_average, data = wi_model_data)
+wi_summary <- summary(wi_model)
+
+#Used ChatGPT to extract data from models and gerenate a table
+combined_results <- tibble(
+  State = c("Arizona", "Georgia", "Michigan", "North Carolina", "Pennsylvania", "Nevada", "Wisconsin"),
+  Polling_Coefficient = c(az_summary$coefficients[2, 1], ga_summary$coefficients[2, 1], mi_summary$coefficients[2, 1],
+                          nc_summary$coefficients[2, 1], pa_summary$coefficients[2, 1], nv_summary$coefficients[2, 1],
+                          wi_summary$coefficients[2, 1]),
+  P_Value = c(az_summary$coefficients[2, 4], ga_summary$coefficients[2, 4], mi_summary$coefficients[2, 4],
+              nc_summary$coefficients[2, 4], pa_summary$coefficients[2, 4], nv_summary$coefficients[2, 4],
+              wi_summary$coefficients[2, 4]),
+  R_Squared = c(az_summary$r.squared, ga_summary$r.squared, mi_summary$r.squared,
+                nc_summary$r.squared, pa_summary$r.squared, nv_summary$r.squared,
+                wi_summary$r.squared)
+)
+
+
+dem <- combined_results %>%
+  kable(
+    col.names = c("State", "Polling Coefficient", "P-Value", "R-Squared"),
+    caption = "State Polling Model Coefficients, P-Values, and R-Squared",
+    align = "c"
+  )
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+
+# Arizona
+az_model_data_rep <- state_polls_avg_rep |> filter(state == "Arizona")
+az_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = az_model_data_rep)
+az_summary_rep <- summary(az_model_rep)
+
+# Georgia
+ga_model_data_rep <- state_polls_avg_rep |> filter(state == "Georgia")
+ga_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = ga_model_data_rep)
+ga_summary_rep <- summary(ga_model_rep)
+
+# Michigan
+mi_model_data_rep <- state_polls_avg_rep |> filter(state == "Michigan")
+mi_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = mi_model_data_rep)
+mi_summary_rep <- summary(mi_model_rep)
+
+# North Carolina
+nc_model_data_rep <- state_polls_avg_rep |> filter(state == "North Carolina")
+nc_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = nc_model_data_rep)
+nc_summary_rep <- summary(nc_model_rep)
+
+# Pennsylvania
+pa_model_data_rep <- state_polls_avg_rep |> filter(state == "Pennsylvania")
+pa_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = pa_model_data_rep)
+pa_summary_rep <- summary(pa_model_rep)
+
+# Nevada
+nv_model_data_rep <- state_polls_avg_rep |> filter(state == "Nevada")
+nv_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = nv_model_data_rep)
+nv_summary_rep <- summary(nv_model_rep)
+
+# Wisconsin
+wi_model_data_rep <- state_polls_avg_rep |> filter(state == "Wisconsin")
+wi_model_rep <- lm(R_pv2p ~ weekly_polling_average, data = wi_model_data_rep)
+wi_summary_rep <- summary(wi_model_rep)
+
+combined_results_rep <- tibble(
+  State = c("Arizona", "Georgia", "Michigan", "North Carolina", "Pennsylvania", "Nevada", "Wisconsin"),
+  Polling_Coefficient = c(az_summary_rep$coefficients[2, 1], ga_summary_rep$coefficients[2, 1], mi_summary_rep$coefficients[2, 1],
+                          nc_summary_rep$coefficients[2, 1], pa_summary_rep$coefficients[2, 1], nv_summary_rep$coefficients[2, 1],
+                          wi_summary_rep$coefficients[2, 1]),
+  P_Value = c(az_summary_rep$coefficients[2, 4], ga_summary_rep$coefficients[2, 4], mi_summary_rep$coefficients[2, 4],
+              nc_summary_rep$coefficients[2, 4], pa_summary_rep$coefficients[2, 4], nv_summary_rep$coefficients[2, 4],
+              wi_summary_rep$coefficients[2, 4]),
+  R_Squared = c(az_summary_rep$r.squared, ga_summary_rep$r.squared, mi_summary_rep$r.squared,
+                nc_summary_rep$r.squared, pa_summary_rep$r.squared, nv_summary_rep$r.squared,
+                wi_summary_rep$r.squared)
+)
+
+rep <- combined_results_rep %>%
+  kable(
+    col.names = c("State", "Polling Coefficient", "P-Value", "R-Squared"),
+    caption = "State Polling Model Coefficients, P-Values, and R-Squared for Republican Candidates",
+    align = "c"
+  )
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+NC_dem_pred <- state_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year == 2024 & party == "DEM") |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE))
+
+dem_2pv_24_nc <- predict(nc_model, NC_dem_pred, interval = "prediction")
+
+WI_dem_pred <- state_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year == 2024 & party == "DEM") |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE))
+
+dem_2pv_24_wi <- predict(wi_model, WI_dem_pred, interval = "prediction")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+AZ_rep_pred <- state_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year == 2024 & party == "REP") |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE))
+
+rep_2pv_24_az <- predict(az_model_rep, AZ_rep_pred, interval = "prediction")
+
+GA_rep_pred <- state_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year == 2024 & party == "REP") |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE))
+
+rep_2pv_24_ga <- predict(ga_model_rep, GA_rep_pred, interval = "prediction")
+
+NC_rep_pred <- state_polls |>
+  filter(weeks_left <= 15 & weeks_left >= 7 & year == 2024 & party == "REP") |>
+  summarize(weekly_polling_average = mean(poll_support, na.rm = TRUE))
+
+rep_2pv_24_nc <- predict(nc_model_rep, NC_rep_pred, interval = "prediction")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+combined_predictions <- tibble( #Used ChatGPT
+  State = c("Arizona", "Georgia", "North Carolina"),
+  Predicted_2PV = c(rep_2pv_24_az[1], rep_2pv_24_ga[1], rep_2pv_24_nc[1]),
+  Lower_Interval = c(rep_2pv_24_az[2], rep_2pv_24_ga[2], rep_2pv_24_nc[2]),
+  Upper_Interval = c(rep_2pv_24_az[3], rep_2pv_24_ga[3], rep_2pv_24_nc[3])
+)
+
+
+rep_preds <- combined_predictions %>%
+  kable(
+    col.names = c("State", "Predicted 2PV (Republican)", "Lower 95% Interval", "Upper 95% Interval"),
+    caption = "2024 Republican Predicted 2-Party Vote Share",
+    align = "c"
+  )
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+combined_predictions_dem <- tibble( #Used ChatGPT
+  State = c("North Carolina", "Wisconsin"),
+  Predicted_2PV = c(dem_2pv_24_nc[1], dem_2pv_24_wi[1]),
+  Lower_Interval = c(dem_2pv_24_nc[2], dem_2pv_24_wi[2]),
+  Upper_Interval = c(dem_2pv_24_nc[3], dem_2pv_24_wi[3])
+)
+
+
+dem_preds <- combined_predictions_dem %>%
+  kable(
+    col.names = c("State", "Predicted 2PV (Democratic)", "Lower 95% Interval", "Upper 95% Interval"),
+    caption = "2024 Democratic Predicted 2-Party Vote Share",
+    align = "c"
+  )
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+dem
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+rep
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+dem_preds
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+rep_preds
+```
+
