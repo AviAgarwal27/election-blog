@@ -182,7 +182,7 @@ combined_results <- tibble(
 dem <- combined_results %>%
   kable(
     col.names = c("State", "Polling Coefficient", "P-Value", "R-Squared"),
-    caption = "State Polling Model Coefficients, P-Values, and R-Squared",
+    caption = "State Polling Model Coefficients, P-Values, and R-Squared for Democratic Candidates",
     align = "c"
   )
 ```

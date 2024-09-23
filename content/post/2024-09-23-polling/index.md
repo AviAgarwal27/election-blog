@@ -96,7 +96,7 @@ To assess whether polls could help predict the outcome of these states in the 20
 
 
 
-Table: <span id="tab:unnamed-chunk-11"></span>Table 3: State Polling Model Coefficients, P-Values, and R-Squared
+Table: <span id="tab:unnamed-chunk-11"></span>Table 3: State Polling Model Coefficients, P-Values, and R-Squared for Democratic Candidates
 
 |     State      | Polling Coefficient |  P-Value  | R-Squared |
 |:--------------:|:-------------------:|:---------:|:---------:|
