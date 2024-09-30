@@ -143,7 +143,25 @@ time_for_change_pred_df <- data.frame(
 
 # Introduction
 
-# Model Excluding Incumbency
+Typically, the question of incumbency in an election is straightforward: either one of the candidates is the sitting president, or they aren’t. Of course, in 2024, no question is that simple.
+
+In this week’s post, I’ll address a few key questions: how to factor Kamala Harris’ status as an incumbent in predictions, whether incumbency has a significant effect on forecasts, and how my models compare to Abramowitz’s Time for Change model, which emphasizes incumbency.
+
+
+# Who are the incumbents?
+
+In a contest between Biden and Trump, the issue of incumbency would be clear. Even though Trump is a former president, both candidates have similar levels of notoriety, with Biden closely tied to the current administration. However, with Harris as the nominee, some might argue that Trump’s status as a former president grants him an advantage similar to that of an incumbent. I disagree for a few reasons.
+
+First, despite his decisive primary win, Trump faced notable challengers, including Florida Governor Ron DeSantis. While his victory demonstrates his grip on the Republican base, it also meant he had to spend time contesting with party rivals rather than focusing on the general election. Second, Trump lacks access to federal grant spending and control over the executive branch—one of the strongest advantages of incumbency. Lastly, voter fatigue, often a downside of incumbency, also applies to Trump, given his dominance in American politics over the past decade. I believe Trump’s notoriety will be reflected in his polling averages, eliminating the need for additional variables to account for his unique circumstances.
+
+A similar question arises with Harris: should she be considered an incumbent due to her last-minute nomination and close ties to the administration? I argue no, for several reasons. One of the most significant advantages of incumbency is bypassing the primary process. While Harris didn’t face challengers, she also missed out on the extra six months of campaigning that normally comes with being the automatic nominee. She was only confirmed as the nominee about two weeks before the convention. Additionally, while Harris is a prominent part of the administration, she doesn’t control federal grant spending. Many of the Biden administration’s priorities, such as infrastructure and manufacturing, are more closely associated with Biden himself, who often touts his blue-collar background—something Harris rarely campaigns on. Finally, she lacked the public recognition typically enjoyed by incumbents before being named the nominee, making her more akin to an up-and-coming challenger than an incumbent.
+Thus, for the purposes of my models, I will consider Harris an incumbent-party nominee.
+
+
+# Model One: Excluding Incumbency
+
+To test the broader effect of the incumbent party on election outcomes, I built two models that predict the Democratic two-party vote share based on basic fundamentals: one includes incumbency, and the other excludes it. The models use two fundamental factors. The first is a weighted poll average from weeks 12 to 7 leading up to the election wich only includes data comparing Harris to Trump. To create the weight, I averaged the polls for each week and regressed them against the two-party vote share. Then, I used the coefficients from the model to create a weighted average. The second factor is quarter 2 real disposable personal income (RDPI) growth, identified as the best economic covariate in blog post #2. I chose to use only one economic variable to avoid issues of multicollinearity. The model uses data from 1968 to 2016 and excludes 2020, as the unique economic factors of the COVID pandemic make it an outlier. It's important to note that this model will improve as the election nears, with more recent polling data and quarter 3 RDPI growth.
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_two, 
@@ -153,6 +171,7 @@ tab_model(model_two,
                                pred.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly"))
 ```
 
+The model results, shown above, have an adjusted R-squared of 0.732, which is decently high. However, since the RDPI increase is statistically insignificant at a test statistic of 0.05, most of the prediction is driven by the weighted poll average. This model predicts Harris winning about 51% of the two-party vote, with a wide 75% confidence interval.
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_df(pred_model_two_df, 
@@ -161,7 +180,10 @@ tab_df(pred_model_two_df,
        digits = 2)
 ```
 
-# Model Including Incumbency
+# Model Two: Including Incumbency
+
+Using the same fundamentals but adding a binary incumbent party variable (1 if the candidate is from the same party as the sitting president) immediately improves the overall model. The adjusted R-squared increases by more than 0.1, totaling 0.836, meaning this model accounts for 83.6% of the variance in elections. Additionally, all covariates are statistically significant at a test statistic of 0.05.
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(model_one, 
@@ -171,6 +193,9 @@ tab_model(model_one,
                                pred.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly", "Incumbent Party"))
 ```
 
+This model shows an increase in Democratic vote share by about 1% and a slightly narrower confidence interval, with overall predictions still favoring Harris winning the two-party vote share.
+
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_df(pred_model_one_df, 
        title = "2024 Democrat Two Party Vote Share via Model Including Incumbent Party",
@@ -178,6 +203,8 @@ tab_df(pred_model_one_df,
 ```
 
 # Time For Change Model
+
+To compare this model to a prominent one, I created a representative model using Abramowitz's Time for Change model. I also excluded 2020, as Abramowitz used a different model for that election.
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(time_for_change_model, 
@@ -187,10 +214,18 @@ tab_model(time_for_change_model,
                                  pred.labels = c("June Approval", "GDP Growth Quarterly", "Incumbent"))
 ```
 
+As shown above, my model performs slightly better in terms of adjusted R-squared and covariate statistical significance. Additionally, his model predicts a Trump victory in the two-party vote share, likely due to its reliance on the June approval rating, which was historically low for Joe Biden, harming the incumbent party—in this case, the Democrats.
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tab_df(time_for_change_pred_df, 
        title = "2024 Democrat Two Party Vote Share via Time for Change Model",
        show.rownames = FALSE, 
        digits = 2)
 ```
+
+# Conclusion
+
+Overall, it’s clear that incumbency is important to include in this election, even though defining who qualifies as an incumbent is far from straightforward.
+
+In the coming weeks, I will modify the second model to create state-level predictions for the seven swing states and build a prediction for the Electoral College, which I will update weekly. Thanks for reading!
 
