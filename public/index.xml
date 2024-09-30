@@ -6,8 +6,15 @@
     <description>Recent content in Home on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 23 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 30 Sep 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Post #4: Will Incumbency Matter?</title>
+      <link>https://example.org/post/2024/09/30/post-4-will-incumbency-matter/</link>
+      <pubDate>Mon, 30 Sep 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/09/30/post-4-will-incumbency-matter/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;h1 id=&#34;model-excluding-incumbency&#34;&gt;Model Excluding Incumbency&lt;/h1&gt;&#xA;&lt;pre&gt;&lt;code&gt;## &#xD;&#xA;## Excluding Incumbent Regression Results&#xD;&#xA;## ===================================================&#xD;&#xA;##                            Dependent variable:     &#xD;&#xA;##                       -----------------------------&#xD;&#xA;##                       Democrat Two Party Vote Share&#xD;&#xA;## ---------------------------------------------------&#xD;&#xA;## Weighted Avg. Poll              0.603***           &#xD;&#xA;##                                  (0.102)           &#xD;&#xA;##                                                    &#xD;&#xA;## RDPI Growth Quarterly             0.242            &#xD;&#xA;##                                  (0.242)           &#xD;&#xA;##                                                    &#xD;&#xA;## Constant                        22.060***          &#xD;&#xA;##                                  (4.643)           &#xD;&#xA;##                                                    &#xD;&#xA;## ---------------------------------------------------&#xD;&#xA;## Observations                       13              &#xD;&#xA;## R2                                0.777            &#xD;&#xA;## Adjusted R2                       0.732            &#xD;&#xA;## Residual Std. Error          2.609 (df = 10)       &#xD;&#xA;## F Statistic              17.408*** (df = 2; 10)    &#xD;&#xA;## ===================================================&#xD;&#xA;## Note:                   *p&amp;lt;0.1; **p&amp;lt;0.05; ***p&amp;lt;0.01&#xD;&#xA;&lt;/code&gt;&lt;/pr</description>
+    </item>
     <item>
       <title>Post #3: Polling</title>
       <link>https://example.org/post/2024/09/23/post-3-polling/</link>

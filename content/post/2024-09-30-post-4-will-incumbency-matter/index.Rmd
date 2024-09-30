@@ -1,0 +1,173 @@
+---
+title: 'Post #4: Will Incumbency Matter?'
+author: Avi Agarwal
+date: '2024-09-30'
+slug: post-4-will-incumbency-matter
+categories: []
+tags: []
+---
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+library(stargazer)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pop_vote <- read_csv("popvote_1948-2020.csv")
+pop_vote1 <- pop_vote |>
+  select(year,party,pv2p,incumbent_party, juneapp)|> 
+  filter(party == "democrat") 
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_polls <- read_csv("national_polls_1968-2024.csv")
+nat_polls_dem <- nat_polls |>
+  filter(party == "DEM") |>
+  group_by(year, weeks_left) |>
+  summarize(avg_poll = mean(poll_support)) |> 
+  filter(weeks_left < 13 & weeks_left >= 7) |>
+  pivot_wider(names_from = weeks_left,
+              values_from = avg_poll ) |>
+  left_join(pop_vote1, by = "year") 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+week_polls_model <- lm(pv2p ~ `12` + `11` + `10` + `9` + `8` + `7`, data = nat_polls_dem)
+coefficients <- week_polls_model$coefficients[-1]
+weights <- coefficients / sum(coefficients)
+weighted_polling <- nat_polls_dem |>
+  mutate(weighted_avg_poll = `12` * weights[1] + `11` * weights[2] + 
+                              `10` * weights[3] + `9` * weights[4] + 
+                              `8` * weights[5] + `7` * weights[6]) |>
+  select(year, pv2p, incumbent_party, weighted_avg_poll, juneapp) 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+fred_econ <- read_csv("fred_econ.csv") 
+fred_adjusted <- fred_econ |>
+  filter(year > 1958) |>
+  mutate(unemployment_growth_quarterly = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(quarter == 2) |>
+  mutate(RDPI_growth_annually = (RDPI - lag(RDPI, 1)) / lag(RDPI, 1) * 100) |> 
+  mutate(sp500_growth_quarterly = ((sp500_adj_close - sp500_open)) / sp500_open * 100) |>
+  mutate(sp500_growth_anually = (sp500_adj_close - lag(sp500_adj_close, 1)) / lag(sp500_adj_close, 1) * 100) |> 
+  mutate(unemployment_growth_anually = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(year >= 1960 & year != 2020 & year %% 4 == 0) |> #exclude 2020 since it such an outlier
+  select(year, RDPI_growth_quarterly, GDP_growth_quarterly)
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+model_one_data <- weighted_polling |>
+  left_join(fred_adjusted, by = "year") |> 
+  mutate(incumbent_party = ifelse(incumbent_party == "TRUE", 1, 0)) 
+model_one_data_p <- model_one_data |> 
+  filter(year > 2020)
+model_one_data_r <- model_one_data |> 
+  filter(year < 2020)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+model_one <- lm(pv2p ~ weighted_avg_poll + RDPI_growth_quarterly + incumbent_party, data = model_one_data_r)
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_model_one <- predict(model_one, model_one_data_p, interval = "prediction")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_model_one_df <- as.data.frame(pred_model_one)
+colnames(pred_model_one_df) <- c("Prediction", "Lower Bound", "Upper Bound")
+inc_pred <- kable(pred_model_one_df, caption = "2024 Democrat Two Party Vote Share via Model Including Incumbent Party",digits = 2)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+model_two <- lm(pv2p ~ weighted_avg_poll + RDPI_growth_quarterly, data = model_one_data_r)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_model_two <- predict(model_two, model_one_data_p, interval = "prediction")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_model_two_df <- as.data.frame(pred_model_two)
+colnames(pred_model_two_df) <- c("Prediction", "Lower Bound", "Upper Bound")
+noninc_pred<- kable(pred_model_two_df, caption = "2024 Democrat Two Party Vote Share via Model Excluding Incumbent Party",digits = 2)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+time_for_change_data <- weighted_polling |>
+  left_join(fred_adjusted, by = "year") |> 
+  select(-pv2p,-incumbent_party)
+pop_vote2 <- pop_vote |>
+  filter(incumbent_party == TRUE) |>
+  select(year, pv2p, incumbent)
+time_for_change_data <- time_for_change_data |>
+  left_join(pop_vote2, by = "year") |>
+  mutate(incumbent = ifelse(incumbent == "TRUE", 1, 0))
+time_for_change_data_p <- time_for_change_data |> 
+  filter(year > 2020)
+time_for_change_data_r <- time_for_change_data |> 
+  filter(year < 2020)
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+time_for_change_model <- lm(pv2p ~ juneapp + GDP_growth_quarterly + incumbent, data = time_for_change_data_r)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+time_for_change_pred <- predict(time_for_change_model, time_for_change_data_p, interval = "prediction")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+time_for_change_pred_df <- as.data.frame(time_for_change_pred)
+colnames(time_for_change_pred_df) <- c("Prediction", "Lower Bound", "Upper Bound")
+time_for_change_pred_pred<- kable(time_for_change_pred_df, caption = "2024 Democrat Two Party Vote Share via Time for Change Model",digits = 2)
+```
+
+# Introduction
+
+# Model Excluding Incumbency
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+model_two_summary <- stargazer(model_two, type = "text",
+                              dep.var.labels = "Democrat Two Party Vote Share",
+                              covariate.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly"),
+                              title = "Excluding Incumbent Regression Results", out = "model_two_results.txt")
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+noninc_pred
+```
+
+# Model Including Incumbency
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+model_one_summary<- stargazer(model_one, type = "text",
+                              dep.var.labels = "Democrat Two Party Vote Share",
+                              covariate.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly", "Incumbent Party"),
+                              title = "Including Incumbent Regression Results", out = "model_one_results.txt")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+inc_pred
+```
+
+# Time For Change Model
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+time_change_summary <- stargazer(time_for_change_model, type = "text",
+                              dep.var.labels = "Incumbent Party Two Party Vote Share",
+                              covariate.labels = c("June Approval", "GDP Growth Quarterly", "Incumbent"),
+                              title = "Time For Change Regression Results", out = "time_change_results.txt")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+time_for_change_pred_pred
+```
+

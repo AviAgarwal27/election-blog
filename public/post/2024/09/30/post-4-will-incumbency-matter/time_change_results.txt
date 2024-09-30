@@ -1,0 +1,27 @@
+
+Time For Change Regression Results
+=========================================================
+                             Dependent variable:         
+                     ------------------------------------
+                     Incumbent Party Two Party Vote Share
+---------------------------------------------------------
+June Approval                      0.166**               
+                                   (0.065)               
+                                                         
+GDP Growth Quarterly                0.328                
+                                   (0.268)               
+                                                         
+Incumbent                           1.655                
+                                   (1.787)               
+                                                         
+Constant                          49.338***              
+                                   (1.952)               
+                                                         
+---------------------------------------------------------
+Observations                          13                 
+R2                                  0.734                
+Adjusted R2                         0.646                
+Residual Std. Error             2.931 (df = 9)           
+F Statistic                  8.292*** (df = 3; 9)        
+=========================================================
+Note:                         *p<0.1; **p<0.05; ***p<0.01
