@@ -10,7 +10,7 @@ tags: []
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 library(tidyverse)
 library(knitr)
-library(stargazer)
+library(sjPlot)
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -81,7 +81,11 @@ pred_model_one <- predict(model_one, model_one_data_p, interval = "prediction")
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 pred_model_one_df <- as.data.frame(pred_model_one)
 colnames(pred_model_one_df) <- c("Prediction", "Lower Bound", "Upper Bound")
-inc_pred <- kable(pred_model_one_df, caption = "2024 Democrat Two Party Vote Share via Model Including Incumbent Party",digits = 2)
+pred_model_one_df <- data.frame( #Used ChatGPT to add % signs and use sjPLot
+  Prediction = sprintf("%.2f%%", pred_model_one_df$Prediction),
+  `Lower Bound` = sprintf("%.2f%%", pred_model_one_df$`Lower Bound`),
+  `Upper Bound` = sprintf("%.2f%%", pred_model_one_df$`Upper Bound`)
+)
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -95,7 +99,11 @@ pred_model_two <- predict(model_two, model_one_data_p, interval = "prediction")
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 pred_model_two_df <- as.data.frame(pred_model_two)
 colnames(pred_model_two_df) <- c("Prediction", "Lower Bound", "Upper Bound")
-noninc_pred<- kable(pred_model_two_df, caption = "2024 Democrat Two Party Vote Share via Model Excluding Incumbent Party",digits = 2)
+pred_model_two_df <- data.frame(
+  Prediction = sprintf("%.2f%%", pred_model_two_df$Prediction),
+  `Lower Bound` = sprintf("%.2f%%", pred_model_two_df$`Lower Bound`),
+  `Upper Bound` = sprintf("%.2f%%", pred_model_two_df$`Upper Bound`)
+)
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -126,7 +134,11 @@ time_for_change_pred <- predict(time_for_change_model, time_for_change_data_p, i
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 time_for_change_pred_df <- as.data.frame(time_for_change_pred)
 colnames(time_for_change_pred_df) <- c("Prediction", "Lower Bound", "Upper Bound")
-time_for_change_pred_pred<- kable(time_for_change_pred_df, caption = "2024 Democrat Two Party Vote Share via Time for Change Model",digits = 2)
+time_for_change_pred_df <- data.frame(
+  Prediction = sprintf("%.2f%%", time_for_change_pred_df$Prediction),
+  `Lower Bound` = sprintf("%.2f%%", time_for_change_pred_df$`Lower Bound`),
+  `Upper Bound` = sprintf("%.2f%%", time_for_change_pred_df$`Upper Bound`)
+)
 ```
 
 # Introduction
@@ -134,40 +146,51 @@ time_for_change_pred_pred<- kable(time_for_change_pred_df, caption = "2024 Democ
 # Model Excluding Incumbency
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-model_two_summary <- stargazer(model_two, type = "text",
-                              dep.var.labels = "Democrat Two Party Vote Share",
-                              covariate.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly"),
-                              title = "Excluding Incumbent Regression Results", out = "model_two_results.txt")
+tab_model(model_two, 
+                               show.se = TRUE,
+                               title = "Excluding Incumbent Regression Results", 
+                               dv.labels = "Democrat Two Party Vote Share",  
+                               pred.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly"))
 ```
 
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-noninc_pred
+tab_df(pred_model_two_df, 
+       title = "2024 Democrat Two Party Vote Share via Model Excluding Incumbent Party",
+       show.rownames = FALSE, 
+       digits = 2)
 ```
 
 # Model Including Incumbency
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-model_one_summary<- stargazer(model_one, type = "text",
-                              dep.var.labels = "Democrat Two Party Vote Share",
-                              covariate.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly", "Incumbent Party"),
-                              title = "Including Incumbent Regression Results", out = "model_one_results.txt")
+tab_model(model_one, 
+                               show.se = TRUE,
+                               title = "Including Incumbent Regression Results", 
+                               dv.labels = "Democrat Two Party Vote Share",  
+                               pred.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly", "Incumbent Party"))
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-inc_pred
+tab_df(pred_model_one_df, 
+       title = "2024 Democrat Two Party Vote Share via Model Including Incumbent Party",
+       show.rownames = FALSE)
 ```
 
 # Time For Change Model
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-time_change_summary <- stargazer(time_for_change_model, type = "text",
-                              dep.var.labels = "Incumbent Party Two Party Vote Share",
-                              covariate.labels = c("June Approval", "GDP Growth Quarterly", "Incumbent"),
-                              title = "Time For Change Regression Results", out = "time_change_results.txt")
+tab_model(time_for_change_model, 
+                                 show.se = TRUE,
+                                 title = "Time For Change Regression Results", 
+                                 dv.labels = "Incumbent Party Two Party Vote Share",  
+                                 pred.labels = c("June Approval", "GDP Growth Quarterly", "Incumbent"))
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-time_for_change_pred_pred
+tab_df(time_for_change_pred_df, 
+       title = "2024 Democrat Two Party Vote Share via Time for Change Model",
+       show.rownames = FALSE, 
+       digits = 2)
 ```
 
