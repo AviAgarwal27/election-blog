@@ -27,26 +27,6 @@ tags: []
 
 
 
-```r
-in_sample_rf_predictions <- predict(rf_fit, data = train_data)$predictions
-
-in_sample_mse <- mean((rf_model_data_r$pv2p - in_sample_rf_predictions)^2)
-
-in_sample_fit_df <- data.frame(
-  year = rf_model_data_r$year,
-  Actual = sprintf("%.2f%%", rf_model_data_r$pv2p),
-  Predicted = sprintf("%.2f%%", in_sample_rf_predictions)
-)
-
-nat_rf_in_sample_error <- tab_df(in_sample_fit_df, 
-       title = paste("In-sample Fit of Democrat National Two Party Vote Share via Random Forest\n(In-sample MSE:", sprintf("%.4f", in_sample_mse), ")"),
-       show.rownames = FALSE)
-
-
-rf_nat_pred <- tab_df(pred_model_rf_df, 
-       title = "2024 Democrat NationalTwo Party Vote Share via Random Forest Model",
-       show.rownames = FALSE)
-```
 
 
 
@@ -70,7 +50,7 @@ This week’s post builds on last week’s and introduces the structure followed
 
 # National Two-Party Vote Predictions
 
-I decided to shift away from using a weighted polling average and instead focus on a simple average of polls from weeks 5 to 8. The main reason for this change is that the weighted polling average, constructed by regressing historical data on each week, resulted in an artificially high R-squared of around 0.95 when recent poll data was added. This high correlation occurred because the weighted polling average was based on the same outcome factor being regressed again, leading to a model that seemed highly accurate but was likely overfitting to past data. Such overfitting makes it a poor predictor of future election outcomes. By switching to an average of polls from weeks 5 to 8, I aim to use a more straightforward and unbiased metric, which should offer better predictive power without inflating the model’s performance through recursive correlation. I will later explain why I chose this specific period.
+I decided to shift away from using a weighted polling average and instead focus on a simple average of polls from weeks 5 to 8. The main reason for this change is that the weighted polling average, constructed by regressing historical data on each week, resulted in an artificially high R-squared of around 0.95 when recent poll data was added. This high correlation occurred because the weighted polling average was based on the same outcome factor being regressed again, leading to a model that seemed highly accurate but was likely over fitting to past data.  By switching to an average of polls from weeks 5 to 8, I aim to use a more straightforward metric, which should offer better predictive power without inflating the model’s performance. I will later explain why I chose this specific period.
 
 As a result, this week's linear regression model, which is otherwise identical to last week’s, has a lower adjusted R-squared. However, I believe this model is a better predictor for future outcomes. The share it predicts for Harris has increased to 53% which is more compared to last week, likely due to recent polling trends in her favor over Trump. I am unsure why Q2 RDPI growth is no longer statistically significant in this model. My main theory is that polls closer to the election are more strongly correlated with the actual two-party vote share, which may reduce the overall impact of Q2 RDPI growth in the model.
 
@@ -222,7 +202,7 @@ The random forest model also predicts a popular vote victory for Harris, but by 
 </table>
 
 <table style="border-collapse:collapse; border:none;">
-<caption style="font-weight: bold; text-align:left;">2024 Democrat NationalTwo Party Vote Share via Random Forest Model</caption>
+<caption style="font-weight: bold; text-align:left;">2024 Democrat National Two Party Vote Share via Random Forest Model</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; ">year</th>
 <th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">Prediction</th>
@@ -235,9 +215,9 @@ The random forest model also predicts a popular vote victory for Harris, but by 
 
 # State Level Predictions
 
-I would like to begin by discussing the states I will be covering in my predictions. As we discovered in week 1, there are only seven states that could realistically be won by either party in this election based on historical trends. This is further supported by the fact that these seven states are currently listed as toss-ups by both the Cook Political Report and Sabato’s Crystal Ball. As a result, it is impractical to predict the outcome in any other state, where the winner is almost certain. This means we are starting with Harris holding 226 electoral votes and Trump with 219 votes. The remaining 95 electoral votes are in play across Arizona, Georgia, Nevada, Pennsylvania, Wisconsin, and Michigan.
+I would like to begin by discussing the states I will be covering in my predictions. As we discovered in week 1, there are only seven states that could realistically be won by either party in this election based on historical trends. This is further supported by the fact that these seven states are the only ones currently listed as toss-ups by both the Cook Political Report and Sabato’s Crystal Ball. As a result, it is impractical to predict the outcome in any other state, where the winner is almost certain. This means we are starting with Harris holding 226 electoral votes and Trump with 219 votes. The remaining 95 electoral votes are in play across Arizona, Georgia, Nevada, Pennsylvania, Wisconsin, and Michigan.
 
-To predict the outcomes in these swing states, I built a linear regression model using polling averages, Q2 RDPI growth, the incumbent party, and state-level differentiation. The decision to focus on polling averages from weeks 8 to 5 in the national model comes from the fact that this was the smallest, most recent time frame in which every state had available polls for all elections measured from 1968 to 2016. Another choice I made was to use national RDPI growth instead of state-level data. While state-specific economic indicators could offer additional granularity, many voters tend to view the economy in national terms. Even if their state is doing well, hearing about broader economic struggles in the media may influence their perception of the national economy negatively. For this reason, I decided to stick with national Q2 RDPI growth in the model.
+To predict the outcomes in these swing states, I built a linear regression model using polling averages, Q2 RDPI growth, the incumbent party, and state-level differentiation. The decision to focus on polling averages from 8 weeks left till the election to 5 weeks left in the national model comes from the fact that this was the smallest, most recent time frame in which every state had available polls for all elections measured from 1968 to 2016. Another choice I made was to use national RDPI growth instead of state-level data. While state-specific economic indicators could offer additional granularity, many voters tend to view the economy in national terms. Even if their state is doing well, hearing about broader economic struggles in the media may influence their perception of the national economy negatively. For this reason, I decided to stick with national Q2 RDPI growth in the model.
 
 
 <table style="border-collapse:collapse; border:none;">
@@ -335,7 +315,7 @@ To predict the outcomes in these swing states, I built a linear regression model
 </table>
 
 
-This model saw Harris winning Michigan, Nevada, Wisconsin, and Pennsylvania which would push her over 270 and result in her wining the presidency. The adjusted R-squared was less that 0.5 suggesting this model does not account for much of the variance in state electionS.
+This model saw Harris winning Michigan, Nevada, Wisconsin, and Pennsylvania which would push her over 270 and result in her wining the presidency. The adjusted R-squared was less that 0.5 suggesting this model does not account for much of the variance in state elections.
 
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">2024 Democrat Two Party Vote Share via Linear Model in Swing States</caption>
@@ -446,4 +426,4 @@ Similar to national two party vote, I also created a random forest model that pr
 
 # Conclusion
 
-Overall, all of my models predict a Harris victory in the Electoral College and national two party popular vote though by slim margins. I look forward to refining these models further as we get close to election day.
+Overall, all of my models predict a Harris victory in the Electoral College and national two party popular vote though by slim margins. I look forward to refining these models further as we get closer to election day.
