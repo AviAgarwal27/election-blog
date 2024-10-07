@@ -154,7 +154,7 @@ rf_nat_pred <- tab_df(pred_model_rf_df,
 
 
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
 swing_state_polls <- read_csv("state_polls_1968-2024.csv") |>
   filter(state %in% swing_states & weeks_left < 15 & weeks_left >= 5 & party == "DEM") |>
@@ -258,7 +258,7 @@ rf_nat_pred
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-lm_swing_model
+state_model_lm
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
