@@ -6,8 +6,15 @@
     <description>Recent content in Posts on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 30 Sep 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 07 Oct 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Post #5: State Level Predictions</title>
+      <link>https://example.org/post/2024/10/07/post-5-state-level-predictions/</link>
+      <pubDate>Mon, 07 Oct 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/10/07/post-5-state-level-predictions/</guid>
+      <description>&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;swing_states &amp;lt;- c(&amp;quot;Arizona&amp;quot;, &amp;quot;Georgia&amp;quot;, &amp;quot;Michigan&amp;quot;, &amp;quot;Nevada&amp;quot;, &amp;quot;North Carolina&amp;quot;, &amp;quot;Pennsylvania&amp;quot;, &amp;quot;Wisconsin&amp;quot;)&#xD;&#xA;swing_state_polls &amp;lt;- read_csv(&amp;quot;state_polls_1968-2024.csv&amp;quot;) |&amp;gt;&#xD;&#xA;  filter(state %in% swing_states &amp;amp; weeks_left &amp;lt; 15 &amp;amp; weeks_left &amp;gt;= 5 &amp;amp; party == &amp;quot;DEM&amp;quot;) |&amp;gt;&#xD;&#xA;  group_by(year, state) |&amp;gt;&#xD;&#xA;  summarize(avg_poll_14_9 = mean(poll_support[weeks_left &amp;lt;= 14 &amp;amp; weeks_left &amp;gt;= 9]),&#xD;&#xA;    avg_poll_8_5 = mean(poll_support[weeks_left &amp;lt; 9 &amp;amp; weeks_left &amp;gt;= 5]))&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code&gt;## Rows: 205100 Columns: 9&#xD;&#xA;## ── Column specification ────────────────────────────────────────────────────────&#xD;&#xA;## Delimiter: &amp;quot;,&amp;quot;&#xD;&#xA;## chr  (3): state, party, candidate&#xD;&#xA;## dbl  (4): year, weeks_left, days_left, poll_support&#xD;&#xA;## lgl  (1): before_convention&#xD;&#xA;## date (1): poll_date&#xD;&#xA;## &#xD;&#xA;## ℹ Use `spec()` to retrieve the full column specification for this data.&#xD;&#xA;## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.&#xD;&#xA;## `summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.&#xD;&#xA;&lt;/code&gt;&lt;/pr</description>
+    </item>
     <item>
       <title>Post #4: Will Incumbency Matter?</title>
       <link>https://example.org/post/2024/09/30/post-4-will-incumbency-matter/</link>

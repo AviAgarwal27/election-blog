@@ -1,0 +1,27 @@
+
+Including Incumbent Regression Results
+===================================================
+                           Dependent variable:     
+                      -----------------------------
+                      Democrat Two Party Vote Share
+---------------------------------------------------
+Weighted Avg. Poll              0.593***           
+                                 (0.080)           
+                                                   
+RDPI Growth Quarterly            0.485**           
+                                 (0.209)           
+                                                   
+Incumbent Party                  3.422**           
+                                 (1.262)           
+                                                   
+Constant                        20.017***          
+                                 (3.708)           
+                                                   
+---------------------------------------------------
+Observations                       13              
+R2                                0.877            
+Adjusted R2                       0.836            
+Residual Std. Error          2.040 (df = 9)        
+F Statistic               21.432*** (df = 3; 9)    
+===================================================
+Note:                   *p<0.1; **p<0.05; ***p<0.01
