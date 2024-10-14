@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Week #6: Improving Electoral College Model | A minimal Hugo website</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/fonts.css" />
+    
+  </head>
+
+  <body>
+    <nav>
+    <ul class="menu">
+      
+      <li><a href="/">Home</a></li>
+      
+      <li><a href="/about/">About</a></li>
+      
+      <li><a href="/categories/">Categories</a></li>
+      
+      <li><a href="/tags/">Tags</a></li>
+      
+      <li><a href="/index.xml">Subscribe</a></li>
+      
+    </ul>
+    <hr/>
+    </nav>
+
+<div class="article-meta">
+<h1><span class="title">Week #6: Improving Electoral College Model</span></h1>
+<h2 class="author">Avi </h2>
+<h2 class="date">2024/10/14</h2>
+</div>
+
+<main>
+<h1 id="introduction">Introduction</h1>
+<p>As terrifying as it might seem, we are less than 22 days away from the 2024 Election Day.</p>
+<pre><code class="language-r">elec_college_pred_table_dems
+</code></pre>
+<table style="border-collapse:collapse; border:none;">
+<caption style="font-weight: bold; text-align:left;">2024 Democrat Two-Party Vote Share Predictions in Swing States</caption>
+<tr>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; ">state</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">Prediction</th>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Arizona</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.92% ± 3.14%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Georgia</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.61% ± 3.07%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Michigan</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">52.34% ± 2.99%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Nevada</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.65% ± 3.07%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">North Carolina</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">47.84% ± 2.97%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Pennsylvania</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">52.61% ± 2.98%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; border-bottom: double; ">Wisconsin</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">52.98% ± 2.94%</td>
+</tr>
+</table>
+<pre><code class="language-r">elec_college_pred_table_dems
+</code></pre>
+<table style="border-collapse:collapse; border:none;">
+<caption style="font-weight: bold; text-align:left;">2024 Democrat Two-Party Vote Share Predictions in Swing States</caption>
+<tr>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; ">state</th>
+<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">Prediction</th>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Arizona</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.92% ± 3.14%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Georgia</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.61% ± 3.07%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Michigan</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">52.34% ± 2.99%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Nevada</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.65% ± 3.07%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">North Carolina</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">47.84% ± 2.97%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Pennsylvania</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">52.61% ± 2.98%</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; border-bottom: double; ">Wisconsin</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">52.98% ± 2.94%</td>
+</tr>
+</table>
+<pre><code class="language-r">map
+</code></pre>
+<img src="https://example.org/post/2024/10/14/week-6-improving-model-spending/index_files/figure-html/unnamed-chunk-26-1.png" width="672" />
+
+</main>
+
+  <footer>
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/katex/dist/katex.min.css">
+<script src="//cdn.jsdelivr.net/combine/npm/katex/dist/katex.min.js,npm/katex/dist/contrib/auto-render.min.js,npm/@xiee/utils/js/render-katex.js" defer></script>
+
+<script src="//cdn.jsdelivr.net/npm/@xiee/utils/js/center-img.min.js" defer></script>
+
+  
+  <hr/>
+  © <a href="https://yihui.org">Yihui Xie</a> 2017 &ndash; 2024 | <a href="https://github.com/yihui">Github</a> | <a href="https://twitter.com/xieyihui">Twitter</a>
+  
+  </footer>
+  </body>
+</html>
+

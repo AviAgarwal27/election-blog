@@ -1,0 +1,258 @@
+---
+title: 'Week #6: Improving Electoral College Model'
+author: 'Avi '
+date: '2024-10-14'
+slug: week-6-improving-model-spending
+categories: []
+tags: []
+---
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+library(sjPlot)
+library(plotly)
+library(maps)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_polls <- read_csv("state_polls_1968-2024.csv")
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
+swing_state_polls <- state_polls |>
+  filter(state %in% swing_states & weeks_left < 15 & weeks_left >= 4 & party == "DEM") |>
+  group_by(state, year,  weeks_left) |>
+  summarize(avg = mean(poll_support)) |>
+  ungroup() |>
+  pivot_wider(names_from = weeks_left, values_from = avg) |>
+  mutate(`13` = ifelse(row_number() == 57, 44.71145, `13`),
+        `14` = ifelse(row_number() == 57, 44.71145, `14`),
+         `13` = ifelse(row_number() == 44, 44.35786, `13`),
+         `14` = ifelse(row_number() == 44, 44.35786, `14`)) |>
+  mutate(polling_trend_8_4 = `4` - `8`,
+         polling_trend_12_8 = `9` - `14`,
+         average_polling = rowMeans(across(`4`:`14`))) |>
+  na.omit() |>
+  select(year, state, polling_trend_8_4, polling_trend_12_8, average_polling)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_dpi <- read_csv("Table.csv") 
+state_dpi[, 28:77] <- lapply(state_dpi[, 28:77], as.numeric)
+state_dpi <- state_dpi %>% select(-c(3:27))
+state_dpi <- state_dpi |> 
+  mutate(state = GeoName) |>
+  select(-GeoName, -GeoFips) 
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+
+swing_state_dpi <- state_dpi |>
+  filter(state %in% swing_states) |>
+  pivot_longer(cols = `1974`:`2023`, names_to = "year", values_to = "percent_change_dpi") |>
+  mutate(year = as.numeric(year)) |>
+  mutate(election_year = year + 1) |>
+  filter(election_year %% 4 == 0) |>
+  select(-year) |>
+  rename(year = election_year) 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+yearly_inflation <- read_csv("yearly_inflation.csv")
+yearly_inflation <- yearly_inflation |> 
+  select(-c(1:4)) |>
+  pivot_longer(cols = 1:64, names_to = "year", values_to = "yearly_national_inflation")
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+yearly_inflation <- yearly_inflation |> 
+  mutate(year = as.numeric(year)) |>
+  mutate(year = year + 1) |>
+  mutate(yearly_national_inflation = as.numeric(yearly_national_inflation)) 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_dpi_inflation <- swing_state_dpi |>
+  left_join(yearly_inflation, by = "year") |>
+  mutate(dpi_inflation_adjusted = percent_change_dpi - yearly_national_inflation) |>
+  select(-percent_change_dpi, -yearly_national_inflation)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data <- swing_state_polls |>
+  left_join(swing_state_dpi_inflation, by = c("year","state"))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_pop_vote <- read_csv("state_popvote_1948_2020.csv")
+state_pop_vote_fixed <- state_pop_vote |>
+  filter(state %in% swing_states) |>
+  select(-c(D_pv, R_pv_lag2, R_pv, R_pv_lag1, R_pv2p, D_pv_lag1, D_pv_lag2, margin, winner, R_pv2p_lag1, R_pv2p_lag2)) 
+
+  
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data <- swing_state_data |>
+  left_join(state_pop_vote_fixed, by = c("year", "state"))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_pop_vote <- read_csv("popvote_1948_2020.csv") |>
+  filter(party == "democrat") |> 
+  select(year, incumbent_party) |>
+  mutate(incumbent_party = ifelse(incumbent_party == TRUE, 1, 0))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data <- swing_state_data |>
+  left_join(nat_pop_vote, by = "year")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+fred_econ <- read_csv("fred_econ.csv") 
+fred_adjusted <- fred_econ |>
+  filter(year > 1958) |>
+  mutate(unemployment_growth_quarterly = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(quarter == 2) |>
+  mutate(RDPI_growth_annually = (RDPI - lag(RDPI, 1)) / lag(RDPI, 1) * 100) |> 
+  mutate(sp500_growth_quarterly = ((sp500_adj_close - sp500_open)) / sp500_open * 100) |>
+  mutate(sp500_growth_anually = (sp500_adj_close - lag(sp500_adj_close, 1)) / lag(sp500_adj_close, 1) * 100) |> 
+  mutate(unemployment_growth_anually = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(year >= 1960 & year %% 4 == 0) |> #exclude 2020 since it such an outlier
+  select(year, RDPI_growth_quarterly)
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+ swing_state_data <-  swing_state_data |>
+  left_join(fred_adjusted, by = "year")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_dummies <- model.matrix(~ state - 1, data = swing_state_data)
+
+swing_state_data <- cbind(swing_state_data, state_dummies)
+
+swing_state_data_train <- swing_state_data |>
+  filter(year < 2024)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+elec_college_model <- lm(
+  data = swing_state_data_train, 
+  D_pv2p ~ 0 + polling_trend_8_4 + polling_trend_12_8 + average_polling + 
+           incumbent_party + dpi_inflation_adjusted + RDPI_growth_quarterly + stateArizona + stateGeorgia + stateMichigan + stateNevada + `stateNorth Carolina` + stateWisconsin + statePennsylvania) 
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data_test <- swing_state_data |>
+  filter(year == 2024) 
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+elec_college_results <- predict(elec_college_model, swing_state_data_test, interval = "prediction")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+lm_in_sample_predictions <- predict(elec_college_model, swing_state_data_train)
+in_sample_mse <- mean((swing_state_data_train$D_pv2p - lm_in_sample_predictions)^2)
+
+
+#Used ChatGPT to help make this table
+elec_college_summary_dems <- tab_model(elec_college_model,
+                                       show.p = TRUE,   
+                                       show.r2 = FALSE, 
+                                       show.se = TRUE,   
+                                       title = paste("Linear Regression Model for Democrat Two-Party Vote Share\n(In-sample MSE:", sprintf("%.4f", in_sample_mse), ")"),
+                                       dv.labels = "Democrat Two-Party Vote Share",
+                                       pred.labels = c("Polling Trend (Weeks 8-4)", "Polling Trend (Weeks 12-8)", 
+                                                       "Average Polling", "Incumbent Party", 
+                                                       "DPI Inflation Adjusted", "RDPI Growth Quarterly", 
+                                                       "Arizona", "Georgia", "Michigan", "Nevada", 
+                                                       "North Carolina", "Wisconsin", "Pennsylvania"))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+elec_college_results_dems <- predict(elec_college_model, swing_state_data_test, interval = "prediction")
+
+
+elec_college_results_df_dems <- as.data.frame(elec_college_results_dems)
+colnames(elec_college_results_df_dems) <- c("Prediction", "Lower Bound", "Upper Bound")
+
+
+elec_college_results_df_dems$SE <- (elec_college_results_df_dems$`Upper Bound` - elec_college_results_df_dems$Prediction) / 1.96
+
+#Used ChatGPT to help make this table
+elec_college_results_df_dems <- data.frame(
+  state = swing_state_data_test$state,
+  Prediction = sprintf("%.2f%% ± %.2f%%", elec_college_results_df_dems$Prediction, elec_college_results_df_dems$SE)
+)
+
+
+
+elec_college_pred_table_dems <- tab_df(elec_college_results_df_dems,
+                                       title = "2024 Democrat Two-Party Vote Share Predictions in Swing States",
+                                       show.rownames = FALSE)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+elec_college_results_df_dems <- as.data.frame(elec_college_results_dems)
+colnames(elec_college_results_df_dems) <- c("Prediction", "Lower Bound", "Upper Bound")
+
+
+swing_states_data_dems <- data.frame(
+  state = tolower(swing_state_data_test$state),  
+  margin = elec_college_results_df_dems$Prediction)  
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+us_states <- map_data("state")
+
+#used chatgpt to help create map
+swing_map_data <- us_states %>%
+  left_join(swing_states_data_dems, by = c("region" = "state"))
+
+
+map <- ggplot(data = swing_map_data, aes(x = long, y = lat, group = group, fill = margin)) +
+  geom_polygon(color = "white") +
+  scale_fill_gradient2(low = "darkred", mid = "white", high = "darkblue", midpoint = 50, 
+                       name = "Dem. Voting Margin (%)") +
+  theme_minimal() +
+  coord_fixed(1.3) +
+  labs(title = "2024 Swing State Voting Margins",
+       subtitle = "Shaded by predicted Democratic (blue) or Republican (red) vote margins") +
+  theme(
+    axis.line = element_blank(),        
+    axis.text = element_blank(),       
+    axis.ticks = element_blank(),      
+    axis.title = element_blank(),
+     panel.grid = element_blank()
+  )
+```
+
+
+
+# Introduction
+
+As terrifying as it might seem, we are less than 22 days away from the 2024 Election Day. 
+
+```{r}
+elec_college_pred_table_dems
+```
+
+```{r}
+elec_college_pred_table_dems
+```
+
+```{r}
+map
+```
+
