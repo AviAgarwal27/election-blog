@@ -363,7 +363,7 @@ Using this model for predictions, Harris is forecasted to win Michigan, Wisconsi
 ##         invisible(value)
 ##     else value
 ## }
-## <bytecode: 0x00000227b9e3d248>
+## <bytecode: 0x0000013edd205b18>
 ## <environment: namespace:maps>
 ```
 

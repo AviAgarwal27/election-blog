@@ -238,7 +238,7 @@ elec_college_pred_table_dems
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-map
+print(map)
 ```
 
 
