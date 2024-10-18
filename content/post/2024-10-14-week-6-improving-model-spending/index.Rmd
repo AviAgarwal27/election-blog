@@ -241,6 +241,9 @@ elec_college_pred_table_dems
 print(map)
 ```
 
+```{r}
+map
+```
 
 # Future Improvements
 
