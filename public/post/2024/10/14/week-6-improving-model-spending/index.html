@@ -34,6 +34,38 @@
 </div>
 
 <main>
+<pre><code class="language-r">swing_map_data &lt;- as.data.frame(elec_college_results_dems)
+
+
+swing_states_data_dems &lt;- data.frame(
+  state = swing_state_data_test$state,
+  margin = swing_map_data$fit)
+</code></pre>
+<pre><code class="language-r">swing_state_data_dems &lt;- swing_states_data_dems %&gt;%
+  mutate(state = tolower(state))
+
+us_states &lt;- map_data(&quot;state&quot;)
+
+swing_map_data &lt;- us_states %&gt;%
+  left_join(swing_state_data_dems, by = c(&quot;region&quot; = &quot;state&quot;))
+
+
+map &lt;- ggplot(data = swing_map_data, aes(x = long, y = lat, group = group, fill = margin)) +
+  geom_polygon(color = &quot;white&quot;) +
+  scale_fill_gradient2(low = &quot;darkred&quot;, mid = &quot;white&quot;, high = &quot;darkblue&quot;, midpoint = 50, 
+                       name = &quot;Dem. Voting Margin (%)&quot;) +
+  theme_minimal() +
+  coord_fixed(1.3) +
+  labs(title = &quot;2024 Swing State Voting Margins&quot;,
+       subtitle = &quot;Shaded by predicted Democratic (blue) or Republican (red) vote margins&quot;) +
+  theme(
+    axis.line = element_blank(),        # Remove axis lines
+    axis.text = element_blank(),        # Remove axis text
+    axis.ticks = element_blank(),       # Remove axis ticks
+    axis.title = element_blank(),       # Remove axis titles
+    panel.grid = element_blank()        # Remove grid lines
+  )
+</code></pre>
 <h1 id="introduction">Introduction</h1>
 <p>As surprising as it might seem, we are less than 22 days away from the 2024 Election Day. As a result, this week, I focused solely on refining my electoral college prediction mode rather than adding any new predictors or techniques. This allowed me to make several substantial improvements to my model that will increase predictive potential.</p>
 <h1 id="polling">Polling</h1>
@@ -191,146 +223,7 @@
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">52.98% ± 2.94%</td>
 </tr>
 </table>
-<pre><code>## function (database = &quot;world&quot;, regions = &quot;.&quot;, exact = FALSE, boundary = TRUE, 
-##     interior = TRUE, projection = &quot;&quot;, parameters = NULL, orientation = NULL, 
-##     fill = FALSE, col = 1, plot = TRUE, add = FALSE, namesonly = FALSE, 
-##     xlim = NULL, ylim = NULL, wrap = FALSE, resolution = if (plot) 1 else 0, 
-##     type = &quot;l&quot;, bg = par(&quot;bg&quot;), mar = c(4.1, 4.1, par(&quot;mar&quot;)[3], 
-##         0.1), myborder = 0.01, namefield = &quot;name&quot;, lforce = &quot;n&quot;, 
-##     ...) 
-## {
-##     if (resolution &gt; 0 &amp;&amp; !plot) 
-##         stop(&quot;must have plot=TRUE if resolution is given&quot;)
-##     if (!fill &amp;&amp; !boundary &amp;&amp; !interior) 
-##         stop(&quot;one of boundary and interior must be TRUE&quot;)
-##     doproj &lt;- !missing(projection) || !missing(parameters) || 
-##         !missing(orientation)
-##     if (doproj &amp;&amp; !requireNamespace(&quot;mapproj&quot;, quietly = TRUE)) {
-##         stop(&quot;Please install the package 'mapproj' for projections.&quot;)
-##     }
-##     coordtype &lt;- maptype(database)
-##     if (coordtype == &quot;unknown&quot;) 
-##         stop(&quot;missing database or unknown coordinate type&quot;)
-##     if (doproj &amp;&amp; coordtype != &quot;spherical&quot;) 
-##         stop(paste(database, &quot;database is not spherical; projections not allowed&quot;))
-##     if (length(wrap) &gt;= 2 &amp;&amp; !doproj &amp;&amp; wrap[2] - wrap[1] != 
-##         360) 
-##         stop(&quot;The specified longitudes for wrapping are inconsistent, they should be 360 apart.&quot;)
-##     if (is.character(database)) 
-##         as.polygon = fill
-##     else as.polygon &lt;- TRUE
-##     xlim_tmp &lt;- if (length(wrap) &gt;= 2) 
-##         NULL
-##     else xlim
-##     coord &lt;- map.poly(database, regions, exact, xlim_tmp, ylim, 
-##         boundary, interior, fill, as.polygon, namefield = namefield)
-##     if (is.na(coord$x[1])) 
-##         stop(&quot;first coordinate is NA. Bad map data?&quot;)
-##     if (length(wrap) &gt;= 2) {
-##         antarctica &lt;- if (length(wrap) == 2) 
-##             -89.9
-##         else wrap[3]
-##         coord &lt;- map.wrap.poly(coord, xlim = wrap[1:2], poly = fill, 
-##             antarctica = antarctica)
-##     }
-##     if (lforce == &quot;e&quot;) {
-##         coord &lt;- map.clip.poly(coord, xlim, ylim, poly = fill)
-##     }
-##     if (plot) {
-##         .map.range(coord$range)
-##     }
-##     if (doproj) {
-##         nam &lt;- coord$names
-##         coord &lt;- mapproj::mapproject(coord, projection = projection, 
-##             parameters = parameters, orientation = orientation)
-##         coord$projection = projection
-##         coord$parameters = parameters
-##         coord$orientation = orientation
-##         coord$names &lt;- nam
-##         if (!is.null(xlim) &amp;&amp; !is.null(ylim) &amp;&amp; lforce %in% c(&quot;s&quot;, 
-##             &quot;l&quot;)) {
-##             prange &lt;- mapproj::mapproject(x = rep(xlim, 2), y = rep(ylim, 
-##                 each = 2))
-##             if (lforce == &quot;s&quot;) {
-##                 xlim &lt;- c(max(prange$x[c(1, 3)]), min(prange$x[c(2, 
-##                   4)]))
-##                 ylim &lt;- c(max(prange$y[c(1, 2)]), min(prange$y[c(3, 
-##                   4)]))
-##             }
-##             else {
-##                 xlim &lt;- c(min(prange$x[c(1, 3)]), max(prange$x[c(2, 
-##                   4)]))
-##                 ylim &lt;- c(min(prange$y[c(1, 2)]), max(prange$y[c(3, 
-##                   4)]))
-##             }
-##         }
-##         if (plot &amp;&amp; coord$error) 
-##             if (all(is.na(coord$x))) 
-##                 stop(&quot;projection failed for all data&quot;)
-##             else warning(&quot;projection failed for some data&quot;)
-##     }
-##     if (length(wrap) == 1 &amp;&amp; wrap) 
-##         coord &lt;- map.wrap(coord)
-##     if (plot) {
-##         if (!add) {
-##             opar = par(bg = bg)
-##             if (!par(&quot;new&quot;)) 
-##                 plot.new()
-##             if (is.null(xlim) || (doproj &amp;&amp; !(lforce %in% c(&quot;s&quot;, 
-##                 &quot;l&quot;)))) 
-##                 xrange &lt;- range(coord$x, na.rm = TRUE)
-##             else xrange &lt;- xlim
-##             if (is.null(ylim) || (doproj &amp;&amp; !(lforce %in% c(&quot;s&quot;, 
-##                 &quot;l&quot;)))) 
-##                 yrange &lt;- range(coord$y, na.rm = TRUE)
-##             else yrange &lt;- ylim
-##             if (coordtype != &quot;spherical&quot; || doproj) {
-##                 aspect &lt;- c(1, 1)
-##             }
-##             else aspect &lt;- c(cos((mean(yrange) * pi)/180), 1)
-##             d &lt;- c(diff(xrange), diff(yrange)) * (1 + 2 * myborder) * 
-##                 aspect
-##             if (coordtype != &quot;spherical&quot; || doproj) {
-##                 plot.window(xrange, yrange, asp = 1/aspect[1])
-##             }
-##             else {
-##                 par(mar = mar)
-##                 p &lt;- par(&quot;fin&quot;) - as.vector(matrix(c(0, 1, 1, 
-##                   0, 0, 1, 1, 0), nrow = 2) %*% par(&quot;mai&quot;))
-##                 par(pin = p)
-##                 p &lt;- par(&quot;pin&quot;)
-##                 p &lt;- d * min(p/d)
-##                 par(pin = p)
-##                 d &lt;- d * myborder + ((p/min(p/d) - d)/2)/aspect
-##                 usr &lt;- c(xrange, yrange) + rep(c(-1, 1), 2) * 
-##                   rep(d, c(2, 2))
-##                 par(usr = usr)
-##             }
-##             on.exit(par(opar))
-##         }
-##         if (type != &quot;n&quot;) {
-##             if (!as.polygon &amp;&amp; resolution != 0) {
-##                 pin &lt;- par(&quot;pin&quot;)
-##                 usr &lt;- par(&quot;usr&quot;)
-##                 resolution &lt;- resolution * min(diff(usr)[-2]/pin/100)
-##                 coord[c(&quot;x&quot;, &quot;y&quot;)] &lt;- mapthin(coord, resolution)
-##             }
-##             if (fill) 
-##                 polygon(coord, col = col, ...)
-##             else lines(coord, col = col, type = type, ...)
-##         }
-##     }
-##     class(coord) = &quot;map&quot;
-##     value &lt;- if (namesonly) 
-##         coord$names
-##     else coord
-##     if (plot) 
-##         invisible(value)
-##     else value
-## }
-## &lt;bytecode: 0x0000013edd205b18&gt;
-## &lt;environment: namespace:maps&gt;
-</code></pre>
+<img src="https://example.org/post/2024/10/14/week-6-improving-model-spending/index_files/figure-html/unnamed-chunk-26-1.png" width="672" />
 <h1 id="future-improvements">Future Improvements</h1>
 <p>While this model shows significant improvement from last week, I plan to test several changes in the coming weeks to enhance its accuracy. I intend to experiment with an elastic net model using imputed data to see if that offers a better method for incorporating polling data. I will also explore modeling various economic fundamentals to create a more nuanced measure of economic effects in this election.</p>
 <p>While campaign fundraising is a useful indicator of public support, strong data for 2024 are not yet available, making it difficult to make meaningful predictions in this area. However, I may also attempt to incorporate it into the model next week.</p>

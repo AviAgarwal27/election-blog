@@ -203,6 +203,45 @@ elec_college_pred_table_dems <- tab_df(elec_college_results_df_dems,
                                        show.rownames = FALSE)
 ```
 
+```{r}
+swing_map_data <- as.data.frame(elec_college_results_dems)
+
+
+swing_states_data_dems <- data.frame(
+  state = swing_state_data_test$state,
+  margin = swing_map_data$fit)
+
+```
+
+
+```{r}
+swing_state_data_dems <- swing_states_data_dems %>%
+  mutate(state = tolower(state))
+
+us_states <- map_data("state")
+
+swing_map_data <- us_states %>%
+  left_join(swing_state_data_dems, by = c("region" = "state"))
+
+
+map <- ggplot(data = swing_map_data, aes(x = long, y = lat, group = group, fill = margin)) +
+  geom_polygon(color = "white") +
+  scale_fill_gradient2(low = "darkred", mid = "white", high = "darkblue", midpoint = 50, 
+                       name = "Dem. Voting Margin (%)") +
+  theme_minimal() +
+  coord_fixed(1.3) +
+  labs(title = "2024 Swing State Voting Margins",
+       subtitle = "Shaded by predicted Democratic (blue) or Republican (red) vote margins") +
+  theme(
+    axis.line = element_blank(),        # Remove axis lines
+    axis.text = element_blank(),        # Remove axis text
+    axis.ticks = element_blank(),       # Remove axis ticks
+    axis.title = element_blank(),       # Remove axis titles
+    panel.grid = element_blank()        # Remove grid lines
+  )
+
+```
+
 
 # Introduction
 
@@ -239,10 +278,6 @@ elec_college_pred_table_dems
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 print(map)
-```
-
-```{r}
-map
 ```
 
 # Future Improvements
