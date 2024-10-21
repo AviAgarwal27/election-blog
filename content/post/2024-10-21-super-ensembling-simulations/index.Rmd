@@ -180,7 +180,6 @@ mod_2 <- lm(
     polling_trend_7_3 +
     polling_trend_12_8 +
     current_week +
-    incumbent_party +
     stateArizona +
     stateGeorgia + stateMichigan +
     stateNevada +
@@ -409,7 +408,6 @@ mod_2_rep <- lm(
     polling_trend_7_3 +
     polling_trend_12_8 +
     current_week +
-    incumbent_party +
     stateArizona +
     stateGeorgia + 
     stateMichigan +
@@ -431,7 +429,8 @@ mod_3_rep <- lm(
     unemployment_growth_quarterly +
     dpi_inflation_adjusted +
     stateArizona +
-    stateGeorgia + stateMichigan +
+    stateGeorgia + 
+    stateMichigan +
     stateNevada +
     `stateNorth Carolina` +
     stateWisconsin +
