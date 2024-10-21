@@ -1,0 +1,763 @@
+---
+title: 'Post #7: State Level Predictions'
+author: Avi Agarwal
+date: '2024-10-21'
+slug: super-ensembling-simulations
+categories: []
+tags: []
+---
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+library(sjPlot)
+library(plotly)
+library(maps)
+library(car)
+library(CVXR)
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_polls <- read_csv("state_polls_1968-2024.csv")
+swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+
+swing_state_polls_dem <- swing_state_polls |>
+  filter(state %in% swing_states & weeks_left < 13 & weeks_left >= 3 & party == "DEM") |>
+  group_by(state, year,  weeks_left) |>
+  summarize(avg = mean(poll_support)) |>
+  ungroup() |>
+  pivot_wider(names_from = weeks_left, values_from = avg) |>
+  mutate(polling_trend_7_3 = `3` - `7`,
+         polling_trend_12_8 = `8` - `12`,
+         average_polling = rowMeans(across(`3`:`12`)),
+         current_week = `3`) |>
+  na.omit() |>
+  select(year, state, polling_trend_7_3, polling_trend_12_8, average_polling, current_week)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_dpi <- read_csv("Table.csv") 
+state_dpi[, 28:77] <- lapply(state_dpi[, 28:77], as.numeric)
+state_dpi <- state_dpi %>% select(-c(3:27))
+state_dpi <- state_dpi |> 
+  mutate(state = GeoName) |>
+  select(-GeoName, -GeoFips) 
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+
+swing_state_dpi <- state_dpi |>
+  filter(state %in% swing_states) |>
+  pivot_longer(cols = `1974`:`2023`, names_to = "year", values_to = "percent_change_dpi") |>
+  mutate(year = as.numeric(year)) |>
+  mutate(election_year = year + 1) |>
+  filter(election_year %% 4 == 0) |>
+  select(-year) |>
+  rename(year = election_year) 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+yearly_inflation <- read_csv("yearly_inflation.csv")
+yearly_inflation <- yearly_inflation |> 
+  select(-c(1:4)) |>
+  pivot_longer(cols = 1:64, names_to = "year", values_to = "yearly_national_inflation")
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+yearly_inflation <- yearly_inflation |> 
+  mutate(year = as.numeric(year)) |>
+  mutate(year = year + 1) |>
+  mutate(yearly_national_inflation = as.numeric(yearly_national_inflation)) 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_dpi<- swing_state_dpi |>
+  left_join(yearly_inflation, by = "year") |>
+  mutate(dpi_inflation_adjusted = percent_change_dpi - yearly_national_inflation) |>
+  select(-percent_change_dpi, -yearly_national_inflation)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data <- swing_state_polls_dem |>
+  left_join(swing_state_dpi, by = c("year","state")) |>
+  na.omit()
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_pop_vote <- read_csv("state_popvote_1948_2020.csv") 
+state_pop_vote <- state_pop_vote |>
+  filter(state %in% swing_states) |>
+  select(c( year, state,D_pv2p, D_pv2p_lag1, D_pv2p_lag2)) 
+
+  
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data <- swing_state_data |>
+  left_join(state_pop_vote, by = c("year", "state"))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_pop_vote <- read_csv("popvote_1948_2020.csv") |>
+  filter(party == "democrat") |> 
+  select(year, incumbent_party) |>
+  mutate(incumbent_party = ifelse(incumbent_party == TRUE, 1, 0))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data <- swing_state_data |>
+  left_join(nat_pop_vote, by = "year")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+fred_econ <- read_csv("fred_econ.csv") 
+fred_adjusted <- fred_econ |>
+  filter(year > 1958) |>
+  mutate(unemployment_growth_quarterly = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(quarter == 2) |>
+  mutate(sp500_growth_quarterly = ((sp500_adj_close - sp500_open)) / sp500_open * 100) |>
+  filter(year >= 1960 & year %% 4 == 0) |>
+  select(year, RDPI_growth_quarterly, unemployment_growth_quarterly, sp500_growth_quarterly) 
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+ swing_state_data <-  swing_state_data |>
+  left_join(fred_adjusted, by = "year")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_dummies <- model.matrix(~ state - 1, data = swing_state_data)
+
+swing_state_data <- cbind(swing_state_data, state_dummies)
+
+swing_state_data_train <- swing_state_data |>
+  filter(year < 2016)
+
+swing_state_data_true <- swing_state_data |> 
+  filter(year == 2016)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+twentyfour_lags <- state_pop_vote |>
+  filter(year == 2020) |>
+   mutate(D_pv2p_lag2= D_pv2p_lag1,
+     D_pv2p_lag1 = D_pv2p,
+     year = 2024) |>
+  select(-D_pv2p)
+
+swing_state_data_test <- swing_state_data |>
+  filter(year == 2024) |>
+  select(where(~ !all(is.na(.)))) |>
+  left_join(twentyfour_lags, by = c("state", "year")) 
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+mod_1 <- lm(
+  data = swing_state_data_train, 
+  D_pv2p ~ 0 +
+    D_pv2p_lag1 +
+    D_pv2p_lag2 +
+    incumbent_party +
+    RDPI_growth_quarterly +
+    stateArizona +
+    stateGeorgia + stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania) 
+
+mod_2 <- lm(
+  data = swing_state_data_train, 
+  D_pv2p ~ 0 +
+    polling_trend_7_3 +
+    polling_trend_12_8 +
+    current_week +
+    incumbent_party +
+    stateArizona +
+    stateGeorgia + stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania) 
+
+
+mod_3 <- lm(
+  data = swing_state_data_train, 
+  D_pv2p ~ 0 +
+    polling_trend_7_3 +
+    polling_trend_12_8 +
+    D_pv2p_lag1 +
+    D_pv2p_lag2 +
+    current_week + 
+    incumbent_party +
+    unemployment_growth_quarterly +
+    dpi_inflation_adjusted +
+    stateArizona +
+    stateGeorgia + stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania) 
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_1 <- as.numeric(predict(mod_1, newdata = swing_state_data_true ))
+pred_2 <- as.numeric(predict(mod_2, newdata = swing_state_data_true ))
+pred_3 <- as.numeric(predict(mod_3, newdata = swing_state_data_true))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_1_2024 <- as.numeric(predict(mod_1, newdata = swing_state_data_test))
+pred_2_2024 <- as.numeric(predict(mod_2, newdata = swing_state_data_test))
+pred_3_2024 <- as.numeric(predict(mod_3, newdata = swing_state_data_test))
+```
+
+```{r,  echo= FALSE, message = FALSE, warning=FALSE}
+in_sample_pred_1 <- as.numeric(predict(mod_1, newdata = swing_state_data_train))
+in_sample_pred_2 <- as.numeric(predict(mod_2, newdata = swing_state_data_train))
+in_sample_pred_3 <- as.numeric(predict(mod_3, newdata = swing_state_data_train))
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+c <- 3  
+predictions <- cbind(pred_1, pred_2, pred_3)  
+y_test <- swing_state_data_true$D_pv2p 
+
+w <- lm(y_test ~ predictions - 1) 
+initial_weights <- coef(w)
+
+beta <- Variable(c) 
+
+objective <- Minimize(sum_squares(y_test - predictions %*% beta))
+
+prob <- Problem(objective)
+constraints(prob) <- list(beta >= 0, beta <= 1)
+solution_prob <- solve(prob)
+weights_dem <- solution_prob$getValue(beta)
+
+predictions_in_sample <- cbind(in_sample_pred_1, in_sample_pred_2, in_sample_pred_3)  
+ensemble_pred_in_sample <- predictions_in_sample %*% weights_dem
+
+y_test_in_sample <- swing_state_data_train$D_pv2p 
+mse_ensemble_in_sample <- mean((y_test_in_sample - ensemble_pred_in_sample)^2)
+
+
+ensemble_pred_out_sample <- predictions %*% weights_dem
+
+mse_ensemble_out_sample <- mean((y_test - ensemble_pred_out_sample)^2)
+
+
+
+predictions_2024 <- cbind(pred_1_2024, pred_2_2024, pred_3_2024)
+ensemble_pred_2024 <- predictions_2024 %*% weights_dem
+
+ensemble_pred_2024_df <- data.frame(
+  state = swing_state_data_test$state,  
+  year = swing_state_data_test$year,    
+  pred_vote_share = round(as.numeric(ensemble_pred_2024), 3)  
+)
+
+```
+
+
+```{r good lm model, echo= FALSE, message = FALSE, warning=FALSE}
+b_model <- lm(
+  data = swing_state_data_train, 
+  D_pv2p ~ 0 +
+    polling_trend_7_3 +
+    polling_trend_12_8 +
+    D_pv2p_lag1 +
+    D_pv2p_lag2 +
+    current_week + 
+    incumbent_party +
+    dpi_inflation_adjusted +
+    unemployment_growth_quarterly +
+    stateArizona +
+    stateGeorgia + stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania) 
+
+b_model_lm_in_sample_predictions <- predict(b_model, swing_state_data_train)
+b_model_in_sample_mse <- mean((swing_state_data_train$D_pv2p - b_model_lm_in_sample_predictions)^2)
+
+
+
+b_model_lm_out_sample_predictions <- predict(b_model, swing_state_data_true)
+b_model_out_sample_mse <- mean((swing_state_data_true$D_pv2p - b_model_lm_out_sample_predictions)^2)
+
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+b_model_predictions <- predict(b_model, swing_state_data_test, interval = "prediction")
+
+b_model_predictions <- as.data.frame(b_model_predictions)
+
+pred_b_model <- data.frame(state = swing_state_data_test$state,
+                           year = swing_state_data_test$year,
+                           Prediction = b_model_predictions$fit)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_polls_rep <- swing_state_polls |>
+  filter(state %in% swing_states & weeks_left < 13 & weeks_left >= 3 & party == "REP") |>
+  group_by(state, year,  weeks_left) |>
+  summarize(avg = mean(poll_support)) |>
+  ungroup() |>
+  pivot_wider(names_from = weeks_left, values_from = avg) |>
+  mutate(polling_trend_7_3 = `3` - `7`,
+         polling_trend_12_8 = `8` - `12`,
+         average_polling = rowMeans(across(`3`:`12`)),
+         current_week = `3`) |>
+  na.omit() |>
+  select(year, state, polling_trend_7_3, polling_trend_12_8, average_polling, current_week)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data_rep <- swing_state_polls_rep |>
+  left_join(swing_state_dpi, by = c("year","state")) |>
+  na.omit()
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_pop_vote <- read_csv("state_popvote_1948_2020.csv") 
+state_pop_vote <- state_pop_vote |>
+  filter(state %in% swing_states) |>
+  select(c( year, state,R_pv2p, R_pv2p_lag1, R_pv2p_lag2)) 
+  
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data_rep <- swing_state_data_rep |>
+  left_join(state_pop_vote, by = c("year", "state"))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE} 
+nat_pop_vote <- read_csv("popvote_1948_2020.csv") |>
+  filter(party == "republican") |> 
+  select(year, incumbent_party) |>
+  mutate(incumbent_party = ifelse(incumbent_party == TRUE, 1, 0))
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data_rep <- swing_state_data_rep |>
+  left_join(nat_pop_vote, by = "year")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data_rep <-  swing_state_data_rep |>
+  left_join(fred_adjusted, by = "year")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+state_dummies <- model.matrix(~ state - 1, data = swing_state_data_rep)
+
+swing_state_data_rep <- cbind(swing_state_data_rep, state_dummies)
+
+swing_state_data_train_rep <- swing_state_data_rep |>
+  filter(year < 2016)
+
+swing_state_data_true_rep <- swing_state_data_rep |> 
+  filter(year == 2016)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+twentyfour_lags_rep <- state_pop_vote |>
+  filter(year == 2020) |>
+   mutate(R_pv2p_lag2= R_pv2p_lag1,
+     R_pv2p_lag1 = R_pv2p,
+     year = 2024) |>
+  select(-R_pv2p)
+
+swing_state_data_test_rep <- swing_state_data_rep |>
+  filter(year == 2024) |>
+  select(where(~ !all(is.na(.)))) |>
+  left_join(twentyfour_lags_rep, by = c("state", "year")) 
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+mod_1_rep <- lm(
+  data = swing_state_data_train_rep, 
+  R_pv2p ~ 0 +
+    R_pv2p_lag1 +
+    R_pv2p_lag2 +
+    incumbent_party +
+    RDPI_growth_quarterly +
+    stateArizona +
+    stateGeorgia + 
+    stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania)
+
+mod_2_rep <- lm(
+  data = swing_state_data_train_rep, 
+  R_pv2p ~ 0 +
+    polling_trend_7_3 +
+    polling_trend_12_8 +
+    current_week +
+    incumbent_party +
+    stateArizona +
+    stateGeorgia + 
+    stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania) 
+
+
+mod_3_rep <- lm(
+  data = swing_state_data_train_rep, 
+  R_pv2p ~ 0 +
+    polling_trend_7_3 +
+    polling_trend_12_8 +
+    R_pv2p_lag1 +
+    R_pv2p_lag2 +
+    current_week + 
+    incumbent_party +
+    unemployment_growth_quarterly +
+    dpi_inflation_adjusted +
+    stateArizona +
+    stateGeorgia + stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania) 
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_1_rep <- as.numeric(predict(mod_1_rep, newdata = swing_state_data_true_rep ))
+pred_2_rep <- as.numeric(predict(mod_2_rep, newdata = swing_state_data_true_rep ))
+pred_3_rep <- as.numeric(predict(mod_3_rep, newdata = swing_state_data_true_rep))
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+pred_1_2024_rep <- as.numeric(predict(mod_1_rep, newdata = swing_state_data_test_rep))
+pred_2_2024_rep <- as.numeric(predict(mod_2_rep, newdata = swing_state_data_test_rep))
+pred_3_2024_rep <- as.numeric(predict(mod_3_rep, newdata = swing_state_data_test_rep))
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+in_sample_pred_1_rep <- as.numeric(predict(mod_1_rep, newdata = swing_state_data_train_rep))
+in_sample_pred_2_rep <- as.numeric(predict(mod_2_rep, newdata = swing_state_data_train_rep))
+in_sample_pred_3_rep <- as.numeric(predict(mod_3_rep, newdata = swing_state_data_train_rep))
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+c <- 3  
+predictions_rep <- cbind(pred_1_rep, pred_2_rep, pred_3_rep)  
+y_test_rep <- swing_state_data_true_rep$R_pv2p 
+
+w_rep <- lm(y_test ~ predictions_rep - 1) 
+initial_weights_rep <- coef(w_rep)
+
+beta_rep <- Variable(c) 
+
+objective_rep <- Minimize(sum_squares(y_test_rep - predictions_rep %*% beta_rep))
+
+prob_rep <- Problem(objective_rep)
+constraints(prob_rep) <- list(beta_rep >= 0, beta_rep <= 1)
+solution_prob_rep <- solve(prob_rep)
+weights_rep <- solution_prob_rep$getValue(beta_rep)
+
+predictions_in_sample_rep <- cbind(in_sample_pred_1_rep, in_sample_pred_2_rep, in_sample_pred_3_rep)  
+ensemble_pred_in_sample_rep <- predictions_in_sample_rep %*% weights_rep
+
+y_test_in_sample_rep <- swing_state_data_train_rep$R_pv2p 
+mse_ensemble_in_sample_rep <- mean((y_test_in_sample_rep - ensemble_pred_in_sample_rep)^2)
+
+
+ensemble_pred_out_sample_rep <- predictions_rep %*% weights_rep
+
+mse_ensemble_out_sample_rep <- mean((y_test_rep - ensemble_pred_out_sample_rep)^2)
+
+
+
+predictions_2024_rep <- cbind(pred_1_2024_rep, pred_2_2024_rep, pred_3_2024_rep)
+ensemble_pred_2024_rep <- predictions_2024_rep %*% weights_rep
+
+ensemble_pred_2024_df_rep <- data.frame(
+  state = swing_state_data_test_rep$state,  
+  year = swing_state_data_test_rep$year,    
+  pred_vote_share = round(as.numeric(ensemble_pred_2024_rep), 3)  
+)
+
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+b_model_rep <- lm(
+  data = swing_state_data_train_rep, 
+  R_pv2p ~ 0 +
+    polling_trend_7_3 +
+    polling_trend_12_8 +
+    R_pv2p_lag1 +
+    R_pv2p_lag2 +
+    current_week + 
+    incumbent_party +
+    dpi_inflation_adjusted +
+    unemployment_growth_quarterly +
+    stateArizona +
+    stateGeorgia + stateMichigan +
+    stateNevada +
+    `stateNorth Carolina` +
+    stateWisconsin +
+    statePennsylvania) 
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+b_model_predictions_rep <- predict(b_model_rep, swing_state_data_test_rep, interval = "prediction")
+
+b_model_predictions_rep <- as.data.frame(b_model_predictions_rep)
+
+pred_b_model_rep <- data.frame(state = swing_state_data_test_rep$state,
+                           year = swing_state_data_test_rep$year,
+                           Prediction = b_model_predictions_rep$fit)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+combined_predictions_lm <- pred_b_model |>
+  left_join(pred_b_model_rep, by = c("state", "year")) |>
+  rename(Democrat_Prediction = Prediction.x, Republican_Prediction = Prediction.y) |>
+  select(state, Democrat_Prediction, Republican_Prediction) |>
+  mutate(margin = Democrat_Prediction - Republican_Prediction)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+adjusted_lm_predictions <- combined_predictions_lm |>
+  mutate(adj_dem_vote = Democrat_Prediction/(Democrat_Prediction + Republican_Prediction) *100,
+         adj_rep_vote = Republican_Prediction/(Democrat_Prediction + Republican_Prediction) *100,
+         margin = adj_dem_vote - adj_rep_vote) |>
+  select(state, adj_dem_vote, adj_rep_vote, margin)
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+combined_prediction_ensemble <- ensemble_pred_2024_df |>
+  left_join(ensemble_pred_2024_df_rep, by = c("state", "year")) |> 
+  rename(Democrat_Prediction = pred_vote_share.x, Republican_Prediction = pred_vote_share.y) |>
+  select(state, Democrat_Prediction, Republican_Prediction) 
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+adjusted_ensemble_predictions <- combined_prediction_ensemble |>
+  mutate(adj_dem_vote = Democrat_Prediction/(Democrat_Prediction + Republican_Prediction) *100,
+         adj_rep_vote = Republican_Prediction/(Democrat_Prediction + Republican_Prediction) *100,
+         margin = adj_dem_vote - adj_rep_vote) |>
+  select(state, adj_dem_vote, adj_rep_vote, margin)
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+swing_state_data_dems <- adjusted_ensemble_predictions %>%
+  mutate(state = tolower(state))
+
+us_states <- map_data("state")
+
+swing_map_data <- us_states %>%
+  left_join(swing_state_data_dems, by = c("region" = "state"))
+
+
+map <- ggplot(data = swing_map_data, aes(x = long, y = lat, group = group, fill = margin)) +
+  geom_polygon(color = "white") +
+  scale_fill_gradient2(low = "darkred", mid = "white", high = "darkblue", midpoint = 0, 
+                       name = "Dem. Voting Margin (%)") +
+  theme_minimal() +
+  coord_fixed(1.3) +
+  labs(title = "2024 Swing State Voting Margins",
+       subtitle = "Shaded by predicted Democratic (blue) or Republican (red) vote margins") +
+  theme(
+    axis.line = element_blank(),        
+    axis.text = element_blank(),       
+    axis.ticks = element_blank(),      
+    axis.title = element_blank(),      
+    panel.grid = element_blank()     
+  )
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pop_vote <- read_csv("popvote_1948_2020.csv")
+pop_vote1 <- pop_vote |>
+  select(year,party,pv2p,incumbent_party, juneapp)|> 
+  filter(party == "democrat") 
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_polls <- read_csv("national_polls_1968-2024.csv")
+weighted_polling <- nat_polls |>
+  filter(party == "DEM") |>
+  group_by(year) |>
+  filter(weeks_left < 9 & weeks_left >= 5) |>
+ summarize(weighted_avg_poll = mean(poll_support)) |>
+  left_join(pop_vote1, by = "year") 
+```
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+fred_econ <- read_csv("fred_econ.csv") 
+fred_adjusted <- fred_econ |>
+  filter(year > 1958) |>
+  mutate(unemployment_growth_quarterly = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(quarter == 2) |>
+  mutate(RDPI_growth_annually = (RDPI - lag(RDPI, 1)) / lag(RDPI, 1) * 100) |> 
+  mutate(sp500_growth_quarterly = ((sp500_adj_close - sp500_open)) / sp500_open * 100) |>
+  mutate(sp500_growth_anually = (sp500_adj_close - lag(sp500_adj_close, 1)) / lag(sp500_adj_close, 1) * 100) |> 
+  mutate(unemployment_growth_anually = (unemployment - lag(unemployment, 1)) / lag(unemployment, 1) * 100) |>
+  filter(year >= 1960 & year != 2020 & year %% 4 == 0) |> #exclude 2020 since it such an outlier
+  select(year, RDPI_growth_quarterly, GDP_growth_quarterly)
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+model_one_data <- weighted_polling |>
+  left_join(fred_adjusted, by = "year") |> 
+  mutate(incumbent_party = ifelse(incumbent_party == "TRUE", 1, 0)) 
+model_one_data_p <- model_one_data |> 
+  filter(year > 2020)
+model_one_data_r <- model_one_data |> 
+  filter(year < 2020)
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+model_one <- lm(pv2p ~ weighted_avg_poll + RDPI_growth_quarterly + incumbent_party, data = model_one_data_r)
+
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_model_one <- predict(model_one, model_one_data_p, interval = "prediction")
+```
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+pred_model_one_df <- as.data.frame(pred_model_one)
+colnames(pred_model_one_df) <- c("Prediction", "Lower Bound", "Upper Bound")
+pred_model_one_df <- data.frame( #Used ChatGPT to add % signs and use sjPLot
+  Prediction = sprintf("%.2f%%", pred_model_one_df$Prediction),
+  `Lower Bound` = sprintf("%.2f%%", pred_model_one_df$`Lower Bound`),
+  `Upper Bound` = sprintf("%.2f%%", pred_model_one_df$`Upper Bound`)
+)
+
+lm_predictions <- predict(model_one, model_one_data_r)
+
+lm_mse <- mean((model_one_data_r$pv2p - lm_predictions)^2)
+
+nat_model <- tab_model(model_one, 
+                       show.se = TRUE, 
+                       title = paste("Linear Regression Model for Democrat Two Party Vote Share\n(In-sample MSE:", sprintf("%.4f", lm_mse), ")"),
+                       dv.labels = "Democrat National Two Party Vote Share",  
+                       pred.labels = c("Weighted Avg. Poll", "RDPI Growth Quarterly", "Incumbent Party"))
+
+nat_pred <- tab_df(pred_model_one_df, 
+       title = "2024 Democrat Two Party Vote Share via Linear Regression",
+       show.rownames = FALSE)
+```
+
+
+
+
+# Introduction
+
+# National Two Party Vote Share
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+nat_pred
+
+```
+
+
+# Linear Model
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+print(paste("In-sample MSE for Optimized LM Model:", b_model_in_sample_mse))
+print(paste("Out-sample MSE for Optimized LM Model:", b_model_out_sample_mse))
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+tab_model(b_model, 
+          title = "Summary of Democrat Vote Share Model", 
+          dv.labels = "", 
+          show.p = FALSE,
+          show.ci = FALSE,
+          show.se = TRUE,
+          show.r2 = FALSE)    
+```
+
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+adjusted_lm_predictions <- combined_predictions_lm |>
+  mutate(
+    adj_dem_vote = paste0(round(Democrat_Prediction / (Democrat_Prediction + Republican_Prediction) * 100, 2), "%"),
+    adj_rep_vote = paste0(round(Republican_Prediction / (Democrat_Prediction + Republican_Prediction) * 100, 2), "%"),
+    margin = paste0(round(Democrat_Prediction / (Democrat_Prediction + Republican_Prediction) * 100 - 
+                          Republican_Prediction / (Democrat_Prediction + Republican_Prediction) * 100, 2), "%")
+  ) |>
+  select(state, adj_dem_vote, adj_rep_vote, margin)
+
+
+colnames(adjusted_lm_predictions) <- c("State", "Dem Vote", "Rep Vote", "Dem Margin")
+
+
+tab_df(adjusted_lm_predictions, 
+       title = "LM Predictions",
+       show.rownames = FALSE, 
+       footnote = "Vote shares are adjusted and displayed as percentages.",
+       string.style = "none",  
+       col.header = FALSE)     
+```
+
+
+# Ensemble Model
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+print(paste("In-sample MSE for Ensemble Model (Democrat):", mse_ensemble_in_sample))
+print(paste("In-sample MSE for Ensemble Model (Republican):", mse_ensemble_in_sample_rep))
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+print(paste("Out-sample MSE for Ensemble Model (Democrat):", mse_ensemble_out_sample))
+print(paste("Out-sample MSE for Ensemble Model (Republican:", mse_ensemble_out_sample_rep))
+```
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+adjusted_ensemble_predictions <- combined_prediction_ensemble |>
+  mutate(
+    adj_dem_vote = paste0(round(Democrat_Prediction / (Democrat_Prediction + Republican_Prediction) * 100, 2), "%"),
+    adj_rep_vote = paste0(round(Republican_Prediction / (Democrat_Prediction + Republican_Prediction) * 100, 2), "%"),
+    margin = paste0(round(Democrat_Prediction / (Democrat_Prediction + Republican_Prediction) * 100 - 
+                          Republican_Prediction / (Democrat_Prediction + Republican_Prediction) * 100, 2), "%")
+  ) |>
+  select(state, adj_dem_vote, adj_rep_vote, margin)
+
+
+colnames(adjusted_ensemble_predictions) <- c("State", "Dem Vote", "Rep  Vote", "Dem Margin")
+
+
+tab_df(adjusted_ensemble_predictions, 
+       title = "Ensemble Predictions",
+       show.rownames = FALSE, 
+       footnote = "Vote shares are adjusted and displayed as percentages.",
+       string.style = "none",  
+       col.header = FALSE) 
+```
+
+
+```{r, echo= FALSE, message = FALSE, warning=FALSE}
+map
+```
+

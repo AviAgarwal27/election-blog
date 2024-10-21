@@ -6,14 +6,21 @@
     <description>Recent content in Posts on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 14 Oct 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 21 Oct 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Post #7: State Level Predictions</title>
+      <link>https://example.org/post/2024/10/21/super-ensembling-simulations/</link>
+      <pubDate>Mon, 21 Oct 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/10/21/super-ensembling-simulations/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;&#xA;&lt;h1 id=&#34;national-two-party-vote-share&#34;&gt;National Two Party Vote Share&lt;/h1&gt;&#xA;&lt;table style=&#34;border-collapse:collapse; border:none;&#34;&gt;&#xD;&#xA;&lt;caption style=&#34;font-weight: bold; text-align:left;&#34;&gt;2024 Democrat Two Party Vote Share via Linear Regression&lt;/caption&gt;&#xD;&#xA;&lt;tr&gt;&#xD;&#xA;&lt;th style=&#34;border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; &#34;&gt;Prediction&lt;/th&gt;&#xD;&#xA;&lt;th style=&#34;border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; &#34;&gt;Lower.Bound&lt;/th&gt;&#xD;&#xA;&lt;th style=&#34;border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; &#34;&gt;Upper.Bound&lt;/th&gt;&#xD;&#xA;&lt;/tr&gt;&#xD;&#xA;&lt;tr&gt;&#xD;&#xA;&lt;td style=&#34; padding:0.2cm; text-align:left; vertical-align:top; text-align:left; border-bottom: double; &#34;&gt;53.31%&lt;/td&gt;&#xD;&#xA;&lt;td style=&#34; padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; &#34;&gt;46.57%&lt;/td&gt;&#xD;&#xA;&lt;td style=&#34; padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; &#34;&gt;60.05%&lt;/td&gt;&#xD;&#xA;&lt;/tr&gt;&#xD;&#xA;&lt;/table&gt;&#xD;&#xA;&lt;h1 id=&#34;linear-model&#34;&gt;Linear Model&lt;/h1&gt;&#xA;&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;In-sample MSE for Optimized LM Model: 1.77876259651781&amp;quot;&#xD;&#xA;&lt;/code&gt;&lt;/pr</description>
+    </item>
     <item>
       <title>Week #6: Improving Electoral College Model</title>
       <link>https://example.org/post/2024/10/14/week-6-improving-model-spending/</link>
       <pubDate>Mon, 14 Oct 2024 00:00:00 +0000</pubDate>
       <guid>https://example.org/post/2024/10/14/week-6-improving-model-spending/</guid>
-      <description>&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;swing_map_data &amp;lt;- as.data.frame(elec_college_results_dems)&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;swing_states_data_dems &amp;lt;- data.frame(&#xD;&#xA;  state = swing_state_data_test$state,&#xD;&#xA;  margin = swing_map_data$fit)&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;swing_state_data_dems &amp;lt;- swing_states_data_dems %&amp;gt;%&#xD;&#xA;  mutate(state = tolower(state))&#xD;&#xA;&#xD;&#xA;us_states &amp;lt;- map_data(&amp;quot;state&amp;quot;)&#xD;&#xA;&#xD;&#xA;swing_map_data &amp;lt;- us_states %&amp;gt;%&#xD;&#xA;  left_join(swing_state_data_dems, by = c(&amp;quot;region&amp;quot; = &amp;quot;state&amp;quot;))&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;map &amp;lt;- ggplot(data = swing_map_data, aes(x = long, y = lat, group = group, fill = margin)) +&#xD;&#xA;  geom_polygon(color = &amp;quot;white&amp;quot;) +&#xD;&#xA;  scale_fill_gradient2(low = &amp;quot;darkred&amp;quot;, mid = &amp;quot;white&amp;quot;, high = &amp;quot;darkblue&amp;quot;, midpoint = 50, &#xD;&#xA;                       name = &amp;quot;Dem. Voting Margin (%)&amp;quot;) +&#xD;&#xA;  theme_minimal() +&#xD;&#xA;  coord_fixed(1.3) +&#xD;&#xA;  labs(title = &amp;quot;2024 Swing State Voting Margins&amp;quot;,&#xD;&#xA;       subtitle = &amp;quot;Shaded by predicted Democratic (blue) or Republican (red) vote margins&amp;quot;) +&#xD;&#xA;  theme(&#xD;&#xA;    axis.line = element_blank(),        # Remove axis lines&#xD;&#xA;    axis.text = element_blank(),        # Remove axis text&#xD;&#xA;    axis.ticks = element_blank(),       # Remove axis ticks&#xD;&#xA;    axis.title = element_blank(),       # Remove axis titles&#xD;&#xA;    panel.grid = element_blank()        # Remove grid lines&#xD;&#xA;  )&#xD;&#xA;&lt;/code&gt;&lt;/pr</description>
+      <description></description>
     </item>
     <item>
       <title>Post #5: State Level Predictions</title>
