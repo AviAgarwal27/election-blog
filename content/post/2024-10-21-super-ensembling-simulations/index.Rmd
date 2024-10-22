@@ -674,19 +674,34 @@ nat_pred <- tab_df(pred_model_one_df,
 
 # National Two Party Vote Share
 
+Given the limited role of the national popular vote in determining the outcome of U.S. elections, I have decided to retain the model I presented in Week 5, despite its acknowledged flaws, which I addressed in last week’s post. I am unlikely to update this prediction further and will instead focus on my state-level model.
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 nat_pred
 
 ```
 
 
+
 # Linear Model
+
+This week, I made significant quality improvements to my linear model, which has evolved since Week 5. First, I updated the polling data to reflect the most recent results. Instead of using an average polling score across all weeks, I replaced it with an average from the most recent polling week.
+
+The first major improvement was the addition of lagged vote shares from the two previous election cycles as a covariate in my model. Historical data tends to be a strong predictor of future outcomes, and I observed a reduction in in-sample MSE after incorporating this variable. The second key update involved changing the national-level economic variable. Over the past two weeks, I used Quarter 2 growth in real disposable income, even though my earlier analysis (in Week 2) indicated that Quarter 2 unemployment was a better indicator. After testing which model resulted in a lower in-sample MSE, I reverted to using unemployment growth.
+
+Previously, my model only used data from elections up to 2016, excluding 2020 due to the economic outliers caused by the pandemic. However, I trained the model in this iteration using data only up to 2012 so I could use the 2016 election to evaluate out-of-sample MSE. I will explain the necessity of out-of-sample MSE later.  The exclusion of a solid Republican electoral college victory from the training set may have biased this model toward the Democrats compared to last week’s version.
+
+The most significant change, however, lies in the methodology for predicting the two-party vote share of a state. Previously, I relied solely on data filtered to the Democratic party, which resulted in unconstrained predictions. If I built the same model for Republicans, the combined predicted vote shares could exceed 100%. Moreover, in extreme cases, a state could hypothetically surpass 100% vote share for one party, though this was unlikely in swing states. To address this, I duplicated the model for Republicans, predicted their vote shares, and then rescaled the predicted Democratic and Republican shares to sum to 100%, providing a more accurate margin.
+
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 print(paste("In-sample MSE for Optimized LM Model:", b_model_in_sample_mse))
 print(paste("Out-sample MSE for Optimized LM Model:", b_model_out_sample_mse))
 ```
 
+
+The immediate improvement is clear: the in-sample MSE dropped from 5.55 last week to less than 1.8 this week. The model performed well when predicting the 2016 election with an out-of-sample MSE of 3.67. These reductions in MSE suggest that this model is more robust than last week’s, though the exclusion of 2016 could also contribute to the improvements.
 ```{r, echo= FALSE, message = FALSE, warning=FALSE}
 tab_model(b_model, 
           title = "Summary of Democrat Vote Share Model", 
@@ -720,8 +735,17 @@ tab_df(adjusted_lm_predictions,
        col.header = FALSE)     
 ```
 
+For the 2024 predictions, this model flips Georgia from Trump to Harris by a margin of 0.5 points, whereas last week’s model predicted a narrow Trump win. Interestingly, for the other swing states where the expected winner remained the same—Nevada, Wisconsin, Michigan, and Pennsylvania for Harris, and Arizona and North Carolina for Trump—the margin of victory increased for both parties compared to last week. I am uncertain which specific model adjustment caused this, though I believe the addition of lagged vote share as a covariate played a role.
+
 
 # Ensemble Model
+
+While I believe my linear model is strong, I thought I could enhance its accuracy and reduce overfitting by creating an ensemble model that combines multiple models. As a result, I developed an ensemble model using three distinct models. The first model focuses solely on fundamentals, excluding polling altogether. It is similar to the linear model but without polling-based covariates, using Q2 real disposable income growth as the sole economic indicator. The second model relies entirely on polling, using the two trend variables and the average polling from the most recent week (currently week 3). The third model is identical to the second one.
+
+Using the 2016 election results, I applied constrained optimization to determine the weights for each model. I observed that for Democrats, the third model tended to yield disproportionately higher predictions, leading to it being weighted more heavily. Similarly, the first model had a higher weight for Republicans.
+
+After developing the ensemble model, I calculated the in-sample MSE using the training data and the out-of-sample MSE using the 2016 data. As expected from a supervised learning model, the in-sample MSE was higher than that of the linear model, while the out-of-sample MSE was lower.
+
 
 ```{r, echo= FALSE, message = FALSE, warning=FALSE}
 print(paste("In-sample MSE for Ensemble Model (Democrat):", mse_ensemble_in_sample))
@@ -755,8 +779,11 @@ tab_df(adjusted_ensemble_predictions,
        col.header = FALSE) 
 ```
 
+For the 2024 predictions in swing states, the model assigns Nevada, Pennsylvania, Wisconsin, and Michigan to Harris, while Trump is projected to win Arizona, Georgia, and North Carolina. This would result in Vice President Harris winning the electoral college with 276 votes to Trump’s 262.
 
 ```{r, echo= FALSE, message = FALSE, warning=FALSE}
 map
 ```
 
+
+Overall, I’m pleased with the improvements the ensemble model brings to my predictions, and I plan to continue using it in the future. Additionally, I hope to integrate a regularization method for polling and further improve the model with simulations to estimate likelihood of either candidate winning or losing. Thanks!
