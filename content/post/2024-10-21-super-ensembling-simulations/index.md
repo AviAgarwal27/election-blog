@@ -393,7 +393,7 @@ After developing the ensemble model, I calculated the in-sample MSE using the tr
 </tr>
 </table>
 
-For the 2024 predictions in swing states, the model assigns Nevada, Pennsylvania, Wisconsin, and Michigan to Harris, while Trump is projected to win Arizona, Georgia, and North Carolina. This would result in Vice President Harris winning the electoral college with 276 votes to Trump’s 262.
+For the 2024 predictions in swing states, the model assigns Pennsylvania, Wisconsin, and Michigan to Harris, while Trump is projected to win Arizona, Nevada, Georgia, and North Carolina. This would result in Vice President Harris winning the electoral college with 270 votes to Trump’s 268.
 
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-59-1.png" width="672" />
 
