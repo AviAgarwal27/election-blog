@@ -241,7 +241,7 @@ for (i in swing_states) { #used GPT to help write this function
   weights_dem <- solution_prob$getValue(beta)
   
   # Store the weights in the list
-  print(weights_dem)
+
   state_weights[[i]] <- weights_dem
   
 #  print(sum(state_weights[[i]]))
@@ -287,7 +287,7 @@ swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", 
 # Loop through each swing state
 for (i in swing_states) {
   
-  print(i)
+
   
    # Filter the training data to include only Florida and the target swing state
   state_train_data <- swing_state_data_train |> 
@@ -335,8 +335,6 @@ for (i in swing_states) {
   # Calculate Democratic prediction as weighted sum of model predictions
   prediction_dem <- as.vector(predictions %*% weights_dem)
   
-  print(prediction_dem)
-  print(state_test_data_2020$D_pv2p[2])
   
     state_test_data_2020 <- swing_state_data_true |>
     filter( state == i)
@@ -358,7 +356,7 @@ mse_results_df <- do.call(rbind, mse_results)
 
 in_MSE <- tab_df(
   mse_results_df,
-  title = "In-Sample MSE for Democratic Predictions by Swing State (2020 Data)",
+  title = "In-Sample MSE for Democratic Predictions by Swing State (2016 Data)",
   digits = 4,                # Rounds MSE values to four decimal places
   show.rownames = FALSE,      # Hides row numbers for a cleaner look
   CSS = list(css.table = "width: 60%;", css.caption = "font-weight: bold; text-align: center;")
@@ -382,7 +380,7 @@ for (i in swing_states) {
   filter(year == 2020)
   
   
-  print(i)
+
   
    # Filter the training data to include only Florida and the target swing state
   state_train_data <- swing_state_data_train |> 
@@ -430,9 +428,7 @@ for (i in swing_states) {
   # Calculate Democratic prediction as weighted sum of model predictions
   prediction_dem <- as.vector(predictions %*% weights_dem)
   
-  print(prediction_dem)
-  print(state_test_data_2020$D_pv2p[2])
-  
+
     state_test_data_2020 <- swing_state_data_true |>
     filter( state == i)
   
@@ -455,7 +451,7 @@ mse_results_df <- do.call(rbind, mse_results)
 
 out_MSE <- tab_df(
   mse_results_df,
-  title = "In-Sample MSE for Democratic Predictions by Swing State (2020 Data)",
+  title = "Out-of-Sample MSE for Democratic Predictions by Swing State (2020 Data)",
   digits = 4,                # Rounds MSE values to four decimal places
   show.rownames = FALSE,      # Hides row numbers for a cleaner look
   CSS = list(css.table = "width: 60%;", css.caption = "font-weight: bold; text-align: center;")
@@ -622,7 +618,7 @@ for (i in swing_states) {
   prediction_2024_rep <- as.vector(predictions_matrix_2024_rep[2, ] %*% weights_rep)
   #prediction_2024_fl <- predictions_matrix_2024 %*% weights_dem
 
-  print(prediction_2024_rep)
+
   
   predictions_2024_rep[[i]] <- data.frame(state = i, prediction_2024_rep = prediction_2024_rep)
 }
