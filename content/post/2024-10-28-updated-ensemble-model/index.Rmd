@@ -842,13 +842,39 @@ nat_pred <- tab_df(pred_model_one_df,
        show.rownames = FALSE)
 ```
 
+# Introoduction
+This week, most of the work focused on updating last week’s ensemble model to create weights for individual states. The adjustments were more challenging than expected, taking additional time and limiting other updates.
+
+# National Two-Party Vote Share
+
+This model remains the same as in previous weeks, predicting that VP Harris will win by 3.31 percentage points.
+Linear State Model
+
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 nat_pred
 ```
 
+# Linear Model
+
+The primary adjustment here was adding updated polling data and removing the lagged vote share from two elections ago. I felt this change was necessary since many of the states in question (Georgia, Arizona, North Carolina) were not considered swing states in 2016, and significant demographic shifts have since altered the electorate, making the 2016 vote share an unreliable predictor for 2024. Beyond these changes, the model maintains last week’s approach, regressing over polling, fundamentals, and economic factors.
+
+The model still predicts a win for Harris in Michigan, Nevada, Wisconsin, and Pennsylvania, though with narrower margins than last week, likely due to a tighter polling spread. This week, however, the model flips Georgia back to Trump by a razor-thin margin of 0.14 percentage points, and overall, there’s a slight shift in predicted vote shares toward Trump across all states.
+Ensemble Model
+
+
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 lm_pred
 ```
+# Ensemble Model
+
+Last week’s model had a significant flaw: it used the same weights across all states instead of creating state-specific weights. I addressed this by creating a function to apply individualized weights for each state. Additionally, I realized that excluding an intercept since week four might have reduced prediction accuracy. To resolve this, I’ve reintroduced an intercept using Florida as the baseline.
+
+The model was trained on elections up to 2016, with weights fitted to 2016 data. This week, I also added 2019 projections of economic factors to 2020 data to enhance prediction accuracy, though I kept 2020 data isolated to calculate a true out-of-sample MSE for testing accuracy.
+
+These adjustments substantially improved the in-sample MSE, with most states now below 1. However, I suspect this improvement is due to overfitting to 2016 data rather than genuine model strength, given the high out-of-sample MSE. While states like Georgia and North Carolina appear accurate, this may be due to random chance rather than predictive accuracy.
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 in_MSE
@@ -857,6 +883,11 @@ in_MSE
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 out_MSE
 ```
+
+The main issue with this model is likely due to restrictive weight constraints. Currently, the model applies a Beta between 0 and 1, preventing negative weights. This constraint may be overly limiting, as two of the regression models are often minimized to nearly zero, relying mainly on a single model. Optimizing these constraints and weights should improve predictive accuracy.
+
+At present, the ensemble model predicts a win for Harris only in Nevada. Nearly all states have shifted towards Trump, with margins between 1.5 and 2.5 points, except North Carolina, which shows a more substantial lead for Trump at -7.06 points.
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 e_pred

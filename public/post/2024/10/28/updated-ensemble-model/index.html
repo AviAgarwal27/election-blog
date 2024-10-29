@@ -34,87 +34,11 @@
 </div>
 
 <main>
-<pre><code>##            [,1]
-## [1,] 0.45206657
-## [2,] 0.54984103
-## [3,] 0.02857024
-##           [,1]
-## [1,] 0.7357583
-## [2,] 0.1781891
-## [3,] 0.1462848
-##               [,1]
-## [1,] -1.008197e-19
-## [2,]  9.708179e-01
-## [3,] -7.521749e-20
-##           [,1]
-## [1,] 0.1141483
-## [2,] 0.3340155
-## [3,] 0.5794384
-##           [,1]
-## [1,] 0.2115558
-## [2,] 0.4861141
-## [3,] 0.3223469
-##               [,1]
-## [1,] -9.931070e-20
-## [2,]  4.545288e-02
-## [3,]  1.000000e+00
-##               [,1]
-## [1,] -1.198229e-19
-## [2,]  9.693694e-01
-## [3,] -1.169093e-21
-</code></pre>
-<pre><code>## [1] &quot;Arizona&quot;
-## [1] 49.38116
-## [1] 49.38116
-## [1] &quot;Georgia&quot;
-## [1] 47.33883
-## [1] 47.33883
-## [1] &quot;Michigan&quot;
-## [1] 50.25262
-## [1] 49.88233
-## [1] &quot;Nevada&quot;
-## [1] 51.29371
-## [1] 51.29371
-## [1] &quot;North Carolina&quot;
-## [1] 48.09625
-## [1] 48.09625
-## [1] &quot;Pennsylvania&quot;
-## [1] 50.34844
-## [1] 49.62446
-## [1] &quot;Wisconsin&quot;
-## [1] 50.42181
-## [1] 49.59201
-</code></pre>
-<pre><code>## [1] &quot;Arizona&quot;
-## [1] 48.53305
-## [1] 48.30525
-## [1] &quot;Georgia&quot;
-## [1] 49.527
-## [1] 50.11933
-## [1] &quot;Michigan&quot;
-## [1] 54.50334
-## [1] 51.41356
-## [1] &quot;Nevada&quot;
-## [1] 55.05035
-## [1] 51.22312
-## [1] &quot;North Carolina&quot;
-## [1] 49.19369
-## [1] 49.31582
-## [1] &quot;Pennsylvania&quot;
-## [1] 56.5605
-## [1] 50.58921
-## [1] &quot;Wisconsin&quot;
-## [1] 53.88811
-## [1] 50.31906
-</code></pre>
-<pre><code>## [1] 50.5873
-## [1] 51.84354
-## [1] 54.19823
-## [1] 50.41905
-## [1] 56.09717
-## [1] 53.12924
-## [1] 54.39335
-</code></pre>
+<h1 id="introoduction">Introoduction</h1>
+<p>This week, most of the work focused on updating last week’s ensemble model to create weights for individual states. The adjustments were more challenging than expected, taking additional time and limiting other updates.</p>
+<h1 id="national-two-party-vote-share">National Two-Party Vote Share</h1>
+<p>This model remains the same as in previous weeks, predicting that VP Harris will win by 3.31 percentage points.
+Linear State Model</p>
 <table style="border-collapse:collapse; border:none;">
 <caption style="font-weight: bold; text-align:left;">2024 Democrat Two Party Vote Share via Linear Regression</caption>
 <tr>
@@ -128,6 +52,10 @@
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">60.05%</td>
 </tr>
 </table>
+<h1 id="linear-model">Linear Model</h1>
+<p>The primary adjustment here was adding updated polling data and removing the lagged vote share from two elections ago. I felt this change was necessary since many of the states in question (Georgia, Arizona, North Carolina) were not considered swing states in 2016, and significant demographic shifts have since altered the electorate, making the 2016 vote share an unreliable predictor for 2024. Beyond these changes, the model maintains last week’s approach, regressing over polling, fundamentals, and economic factors.</p>
+<p>The model still predicts a win for Harris in Michigan, Nevada, Wisconsin, and Pennsylvania, though with narrower margins than last week, likely due to a tighter polling spread. This week, however, the model flips Georgia back to Trump by a razor-thin margin of 0.14 percentage points, and overall, there’s a slight shift in predicted vote shares toward Trump across all states.
+Ensemble Model</p>
 <table style="width: 50%;">
 <caption style="font-weight: bold; text-align: center;">LM Model Predicted Vote Share</caption>
 <tr>
@@ -179,8 +107,12 @@
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">3.51</td>
 </tr>
 </table>
+# Ensemble Model
+<p>Last week’s model had a significant flaw: it used the same weights across all states instead of creating state-specific weights. I addressed this by creating a function to apply individualized weights for each state. Additionally, I realized that excluding an intercept since week four might have reduced prediction accuracy. To resolve this, I’ve reintroduced an intercept using Florida as the baseline.</p>
+<p>The model was trained on elections up to 2016, with weights fitted to 2016 data. This week, I also added 2019 projections of economic factors to 2020 data to enhance prediction accuracy, though I kept 2020 data isolated to calculate a true out-of-sample MSE for testing accuracy.</p>
+<p>These adjustments substantially improved the in-sample MSE, with most states now below 1. However, I suspect this improvement is due to overfitting to 2016 data rather than genuine model strength, given the high out-of-sample MSE. While states like Georgia and North Carolina appear accurate, this may be due to random chance rather than predictive accuracy.</p>
 <table style="width: 60%;">
-<caption style="font-weight: bold; text-align: center;">In-Sample MSE for Democratic Predictions by Swing State (2020 Data)</caption>
+<caption style="font-weight: bold; text-align: center;">In-Sample MSE for Democratic Predictions by Swing State (2016 Data)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; ">state</th>
 <th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">mse_dem</th>
@@ -215,7 +147,7 @@
 </tr>
 </table>
 <table style="width: 60%;">
-<caption style="font-weight: bold; text-align: center;">In-Sample MSE for Democratic Predictions by Swing State (2020 Data)</caption>
+<caption style="font-weight: bold; text-align: center;">Out-of-Sample MSE for Democratic Predictions by Swing State (2020 Data)</caption>
 <tr>
 <th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; ">state</th>
 <th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">mse_dem</th>
@@ -249,6 +181,8 @@
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">12.7381</td>
 </tr>
 </table>
+<p>The main issue with this model is likely due to restrictive weight constraints. Currently, the model applies a Beta between 0 and 1, preventing negative weights. This constraint may be overly limiting, as two of the regression models are often minimized to nearly zero, relying mainly on a single model. Optimizing these constraints and weights should improve predictive accuracy.</p>
+<p>At present, the ensemble model predicts a win for Harris only in Nevada. Nearly all states have shifted towards Trump, with margins between 1.5 and 2.5 points, except North Carolina, which shows a more substantial lead for Trump at -7.06 points.</p>
 <table style="width: 50%;">
 <caption style="font-weight: bold; text-align: center;">Ensemble Model Predicted Vote Share</caption>
 <tr>
