@@ -60,6 +60,48 @@ tags: []
 
 
 
+```
+## [1] "Arizona"
+## [1] 47.49625
+## [1] 50.15683
+## [1] 2.660585
+## [1] "Georgia"
+## [1] 47.42172
+## [1] 50.11933
+## [1] 2.697607
+## [1] "Michigan"
+## [1] 52.6748
+## [1] 51.41356
+## [1] 1.261239
+## [1] "Nevada"
+## [1] 54.51226
+## [1] 51.22312
+## [1] 3.289144
+## [1] "North Carolina"
+## [1] 48.77503
+## [1] 49.31582
+## [1] 0.5407834
+## [1] "Pennsylvania"
+## [1] 53.37993
+## [1] 50.58921
+## [1] 2.790725
+## [1] "Wisconsin"
+## [1] 53.16148
+## [1] 50.31906
+## [1] 2.842421
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -126,45 +168,45 @@ Ensemble Model
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Arizona</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.78</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.22</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-2.43</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.29</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.71</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-1.42</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Georgia</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.93</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.07</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-0.14</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.24</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.76</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.48</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Michigan</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.66</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.34</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">3.32</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.87</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.13</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">3.75</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Nevada</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.69</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.31</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">3.38</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.85</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.15</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">3.70</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">North Carolina</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.03</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.97</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-1.95</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.25</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.75</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-1.50</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Pennsylvania</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.67</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.33</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">3.33</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">52.05</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">47.95</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">4.09</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; border-bottom: double; ">Wisconsin</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">51.76</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">48.24</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">3.51</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">52.07</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">47.93</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">4.13</td>
 </tr>
 </table>
 # Ensemble Model
@@ -176,77 +218,9 @@ The model was trained on elections up to 2016, with weights fitted to 2016 data.
 These adjustments substantially improved the in-sample MSE, with most states now below 1. However, I suspect this improvement is due to overfitting to 2016 data rather than genuine model strength, given the high out-of-sample MSE. While states like Georgia and North Carolina appear accurate, this may be due to random chance rather than predictive accuracy.
 
 
-<table style="width: 60%;">
-<caption style="font-weight: bold; text-align: center;">In-Sample MSE for Democratic Predictions by Swing State (2016 Data)</caption>
-<tr>
-<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; ">state</th>
-<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">mse_dem</th>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Arizona</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">1.6159</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Georgia</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.0000</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Michigan</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.1371</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Nevada</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.0000</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">North Carolina</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.0000</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Pennsylvania</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.5241</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; border-bottom: double; ">Wisconsin</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">0.6886</td>
-</tr>
-</table>
 
-<table style="width: 60%;">
-<caption style="font-weight: bold; text-align: center;">Out-of-Sample MSE for Democratic Predictions by Swing State (2020 Data)</caption>
-<tr>
-<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; text-align:left; ">state</th>
-<th style="border-top: double; text-align:center; font-style:italic; font-weight:normal; padding:0.2cm; border-bottom:1px solid black; ">mse_dem</th>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Arizona</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">2.6367</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Georgia</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.3509</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Michigan</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">9.5468</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Nevada</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">14.6477</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">North Carolina</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">0.0149</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Pennsylvania</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">35.6564</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; border-bottom: double; ">Wisconsin</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">12.7381</td>
-</tr>
-</table>
+
+
 
 The main issue with this model is likely due to restrictive weight constraints. Currently, the model applies a Beta between 0 and 1, preventing negative weights. This constraint may be overly limiting, as two of the regression models are often minimized to nearly zero, relying mainly on a single model. Optimizing these constraints and weights should improve predictive accuracy.
 
@@ -263,45 +237,45 @@ At present, the ensemble model predicts a win for Harris only in Nevada. Nearly 
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Arizona</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.21</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.79</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-1.58</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">47.06</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">52.94</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-5.88</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Georgia</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.41</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.59</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-1.17</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">45.64</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">54.36</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-8.71</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Michigan</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.96</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.04</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-2.08</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.43</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.57</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">2.85</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Nevada</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">51.22</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">48.78</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">2.43</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.92</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.08</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-0.16</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">North Carolina</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">46.47</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">53.53</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-7.06</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">46.99</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">53.01</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-6.01</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">Pennsylvania</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.35</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.65</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-1.30</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">49.22</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">50.78</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; ">-1.55</td>
 </tr>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; border-bottom: double; ">Wisconsin</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">48.90</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">51.10</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">-2.21</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">51.02</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">48.98</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center; border-bottom: double; ">2.04</td>
 </tr>
 </table>
 

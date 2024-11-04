@@ -146,10 +146,10 @@ fred_adjusted <- fred_adjusted |>
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 swing_state_data_train <- swing_state_data |>
-  filter(year < 2016)
+  filter(year < 2012)
 
 swing_state_data_true <- swing_state_data |> 
-  filter(year == 2016)
+  filter(year == 2012)
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
@@ -231,7 +231,7 @@ for (i in swing_states) { #used GPT to help write this function
   
   # Define problem with constraints
   prob <- Problem(objective)
-  constraints(prob) <- list(beta >= 0, beta <= 1)
+  constraints(prob) <- list(beta >= 0, beta <= 1, sum(beta) == 1)
 
   
   # Solve the constrained regression problem
@@ -277,7 +277,7 @@ predictions_2024_df <- do.call(rbind, predictions_2024)
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-
+#####################################################################################################
 # List to store the MSE for each state
 mse_results <- list()
 
@@ -362,104 +362,13 @@ in_MSE <- tab_df(
   CSS = list(css.table = "width: 60%;", css.caption = "font-weight: bold; text-align: center;")
 )
 
-
-```
-
-```{r , echo= FALSE, message = FALSE, warning=FALSE}
-# List to store the MSE for each state
-mse_results <- list()
-
-swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
-
-
-
-
-# Loop through each swing state
-for (i in swing_states) {
-  swing_state_data_true <- swing_state_data |> 
-  filter(year == 2020)
-  
-  
-
-  
-   # Filter the training data to include only Florida and the target swing state
-  state_train_data <- swing_state_data_train |> 
-    mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
-    filter(state == "AAFlorida" | state == i)
-  
-  # Use only the specific swing state in the test data (exclude Florida from test predictions)
-  state_test_data <- swing_state_data_true |> 
-    mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
-    filter(state == "AAFlorida" | state == i)
-  
-
-  # Filter the test data for 2020, including only Florida and the target swing state
-  state_test_data_2020 <- swing_state_data_true |>
-    mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
-    filter(state == "AAFlorida" | state == i)
-  
-
-  mod_1 <- lm(
-    data = state_train_data, 
-    D_pv2p ~ state + D_pv2p_lag1 + incumbent_party + RDPI_growth_quarterly
-  )
-  
-  mod_2 <- lm(
-    data = state_train_data, 
-    D_pv2p ~ state + polling_trend_7_3 + polling_trend_12_8 + current_week
-  )
-  
-  mod_3 <- lm(
-    data = state_train_data, 
-    D_pv2p ~ state + polling_trend_7_3 + polling_trend_12_8 + D_pv2p_lag1 + 
-      D_pv2p_lag2 + current_week + incumbent_party + unemployment_growth_quarterly + dpi_inflation_adjusted
-  )
-  
-
-  pred_1 <- as.numeric(predict(mod_1, newdata = state_test_data_2020))
-  pred_2 <- as.numeric(predict(mod_2, newdata = state_test_data_2020))
-  pred_3 <- as.numeric(predict(mod_3, newdata = state_test_data_2020))
-  
-  
-  # Combine predictions for constrained regression (Democratic model)
-  predictions <- cbind(pred_1[2], pred_2[2], pred_3[2])
-  weights_dem <- state_weights[[i]] # Retrieve weights for Democratic model
-  
-  # Calculate Democratic prediction as weighted sum of model predictions
-  prediction_dem <- as.vector(predictions %*% weights_dem)
-  
-
-    state_test_data_2020 <- swing_state_data_true |>
-    filter( state == i)
-  
-  # Calculate MSE for Democratic prediction
-  mse_dem <- mean((state_test_data_2020$D_pv2p - prediction_dem)^2)
-  
-
-  
-  mse_results[[i]] <- data.frame(
-    state = i,
-    mse_dem = mse_dem
-  )
-  
-  
-}
-
-# Combine the MSE results into a single data frame
-mse_results_df <- do.call(rbind, mse_results)
-
-
-out_MSE <- tab_df(
-  mse_results_df,
-  title = "Out-of-Sample MSE for Democratic Predictions by Swing State (2020 Data)",
-  digits = 4,                # Rounds MSE values to four decimal places
-  show.rownames = FALSE,      # Hides row numbers for a cleaner look
-  CSS = list(css.table = "width: 60%;", css.caption = "font-weight: bold; text-align: center;")
-)
+#####################################################################################################
 ```
 
 
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
+#####################################################################################################
 swing_states <- c("Florida", "Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
 
 swing_state_polls_rep <- swing_state_polls |>
@@ -590,7 +499,7 @@ for (i in swing_states) {
   
   
   prob_rep <- Problem(objective_rep)
-  constraints(prob_rep) <- list(beta_rep >= 0, beta_rep <= 1)
+  constraints(prob_rep) <- list(beta_rep >= 0, beta_rep <= 1, sum(beta_rep) == 1)
 
   
   solution_prob_rep <- solve(prob_rep)
@@ -628,6 +537,154 @@ predictions_2024_df_rep <- do.call(rbind, predictions_2024_rep)
 
 
 ```
+
+
+
+
+
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
+# List to store the MSE for each state
+mse_results <- list()
+
+swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
+
+
+
+# Loop through each swing state
+for (i in swing_states) {
+  
+  print(i)
+  
+  swing_state_data_true <- swing_state_data |> 
+  filter(year == 2020)
+  
+   # Filter the training data to include only Florida and the target swing state
+  state_train_data <- swing_state_data_train |> 
+    mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
+    filter(state == "AAFlorida" | state == i)
+  
+  # Filter the test data for 2020, including only Florida and the target swing state
+  state_test_data_2020 <- swing_state_data_true |>
+    mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
+    filter(state == "AAFlorida" | state == i)
+  
+
+  mod_1 <- lm(
+    data = state_train_data, 
+    D_pv2p ~ state + D_pv2p_lag1 + incumbent_party + RDPI_growth_quarterly
+  )
+  
+  mod_2 <- lm(
+    data = state_train_data, 
+    D_pv2p ~ state + polling_trend_7_3 + polling_trend_12_8 + current_week
+  )
+  
+  mod_3 <- lm(
+    data = state_train_data, 
+    D_pv2p ~ state + polling_trend_7_3 + polling_trend_12_8 + D_pv2p_lag1 + 
+      D_pv2p_lag2 + current_week + incumbent_party + unemployment_growth_quarterly + dpi_inflation_adjusted
+  )
+  
+
+  pred_1 <- as.numeric(predict(mod_1, newdata = state_test_data_2020))
+  pred_2 <- as.numeric(predict(mod_2, newdata = state_test_data_2020))
+  pred_3 <- as.numeric(predict(mod_3, newdata = state_test_data_2020))
+  
+  
+  # Combine predictions for constrained regression (Democratic model)
+  predictions <- cbind(pred_1[2], pred_2[2], pred_3[2])
+  weights_dem <- state_weights[[i]] # Retrieve weights for Democratic model
+  
+
+  # Calculate Democratic prediction as weighted sum of model predictions
+  prediction_dem <- as.vector(predictions %*% weights_dem)
+  state_test_data_2020 <- swing_state_data_true |>
+  filter(state == i)
+  
+#####################################################################################################
+
+  
+  swing_state_data_true_rep <- swing_state_data_rep |> 
+  filter(year == 2020)
+  
+   # Filter the training data to include only Florida and the target swing state
+  state_train_data_rep <- swing_state_data_train_rep |> 
+    mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
+    filter(state == "AAFlorida" | state == i)
+  
+  # Filter the test data for 2020, including only Florida and the target swing state
+  state_test_data_2020_rep <- swing_state_data_true_rep |>
+    mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
+    filter(state == "AAFlorida" | state == i)
+  
+    mod_1_rep <- lm(
+    data = state_train_data_rep, 
+    R_pv2p ~ state + R_pv2p_lag1  + incumbent_party + RDPI_growth_quarterly
+  )
+  
+  mod_2_rep <- lm(
+    data = state_train_data_rep, 
+    R_pv2p ~ state + polling_trend_7_3 + polling_trend_12_8 + current_week
+  )
+  
+  mod_3_rep <- lm(
+    data = state_train_data_rep, 
+    R_pv2p ~ state + polling_trend_7_3 + polling_trend_12_8 + R_pv2p_lag1 + current_week + incumbent_party + unemployment_growth_quarterly + dpi_inflation_adjusted)
+  
+  pred_1_rep <- as.numeric(predict(mod_1_rep, newdata = state_test_data_2020_rep))
+  pred_2_rep <- as.numeric(predict(mod_2_rep, newdata = state_test_data_2020_rep))
+  pred_3_rep <- as.numeric(predict(mod_3_rep, newdata = state_test_data_2020_rep))
+  
+    # Combine predictions for constrained regression (Democratic model)
+  predictions_rep <- cbind(pred_1_rep[2], pred_2_rep[2], pred_3_rep[2])
+  weights_rep <- state_weights_rep[[i]] # Retrieve weights for Democratic model
+  
+
+  # Calculate Democratic prediction as weighted sum of model predictions
+  prediction_rep_rep <- as.vector(predictions_rep %*% weights_rep)
+  
+  state_test_data_2020_rep <- swing_state_data_true_rep |>
+  filter(state == i)
+  
+  pred_dem_share <-  (prediction_dem / (prediction_dem + prediction_rep_rep) *100 )
+  print(pred_dem_share)
+  
+  actual_margin <- state_test_data_2020$D_pv2p - state_test_data_2020_rep$R_pv2p
+  
+  print(state_test_data_2020$D_pv2p)
+  # Calculate MSE for Democratic prediction
+  
+  rmse_dem <- sqrt(mean((state_test_data_2020$D_pv2p - pred_dem_share)^2))
+  print(rmse_dem)
+  
+  mse_results[[i]] <- rmse_dem
+  
+  
+ 
+  
+  
+}
+
+# Combine the MSE results into a single data frame
+mse_results_df <- do.call(rbind, mse_results)
+
+
+
+#out_MSE <- tab_df(
+#  mse_results_df,
+#  title = "Out-of-Sample MSE for Democratic Predictions by Swing State (2020 Data)",
+#  digits = 4,                # Rounds MSE values to four decimal places
+#  show.rownames = FALSE,      # Hides row numbers for a cleaner look
+#  CSS = list(css.table = "width: 60%;", css.caption = "font-weight: bold; text-align: center;")
+#)
+```
+
+
+
+
+
+
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 ensemble_pred <- predictions_2024_df |>
@@ -877,11 +934,11 @@ These adjustments substantially improved the in-sample MSE, with most states now
 
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-in_MSE
+#in_MSE
 ```
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
-out_MSE
+#out_MSE
 ```
 
 The main issue with this model is likely due to restrictive weight constraints. Currently, the model applies a Beta between 0 and 1, preventing negative weights. This constraint may be overly limiting, as two of the regression models are often minimized to nearly zero, relying mainly on a single model. Optimizing these constraints and weights should improve predictive accuracy.

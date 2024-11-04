@@ -1,0 +1,28 @@
+
+
+
+```r
+swing_state_polls <- read_csv("state_polls_1968-2024(1).csv")
+```
+
+```
+## Rows: 206284 Columns: 9
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr  (3): state, party, candidate
+## dbl  (4): year, weeks_left, days_left, poll_support
+## lgl  (1): before_convention
+## date (1): poll_date
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
+```
+
+
+
+
+
