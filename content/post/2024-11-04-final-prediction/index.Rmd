@@ -53,7 +53,7 @@ swing_state_polls_dem <- swing_state_polls |>
   
   na.omit() |>
   
-  select(year, state, support_DEM_1,  support_REP_1, polling_trend_5_1, polling_trend_10_6, average_polling, current_week)
+  select(year, state, support_DEM_1,support_DEM_3, support_DEM_2,support_REP_1, polling_trend_5_1, polling_trend_10_6, average_polling, current_week)
 
 ```
 
@@ -245,18 +245,18 @@ for (state_name in swing_states) {
     
     test_year <- d_test_data$year
     
-    
     train_data <- bind_rows(d_train_data, fl_data) |>
       filter(year != test_year )
     
-    test_data <- bind_rows(d_test_data, fl_data) |>
-      filter(year == test_year ) 
     
-
-
+    test_data <- bind_rows(d_test_data, fl_data) |>
+      filter(year == test_year)  |>
+      arrange(desc(state == "AAFlorida"))
+  
+ 
   mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party,  data = train_data)
       
-  mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1 , data = train_data)
+  mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1 + support_DEM_2 + support_DEM_3, data = train_data)
     
   mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1  + D_pv2p_lag2 + support_DEM_1 +  polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
     
@@ -276,9 +276,9 @@ for (state_name in swing_states) {
     filter(state == "AAFlorida" | state == state_name) |>
     filter(year != 2024)
   
-  mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party,  data = train_data)
+ mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party,  data = train_data)
       
-  mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1, data = train_data)
+  mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1 + support_DEM_2 + support_DEM_3, data = train_data)
     
   mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1  + D_pv2p_lag2 + support_DEM_1 +  polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
   
@@ -304,7 +304,8 @@ for (state_name in swing_states) {
   
   state_test_data_2024 <- swing_state_data_test |>
     mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
-    filter(state == "AAFlorida" | state == state_name)
+    filter(state == "AAFlorida" | state == state_name) |> 
+    arrange(desc(state == "AAFlorida"))
   
   pred_1_2024 <- as.numeric(predict(mod_1, newdata = state_test_data_2024))
   pred_2_2024 <- as.numeric(predict(mod_2, newdata = state_test_data_2024))
@@ -320,7 +321,7 @@ for (state_name in swing_states) {
 }
 
 predictions_2024_df <- do.call(rbind, predictions_2024)
-#predictions_2024_df
+predictions_2024_df
 
 ```
 
@@ -421,7 +422,7 @@ rmse_df <- data.frame(
 
 # Display the table using kable for nicely formatted output
 in_rmse <- rmse_df %>%
-  kable("html", caption = "In-Sample RMSE for 2020 by State", digits = 4) %>%
+  kable("html", caption = "In-Sample RMSE for 2020 by State",row.names = FALSE, digits = 4) %>%
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
   column_spec(1, width = "8em", extra_css = "text-align: center;") %>%
   column_spec(2, width = "6em", extra_css = "text-align: center;")
@@ -507,7 +508,7 @@ rmse_df <- data.frame(
 
 # Display the table using kable for nicely formatted output
 out_rmse <- rmse_df %>%
-  kable("html", caption = "Out-of-Sample RMSE for 2020 by State", digits = 4) %>%
+  kable("html", caption = "Out-of-Sample RMSE for 2020 by State", row.names = FALSE, digits = 4) %>%
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
   column_spec(1, width = "8em", extra_css = "text-align: center;") %>%
   column_spec(2, width = "6em", extra_css = "text-align: center;")
@@ -805,18 +806,17 @@ sim_table <- win_counts %>%
 
 #Model 1
 
-$$
+
 \text{Democratic Vote Share (D_pv2p)} = \beta_0 + \beta_1 \text{ State } + \beta_2 \text{ Democratic Vote Share Lag 1 (D_pv2p_lag1)} + \beta_3 \text{ Democratic Vote Share Lag 2 (D_pv2p_lag2)} + \beta_4 \text{ Updated RDPI} \times \text{ Incumbent Party} + \beta_5 \text{ DPI Inflation Adjusted} \times \text{ Incumbent Party} + \epsilon
-$$
   
 # Model 2
-$$
+
 \text{Democratic Vote Share (D_pv2p)} = \beta_0 + \beta_1 \text{ State } + \beta_2 \text{ Polling Trend (Weeks 5-1) (polling_trend_5_1)} + \beta_3 \text{ Polling Trend (Weeks 10-6) (polling\_trend_10_6)} + \beta_4 \text{ Current Week Margin (current_week)} + \beta_5 \text{ Democratic Support (support_DEM_1)} + \epsilon
-$$
+
 # Model 3
-$$
+
 \text{Democratic Vote Share (D_pv2p)} = \beta_0 + \beta_1 \text{ State } + \beta_2 \text{ Democratic Vote Share Lag 1 (D_pv2p_lag1)} + \beta_3 \text{ Democratic Vote Share Lag 2 (D_pv2p_lag2)} + \beta_4 \text{ Democratic Support (support_DEM_1)} + \beta_5 \text{ Polling Trend (Weeks 5-1) (polling_trend_5_1)} + \beta_6 \text{ Polling Trend (Weeks 10-6) (polling_trend_10_6)} + \beta_7 \text{ DPI Inflation Adjusted} \times \text{ Incumbent Party} + \beta_8 \text{ Unemployment Growth Quarterly} \times \text{ Incumbent Party} + \beta_9 \text{ Updated RDPI} \times \text{ Incumbent Party} + \epsilon
-$$
+
 # Weights
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}

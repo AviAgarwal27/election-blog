@@ -27,22 +27,28 @@ tags: []
 
 <link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
 
+    ##                         state prediction_2024
+    ## Arizona               Arizona        47.79392
+    ## Georgia               Georgia        49.23295
+    ## Michigan             Michigan        51.41176
+    ## Nevada                 Nevada        51.68528
+    ## North Carolina North Carolina        49.24651
+    ## Pennsylvania     Pennsylvania        50.30364
+    ## Wisconsin           Wisconsin        50.68785
+
 \#Model 1
 
-$$
-\text{Democratic Vote Share (D_pv2p)} = \beta_0 + \beta_1 \text{ State } + \beta_2 \text{ Democratic Vote Share Lag 1 (D_pv2p_lag1)} + \beta_3 \text{ Democratic Vote Share Lag 2 (D_pv2p_lag2)} + \beta_4 \text{ Updated RDPI} \times \text{ Incumbent Party} + \beta_5 \text{ DPI Inflation Adjusted} \times \text{ Incumbent Party} + \epsilon
-$$
+= \_0 + \_1  + \_2  + \_3  + \_4  + \_5  +
 
 # Model 2
 
-$$
-\text{Democratic Vote Share (D_pv2p)} = \beta_0 + \beta_1 \text{ State } + \beta_2 \text{ Polling Trend (Weeks 5-1) (polling_trend_5_1)} + \beta_3 \text{ Polling Trend (Weeks 10-6) (polling\_trend_10_6)} + \beta_4 \text{ Current Week Margin (current_week)} + \beta_5 \text{ Democratic Support (support_DEM_1)} + \epsilon
-$$
-\# Model 3
-$$
-\text{Democratic Vote Share (D_pv2p)} = \beta_0 + \beta_1 \text{ State } + \beta_2 \text{ Democratic Vote Share Lag 1 (D_pv2p_lag1)} + \beta_3 \text{ Democratic Vote Share Lag 2 (D_pv2p_lag2)} + \beta_4 \text{ Democratic Support (support_DEM_1)} + \beta_5 \text{ Polling Trend (Weeks 5-1) (polling_trend_5_1)} + \beta_6 \text{ Polling Trend (Weeks 10-6) (polling_trend_10_6)} + \beta_7 \text{ DPI Inflation Adjusted} \times \text{ Incumbent Party} + \beta_8 \text{ Unemployment Growth Quarterly} \times \text{ Incumbent Party} + \beta_9 \text{ Updated RDPI} \times \text{ Incumbent Party} + \epsilon
-$$
-\# Weights
+= \_0 + \_1  + \_2  + \_3  + \_4  + \_5  +
+
+# Model 3
+
+= \_0 + \_1  + \_2  + \_3  + \_4  + \_5  + \_6  + \_7  + \_8  + \_9  +
+
+# Weights
 
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -70,10 +76,10 @@ Weight.Model.3
 Arizona
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.0000
+0.0281
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-1.0000
+0.9719
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
 0.0000
@@ -84,13 +90,13 @@ Arizona
 Georgia
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.0878
+0.1304
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.9122
+0.8381
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.0000
+0.0315
 </td>
 </tr>
 <tr>
@@ -98,13 +104,13 @@ Georgia
 Michigan
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.2227
+0.1293
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.4650
+0.6102
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.3123
+0.2604
 </td>
 </tr>
 <tr>
@@ -112,13 +118,13 @@ Michigan
 Nevada
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.3240
+0.1276
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.6032
+0.7298
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.0727
+0.1426
 </td>
 </tr>
 <tr>
@@ -126,13 +132,13 @@ Nevada
 North Carolina
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.4250
+0.3955
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.5750
+0.5703
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.0000
+0.0342
 </td>
 </tr>
 <tr>
@@ -140,13 +146,13 @@ North Carolina
 Pennsylvania
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.0922
+0.0312
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.9078
+0.9585
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.0000
+0.0104
 </td>
 </tr>
 <tr>
@@ -154,13 +160,13 @@ Pennsylvania
 Wisconsin
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.2659
+0.1537
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.3742
+0.6419
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
-0.3599
+0.2043
 </td>
 </tr>
 </tbody>
@@ -175,8 +181,6 @@ Wisconsin
 <thead>
 <tr>
 <th style="text-align:left;">
-</th>
-<th style="text-align:left;">
 State
 </th>
 <th style="text-align:right;">
@@ -189,77 +193,56 @@ RMSE.2020
 <td style="text-align:left;width: 8em; text-align: center;">
 Arizona
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Arizona
-</td>
-<td style="text-align:right;">
-0.5894
+<td style="text-align:right;width: 6em; text-align: center;">
+0.6380
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Georgia
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Georgia
-</td>
-<td style="text-align:right;">
-0.1473
+<td style="text-align:right;width: 6em; text-align: center;">
+0.2305
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Michigan
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Michigan
-</td>
-<td style="text-align:right;">
-0.7499
+<td style="text-align:right;width: 6em; text-align: center;">
+1.3075
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Nevada
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Nevada
-</td>
-<td style="text-align:right;">
-0.6348
+<td style="text-align:right;width: 6em; text-align: center;">
+1.6513
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 North Carolina
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-North Carolina
-</td>
-<td style="text-align:right;">
-0.7515
+<td style="text-align:right;width: 6em; text-align: center;">
+0.7219
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Pennsylvania
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Pennsylvania
-</td>
-<td style="text-align:right;">
-1.5191
+<td style="text-align:right;width: 6em; text-align: center;">
+1.5780
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Wisconsin
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Wisconsin
-</td>
-<td style="text-align:right;">
-1.2928
+<td style="text-align:right;width: 6em; text-align: center;">
+2.4075
 </td>
 </tr>
 </tbody>
@@ -271,8 +254,6 @@ Wisconsin
 <thead>
 <tr>
 <th style="text-align:left;">
-</th>
-<th style="text-align:left;">
 State
 </th>
 <th style="text-align:right;">
@@ -285,77 +266,56 @@ RMSE.2020
 <td style="text-align:left;width: 8em; text-align: center;">
 Arizona
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Arizona
-</td>
-<td style="text-align:right;">
-0.2358
+<td style="text-align:right;width: 6em; text-align: center;">
+0.3434
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Georgia
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Georgia
-</td>
-<td style="text-align:right;">
-0.1407
+<td style="text-align:right;width: 6em; text-align: center;">
+0.5773
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Michigan
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Michigan
-</td>
-<td style="text-align:right;">
-0.1871
+<td style="text-align:right;width: 6em; text-align: center;">
+0.7380
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Nevada
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Nevada
-</td>
-<td style="text-align:right;">
-0.1007
+<td style="text-align:right;width: 6em; text-align: center;">
+1.3067
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 North Carolina
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-North Carolina
-</td>
-<td style="text-align:right;">
-1.6074
+<td style="text-align:right;width: 6em; text-align: center;">
+1.7392
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Pennsylvania
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Pennsylvania
-</td>
-<td style="text-align:right;">
-1.9071
+<td style="text-align:right;width: 6em; text-align: center;">
+1.9944
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
 Wisconsin
 </td>
-<td style="text-align:left;width: 6em; text-align: center;">
-Wisconsin
-</td>
-<td style="text-align:right;">
-0.1821
+<td style="text-align:right;width: 6em; text-align: center;">
+1.9922
 </td>
 </tr>
 </tbody>
@@ -383,7 +343,7 @@ Margin
 Arizona
 </td>
 <td style="text-align:left;width: 8em; text-align: center;">
--7.02%
+-4.41%
 </td>
 </tr>
 <tr>
@@ -391,7 +351,7 @@ Arizona
 Georgia
 </td>
 <td style="text-align:left;width: 8em; text-align: center;">
--2.52%
+-1.53%
 </td>
 </tr>
 <tr>
@@ -399,7 +359,7 @@ Georgia
 Michigan
 </td>
 <td style="text-align:left;width: 8em; text-align: center;">
-2.79%
+2.82%
 </td>
 </tr>
 <tr>
@@ -407,7 +367,7 @@ Michigan
 Nevada
 </td>
 <td style="text-align:left;width: 8em; text-align: center;">
-3.41%
+3.37%
 </td>
 </tr>
 <tr>
@@ -415,7 +375,7 @@ Nevada
 North Carolina
 </td>
 <td style="text-align:left;width: 8em; text-align: center;">
--1.72%
+-1.51%
 </td>
 </tr>
 <tr>
@@ -423,7 +383,7 @@ North Carolina
 Pennsylvania
 </td>
 <td style="text-align:left;width: 8em; text-align: center;">
-0.03%
+0.61%
 </td>
 </tr>
 <tr>
@@ -431,13 +391,13 @@ Pennsylvania
 Wisconsin
 </td>
 <td style="text-align:left;width: 8em; text-align: center;">
-1.83%
+1.38%
 </td>
 </tr>
 </tbody>
 </table>
 <div class="plotly html-widget html-fill-item" id="htmlwidget-1" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"4a9c1756281":["function () ","plotlyVisDat"]},"cur_data":"4a9c1756281","attrs":{"4a9c1756281":{"locations":{},"locationmode":"USA-states","z":{},"text":{},"hoverinfo":"text","colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"zmin":-7.5,"zmid":0,"zmax":7.5,"colorbar":{"title":"Dem. Voting Margin (%)"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"choropleth"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"2024 Swing State Voting Margins","y":0.94999999999999996,"x":0.5,"xanchor":"center","yanchor":"top"},"geo":{"scope":"usa","projection":{"type":"albers usa"},"showlakes":true,"lakecolor":"rgba(173,216,230,1)","showcountries":false,"showcoastlines":false,"coastlinecolor":"rgba(255,255,255,1)","showframe":false},"scene":{"zaxis":{"title":"Margin"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Dem. Voting Margin (%)","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"showscale":true,"locations":["AZ","GA","MI","NV","NC","PA","WI"],"locationmode":"USA-states","z":[-7.024446302939694,-2.5184827592694461,2.7934920971141111,3.4112621178387883,-1.7217337269380835,0.026786108144975174,1.8304330600754923],"text":["State: Arizona <br>Margin: -7.02 %","State: Georgia <br>Margin: -2.52 %","State: Michigan <br>Margin: 2.79 %","State: Nevada <br>Margin: 3.41 %","State: North Carolina <br>Margin: -1.72 %","State: Pennsylvania <br>Margin: 0.03 %","State: Wisconsin <br>Margin: 1.83 %"],"hoverinfo":["text","text","text","text","text","text","text"],"zmin":-7.5,"zmid":0,"zmax":7.5,"type":"choropleth","marker":{"line":{"color":"rgba(31,119,180,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"1160196b4bd0":["function () ","plotlyVisDat"]},"cur_data":"1160196b4bd0","attrs":{"1160196b4bd0":{"locations":{},"locationmode":"USA-states","z":{},"text":{},"hoverinfo":"text","colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"zmin":-7.5,"zmid":0,"zmax":7.5,"colorbar":{"title":"Dem. Voting Margin (%)"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"choropleth"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"2024 Swing State Voting Margins","y":0.94999999999999996,"x":0.5,"xanchor":"center","yanchor":"top"},"geo":{"scope":"usa","projection":{"type":"albers usa"},"showlakes":true,"lakecolor":"rgba(173,216,230,1)","showcountries":false,"showcoastlines":false,"coastlinecolor":"rgba(255,255,255,1)","showframe":false},"scene":{"zaxis":{"title":"Margin"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Dem. Voting Margin (%)","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"showscale":true,"locations":["AZ","GA","MI","NV","NC","PA","WI"],"locationmode":"USA-states","z":[-4.4121567351972715,-1.5341034414037864,2.8235235667392828,3.3705583134253061,-1.5069849367033186,0.60727480942513523,1.3756902964105535],"text":["State: Arizona <br>Margin: -4.41 %","State: Georgia <br>Margin: -1.53 %","State: Michigan <br>Margin: 2.82 %","State: Nevada <br>Margin: 3.37 %","State: North Carolina <br>Margin: -1.51 %","State: Pennsylvania <br>Margin: 0.61 %","State: Wisconsin <br>Margin: 1.38 %"],"hoverinfo":["text","text","text","text","text","text","text"],"zmin":-7.5,"zmid":0,"zmax":7.5,"type":"choropleth","marker":{"line":{"color":"rgba(31,119,180,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 
 # Simulations
 
@@ -463,13 +423,13 @@ Harris Victory %
 <tbody>
 <tr>
 <td style="text-align:right;width: 5em; text-align: center;">
-492
+412
 </td>
 <td style="text-align:right;width: 5em; text-align: center;">
-508
+588
 </td>
 <td style="text-align:left;width: 5em; text-align: center;">
-49.2%
+41.2%
 </td>
 </tr>
 </tbody>
