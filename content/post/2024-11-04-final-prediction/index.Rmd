@@ -774,12 +774,12 @@ expanded_data <- electoral_vote_df %>%
 
 
 sim_plot <- ggplot(expanded_data, aes(x = electoral_votes, fill = color)) +
-  geom_dotplot(binwidth = 1.5, dotsize = 0.5, stackdir = "up", stroke = 0) +
+  geom_dotplot(binwidth = 2, dotsize = 0.5, stackdir = "up", stroke = 0) +
   scale_x_continuous(breaks = seq(0, 538, by = 10), limits = c(220, 310)) +
   scale_fill_identity() + 
   labs(
     title = "Simulated Electoral College Outcomes",
-    subtitle = "Each dot represents one simulation result",
+    subtitle = "Each dot represents five simulation results",
     x = "Harris Electoral Vote Total",
     y = "Frequency (stacked dots)"
   ) +
@@ -820,19 +820,30 @@ sim_table <- win_counts %>%
 
 
 1. Model 1:
-   $$
-   D\_pv2p = \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
-   $$
+$$
+\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) \\
+& + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}
+$$
 
 2. Model 2:
-   $$
-   D\_pv2p = \alpha + \beta_1(\text{state}) + \beta_2(\text{polling\_trend\_5\_1}) + \beta_3(\text{polling\_trend\_10\_6}) + \beta_4(\text{current\_week}) + \beta_5(\text{support\_DEM\_1}) + \beta_6(\text{support\_DEM\_2}) + \beta_7(\text{support\_DEM\_3}) + \epsilon
-   $$
+  $$
+\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{polling\_trend\_5\_1}) + \beta_3(\text{polling\_trend\_10\_6}) \\
+& + \beta_4(\text{current\_week}) + \beta_5(\text{support\_DEM\_1}) + \beta_6(\text{support\_DEM\_2}) + \beta_7(\text{support\_DEM\_3}) + \epsilon
+\end{aligned}
+  $$
 
 3. Model 3:
-   $$
-   D\_pv2p = \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) + \beta_4(\text{support\_DEM\_1}) + \beta_5(\text{polling\_trend\_5\_1}) + \beta_6(\text{polling\_trend\_10\_6}) + \beta_7(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \beta_8(\text{unemployment\_growth\_quarterly} \times \text{incumbent\_party}) + \beta_9(\text{updated\_rdpi} \times \text{incumbent\_party}) + \epsilon
-   $$
+
+  $$
+\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) + \beta_4(\text{support\_DEM\_1}) \\
+& + \beta_5(\text{polling\_trend\_5\_1}) + \beta_6(\text{polling\_trend\_10\_6}) + \beta_7(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) \\
+& + \beta_8(\text{unemployment\_growth\_quarterly} \times \text{incumbent\_party}) + \beta_9(\text{updated\_rdpi} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}
+  $$
 
 # Weights
 
