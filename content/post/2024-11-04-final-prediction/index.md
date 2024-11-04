@@ -45,7 +45,14 @@ Initially, I had created one set of weights I had used for all the swing states,
 
 I used data from the 1980 - 2020 elections to train the models, the largest range where all data was available.
 
-Model 1:
+**Model 1:**
+
+$$
+`\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) \\
+& + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}`
+  $$
 
 The first model uses only fundamental predictors, including lagged Democratic two-party vote shares from 2016 and 2020 and two measures of Real Disposable Personal Income (RDPI).
 
@@ -55,20 +62,7 @@ The second RDPI measure, “DPI inflation-adjusted,” uses state-level disposab
 
 Both economic variables are modeled as interaction effects, with a binary variable indicating the incumbent party. Including both state and national predictors helps capture voter perceptions of national economic conditions and personal financial situations.
 
-$$
-`\begin{aligned}
-D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) \\
-& + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
-\end{aligned}`
-$$
-
-Model 2:
-
-The second model relies solely on various polling-based covariates, all sourced from [FiveThirtyEight](https://www.google.com/url?q=https://projects.fivethirtyeight.com/polls/&sa=D&source=docs&ust=1730744938418979&usg=AOvVaw3PPYvini-EY-MVTfSMOHoj) with their poll weighting applied. The data is state-level and grouped by the weeks remaining before the election.
-
-The first three polling variables—Polling Trend 5-1, Polling Trend 6-10, and Current Week—are measured in poll margin (Democratic candidate polling minus Republican candidate polling). Polling Trend 5-1 captures the change in margin from five weeks to one week before the election, indicating whether a candidate is gaining or losing ground close to Election Day. Polling Trend 6-10 reflects changes from six to ten weeks out, while Current Week is the margin from one week before the election.
-
-The last three variables—Support Dem. 1, Support Dem. 2, and Support Dem. 3—represent the average Democratic candidate polling one, two, and three weeks before the election, respectively.
+**Model 2:**
 
 $$
 `\begin{aligned}
@@ -77,9 +71,13 @@ D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{polling\_trend\_5\
 \end{aligned}`
   $$
 
-Model 3:
+The second model relies solely on various polling-based covariates, all sourced from [FiveThirtyEight](https://www.google.com/url?q=https://projects.fivethirtyeight.com/polls/&sa=D&source=docs&ust=1730744938418979&usg=AOvVaw3PPYvini-EY-MVTfSMOHoj) with their poll weighting applied. The data is state-level and grouped by the weeks remaining before the election.
 
-The third model combines Models 1 and 2 covariates with the addition of national-level Q2 unemployment growth from the Fed. in St. Louis, which is included as an interaction effect with the incumbent party. Including this factor reduced the RMSE, which led me to incorporate it in this combined model.
+The first three polling variables—Polling Trend 5-1, Polling Trend 6-10, and Current Week—are measured in poll margin (Democratic candidate polling minus Republican candidate polling). Polling Trend 5-1 captures the change in margin from five weeks to one week before the election, indicating whether a candidate is gaining or losing ground close to Election Day. Polling Trend 6-10 reflects changes from six to ten weeks out, while Current Week is the margin from one week before the election.
+
+The last three variables—Support Dem. 1, Support Dem. 2, and Support Dem. 3—represent the average Democratic candidate polling one, two, and three weeks before the election, respectively.
+
+**Model 3:**
 
 $$
 `\begin{aligned}
@@ -88,6 +86,8 @@ D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + 
 & + \beta_8(\text{unemployment\_growth\_quarterly} \times \text{incumbent\_party}) + \beta_9(\text{updated\_rdpi} \times \text{incumbent\_party}) + \epsilon
 \end{aligned}`
   $$
+
+The third model combines Models 1 and 2 covariates with the addition of national-level Q2 unemployment growth from the Fed. in St. Louis, which is included as an interaction effect with the incumbent party. Including this factor reduced the RMSE, which led me to incorporate it in this combined model.
 
 # Weights
 
@@ -223,6 +223,10 @@ The fundamental model is weighted just above 0.1 in four swing states, reaching 
 
 # RMSE (In-sample & Out-of-sample)
 
+To test the predictive accuracy of this model, I calculated both in-sample and out-of-sample root mean square error (RMSE) based on the 2020 election. For the in-sample RMSE, I included 2020 data in the training set while using the same weights derived from all prior elections. For the out-of-sample RMSE, I excluded the 2020 data from the training set, but still applied the same weights. Although this means the out-of-sample RMSE reflects weights partially trained on 2020 data, removing this data would be challenging given the method I used for generating the weights, and the impact of any single election on weight determination is minimal.
+
+The in-sample RMSE results, in Table 2, were encouraging, ranging from a low of 0.04 in Georgia to a high of 2.05 in Wisconsin, indicating that the maximum prediction error was within 2 percentage points—enough to potentially swing a state. Most of the error came from overestimating the Democratic vote share.
+
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:unnamed-chunk-21"></span>Table 2: In-Sample RMSE for 2020 by State
@@ -235,6 +239,12 @@ State
 <th style="text-align:right;">
 RMSE.2020
 </th>
+<th style="text-align:right;">
+Predicted.Vote.Share
+</th>
+<th style="text-align:right;">
+True.Vote.Share
+</th>
 </tr>
 </thead>
 <tbody>
@@ -245,6 +255,12 @@ Arizona
 <td style="text-align:right;width: 6em; text-align: center;">
 0.6719
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+49.4850
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.1568
+</td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
@@ -252,6 +268,12 @@ Georgia
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
 0.0435
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.1629
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.1193
 </td>
 </tr>
 <tr>
@@ -261,6 +283,12 @@ Michigan
 <td style="text-align:right;width: 6em; text-align: center;">
 1.5867
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+53.0003
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+51.4136
+</td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
@@ -268,6 +296,12 @@ Nevada
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
 1.5505
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+52.7736
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+51.2231
 </td>
 </tr>
 <tr>
@@ -277,6 +311,12 @@ North Carolina
 <td style="text-align:right;width: 6em; text-align: center;">
 0.5768
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+48.7390
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+49.3158
+</td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
@@ -284,6 +324,12 @@ Pennsylvania
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
 1.7680
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+52.3572
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.5892
 </td>
 </tr>
 <tr>
@@ -293,9 +339,18 @@ Wisconsin
 <td style="text-align:right;width: 6em; text-align: center;">
 2.0518
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+52.3709
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.3191
+</td>
 </tr>
 </tbody>
 </table>
+
+The out-of-sample RMSE results, while expectedly higher, remained strong. The highest RMSE was in Pennsylvania at 2.46, due to a significant overestimation of the Democratic vote share. This is likely due to the model’s reliance on polling data for Pennsylvania, as shown in Table 1, where polling errors led to an overestimate.
+
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:unnamed-chunk-22"></span>Table 3: Out-of-Sample RMSE for 2020 by State
@@ -308,6 +363,12 @@ State
 <th style="text-align:right;">
 RMSE.2020
 </th>
+<th style="text-align:right;">
+Predicted.Vote.Share
+</th>
+<th style="text-align:right;">
+True.Vote.Share
+</th>
 </tr>
 </thead>
 <tbody>
@@ -318,6 +379,12 @@ Arizona
 <td style="text-align:right;width: 6em; text-align: center;">
 0.3713
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+49.7855
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.1568
+</td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
@@ -325,6 +392,12 @@ Georgia
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
 0.2846
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+49.8347
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.1193
 </td>
 </tr>
 <tr>
@@ -334,6 +407,12 @@ Michigan
 <td style="text-align:right;width: 6em; text-align: center;">
 1.1598
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+52.5734
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+51.4136
+</td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
@@ -341,6 +420,12 @@ Nevada
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
 1.2268
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+52.4499
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+51.2231
 </td>
 </tr>
 <tr>
@@ -350,6 +435,12 @@ North Carolina
 <td style="text-align:right;width: 6em; text-align: center;">
 1.5875
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+47.7283
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+49.3158
+</td>
 </tr>
 <tr>
 <td style="text-align:left;width: 8em; text-align: center;">
@@ -357,6 +448,12 @@ Pennsylvania
 </td>
 <td style="text-align:right;width: 6em; text-align: center;">
 2.4631
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+53.0523
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.5892
 </td>
 </tr>
 <tr>
@@ -366,11 +463,21 @@ Wisconsin
 <td style="text-align:right;width: 6em; text-align: center;">
 1.9281
 </td>
+<td style="text-align:right;width: 8em; text-align: center;">
+52.2472
+</td>
+<td style="text-align:right;width: 8em; text-align: center;">
+50.3191
+</td>
 </tr>
 </tbody>
 </table>
 
 # Ensemble Model Predictions
+
+Now, with the preamble complete, we can finally reach the main event: Who will win the 2024 Presidential Election?
+
+Using data from 2024, my model predicts that Harris will narrowly win in Pennsylvania and Wisconsin, with more substantial leads in Michigan and Nevada—enough to reach 270 electoral votes and become **America’s 47th President**. She is projected to lose Arizona by a large margin, with close losses in both North Carolina and Georgia, finishing with 276 electoral votes to Trump’s 262.
 
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -445,12 +552,22 @@ Wisconsin
 </tr>
 </tbody>
 </table>
+
+You can view the margins in Table 4 above or by hovering over the states in the interactive map below .
+
 <div class="plotly html-widget html-fill-item" id="htmlwidget-1" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"b4469124342":["function () ","plotlyVisDat"]},"cur_data":"b4469124342","attrs":{"b4469124342":{"locations":{},"locationmode":"USA-states","z":{},"text":{},"hoverinfo":"text","colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"zmin":-10,"zmid":0,"zmax":10,"colorbar":{"title":"Dem. Voting Margin (%)","y":0.5,"yanchor":"middle"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"choropleth"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"2024 Swing State Voting Margins","y":0.94999999999999996,"x":0.5,"xanchor":"center","yanchor":"top"},"geo":{"scope":"usa","projection":{"type":"albers usa"},"showlakes":false,"showcountries":false,"showcoastlines":false,"coastlinecolor":"rgba(255,255,255,1)","showframe":false},"scene":{"zaxis":{"title":"Margin"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Dem. Voting Margin (%)","ticklen":2,"y":0.5,"yanchor":"middle","len":0.5,"lenmode":"fraction"},"colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"showscale":true,"locations":["AZ","GA","MI","NV","NC","PA","WI"],"locationmode":"USA-states","z":[-4.4121567351972715,-1.5341034414037864,2.8235235667392828,3.3705583134253061,-1.5069849367033186,0.60727480942513523,1.3756902964105535],"text":["State: Arizona <br>Margin: -4.41 %","State: Georgia <br>Margin: -1.53 %","State: Michigan <br>Margin: 2.82 %","State: Nevada <br>Margin: 3.37 %","State: North Carolina <br>Margin: -1.51 %","State: Pennsylvania <br>Margin: 0.61 %","State: Wisconsin <br>Margin: 1.38 %"],"hoverinfo":["text","text","text","text","text","text","text"],"zmin":-10,"zmid":0,"zmax":10,"type":"choropleth","marker":{"line":{"color":"rgba(31,119,180,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"519c25f65886":["function () ","plotlyVisDat"]},"cur_data":"519c25f65886","attrs":{"519c25f65886":{"locations":{},"locationmode":"USA-states","z":{},"text":{},"hoverinfo":"text","colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"zmin":-10,"zmid":0,"zmax":10,"colorbar":{"title":"Dem. Voting Margin (%)","y":0.5,"yanchor":"middle"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"choropleth"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"2024 Swing State Voting Margins","y":0.94999999999999996,"x":0.5,"xanchor":"center","yanchor":"top"},"geo":{"scope":"usa","projection":{"type":"albers usa"},"showlakes":false,"showcountries":false,"showcoastlines":false,"coastlinecolor":"rgba(255,255,255,1)","showframe":false},"scene":{"zaxis":{"title":"Margin"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Dem. Voting Margin (%)","ticklen":2,"y":0.5,"yanchor":"middle","len":0.5,"lenmode":"fraction"},"colorscale":[["0","darkred"],["0.5","white"],["1","blue"]],"showscale":true,"locations":["AZ","GA","MI","NV","NC","PA","WI"],"locationmode":"USA-states","z":[-4.4121567351972715,-1.5341034414037864,2.8235235667392828,3.3705583134253061,-1.5069849367033186,0.60727480942513523,1.3756902964105535],"text":["State: Arizona <br>Margin: -4.41 %","State: Georgia <br>Margin: -1.53 %","State: Michigan <br>Margin: 2.82 %","State: Nevada <br>Margin: 3.37 %","State: North Carolina <br>Margin: -1.51 %","State: Pennsylvania <br>Margin: 0.61 %","State: Wisconsin <br>Margin: 1.38 %"],"hoverinfo":["text","text","text","text","text","text","text"],"zmin":-10,"zmid":0,"zmax":10,"type":"choropleth","marker":{"line":{"color":"rgba(31,119,180,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 
 # Simulations
 
+However, even if my model were 100% accurate, these predictions would only hold if polling error were zero. As we saw in 2016 and 2020, polling errors can be significant, sometimes even reversing expectations entirely, as in 2016.
+
+To account for this, I ran 1,000 simulations of all polling-based covariates, using a normal distribution centered around the mean with a standard deviation of 3. I then predicted Harris’s total electoral vote share in all 1,000 simulations to estimate her likelihood of winning the election.
+
+The plot below represents the distribution of these simulations, with each dot representing five simulations. Harris victories are shown in blue, while losses are shown in red. As you can see, the majority of simulations predict a Harris victory, with the most common outcome being Harris achieving 276 electoral votes, the scenario predicted above. As expected, the most common loss scenario is when Harris earns only 257 electoral votes, primarily from losing Pennsylvania.
+
 <img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-34-1.png" width="672" />
+Table 5 below shows that, out of the 1,000 simulations, Harris wins in 589 and loses in 411.
 
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -484,4 +601,10 @@ Harris Victory %
 </tbody>
 </table>
 
-# References
+# Conclusion & Acknowledgements
+
+Overall, my model suggests that Harris has a **slightly higher chance of winning the election**, but ultimately, the race is still a toss-up and far too close to call.
+
+In closing, I would like to acknowledge the exceptional faculty and course staff of Gov 1347: Election Analytics, without whose teaching and guidance this project would not have been possible: Professor Ryan Enos, Teaching Fellow Matthew Dardet, and Course Assistants Ethan Jasney and Yusuf Mian.
+
+Thank you for reading, and I hope you enjoyed this analysis! If you have any questions or feedback, please feel free to reach out to me at *aviagarwal@college.harvard.edu*.

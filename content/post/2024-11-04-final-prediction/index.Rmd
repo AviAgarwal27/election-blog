@@ -347,15 +347,13 @@ weights <- weights_df %>%
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 mse_results <- list()
+predicted_vote_shares <- list()
+true_vote_shares <- list()
 
 swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
 
-
-
 for (i in swing_states) {
-  
-  #print(i)
-  
+
   train_data <- swing_state_data |> 
     mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
     filter(state == "AAFlorida" | state == i) |>
@@ -364,70 +362,46 @@ for (i in swing_states) {
   state_test_data_2020 <- swing_state_data |>
     mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
     filter(state == "AAFlorida" | state == i) |>
-    filter (year == 2020)
+    filter(year == 2020)
   
-
   mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party,  data = train_data)
-      
   mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1 + support_DEM_2 + support_DEM_3, data = train_data)
-    
-  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1  + D_pv2p_lag2 + support_DEM_1 +  polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
-    
-    
+  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + support_DEM_1 + polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
   
-
   pred_1 <- as.numeric(predict(mod_1, newdata = state_test_data_2020))[2]
   pred_2 <- as.numeric(predict(mod_2, newdata = state_test_data_2020))[2]
   pred_3 <- as.numeric(predict(mod_3, newdata = state_test_data_2020))[2]
   
   predictions <- cbind(pred_1, pred_2, pred_3)
-#  print(predictions)
   weights_dem <- state_weights[[i]]
-  #print(weights_dem)
-  
-
   prediction_dem <- as.vector(predictions %*% weights_dem)
-  
   
   state_test_data_2020 <- state_test_data_2020 |>
     filter(state == i)
   
-  #print("real")
-  #print(state_test_data_2020$D_pv2p)
-
-  
- # print("one model")
-  #print(prediction_dem)
   rmse_dem_1 <- sqrt(mean((state_test_data_2020$D_pv2p - prediction_dem)^2))
-
-  #print(rmse_dem_1)
-  
-
-  actual_winner <- ifelse(state_test_data_2020$D_pv2p > 50, "Democrat", "Republican")
-  predicted_winner <- ifelse(prediction_dem > 50, "Democrat", "Republican")
-
-#if (actual_winner == predicted_winner) {
-#  print("Correct prediction: Model correctly predicted the winner!")
-#} else {
-#  print("Incorrect prediction: Model did not predict the correct winner.")
-#}
   
   mse_results[[i]] <- rmse_dem_1
-  
-  
+  predicted_vote_shares[[i]] <- prediction_dem
+  true_vote_shares[[i]] <- state_test_data_2020$D_pv2p
 }
 
 rmse_df <- data.frame(
   State = names(mse_results),
-  `RMSE 2020` = unlist(mse_results)
+  `RMSE 2020` = unlist(mse_results),
+  `Predicted Vote Share` = unlist(predicted_vote_shares),
+  `True Vote Share` = unlist(true_vote_shares)
 )
 
 # Display the table using kable for nicely formatted output
 in_rmse <- rmse_df %>%
-  kable("html", caption = "In-Sample RMSE for 2020 by State",row.names = FALSE, digits = 4) %>%
+  kable("html", caption = "In-Sample RMSE for 2020 by State", row.names = FALSE, digits = 4) %>%
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
   column_spec(1, width = "8em", extra_css = "text-align: center;") %>%
-  column_spec(2, width = "6em", extra_css = "text-align: center;")
+  column_spec(2, width = "6em", extra_css = "text-align: center;") %>%
+  column_spec(3, width = "8em", extra_css = "text-align: center;") %>%
+  column_spec(4, width = "8em", extra_css = "text-align: center;")
+
 
 ```
 
@@ -437,11 +411,11 @@ in_rmse <- rmse_df %>%
 swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
 
 rmse_results <- list()
+predicted_vote_shares <- list()
+true_vote_shares <- list()
 
 for (i in swing_states) {
-  
-  #print(i)
-  
+
   train_data <- swing_state_data |> 
     mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
     filter(state == "AAFlorida" | state == i) |>
@@ -450,62 +424,35 @@ for (i in swing_states) {
   state_test_data_2020 <- swing_state_data |>
     mutate(state = ifelse(state == "Florida", "AAFlorida", state)) |>
     filter(state == "AAFlorida" | state == i) |>
-    filter (year == 2020)
+    filter(year == 2020)
   
-  mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party,  data = train_data)
-      
+  mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party, data = train_data)
   mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1 + support_DEM_2 + support_DEM_3, data = train_data)
-    
-  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1  + D_pv2p_lag2 + support_DEM_1 +  polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
-    
-    
+  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + support_DEM_1 + polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
   
-
   pred_1 <- as.numeric(predict(mod_1, newdata = state_test_data_2020))[2]
   pred_2 <- as.numeric(predict(mod_2, newdata = state_test_data_2020))[2]
   pred_3 <- as.numeric(predict(mod_3, newdata = state_test_data_2020))[2]
   
   predictions <- cbind(pred_1, pred_2, pred_3)
-#  print(predictions)
   weights_dem <- state_weights[[i]]
-  #print(weights_dem)
-  #
-
   prediction_dem <- as.vector(predictions %*% weights_dem)
-  
   
   state_test_data_2020 <- state_test_data_2020 |>
     filter(state == i)
   
-  #print("real")
-  #print(state_test_data_2020$D_pv2p)
-
-  
- # print("one model")
-  #print(prediction_dem)
   rmse_dem_1 <- sqrt(mean((state_test_data_2020$D_pv2p - prediction_dem)^2))
   
   rmse_results[[i]] <- rmse_dem_1
-
-  #print(rmse_dem_1)
-  
-
-  actual_winner <- ifelse(state_test_data_2020$D_pv2p > 50, "Democrat", "Republican")
-  predicted_winner <- ifelse(prediction_dem > 50, "Democrat", "Republican")
-
-#if (actual_winner == predicted_winner) {
-#  print("Correct prediction: Model correctly predicted the winner!")
-#} else {
-#  print("Incorrect prediction: Model did not predict the correct winner.")
-#}
-  
-  
-
+  predicted_vote_shares[[i]] <- prediction_dem
+  true_vote_shares[[i]] <- state_test_data_2020$D_pv2p
 }
 
 rmse_df <- data.frame(
   State = names(rmse_results),
-  `RMSE 2020` = unlist(rmse_results)
+  `RMSE 2020` = unlist(rmse_results),
+  `Predicted Vote Share` = unlist(predicted_vote_shares),
+  `True Vote Share` = unlist(true_vote_shares)
 )
 
 # Display the table using kable for nicely formatted output
@@ -513,9 +460,9 @@ out_rmse <- rmse_df %>%
   kable("html", caption = "Out-of-Sample RMSE for 2020 by State", row.names = FALSE, digits = 4) %>%
   kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
   column_spec(1, width = "8em", extra_css = "text-align: center;") %>%
-  column_spec(2, width = "6em", extra_css = "text-align: center;")
-  
-  
+  column_spec(2, width = "6em", extra_css = "text-align: center;") %>%
+  column_spec(3, width = "8em", extra_css = "text-align: center;") %>%
+  column_spec(4, width = "8em", extra_css = "text-align: center;")
 ```
 
 
@@ -835,7 +782,14 @@ Initially, I had created one set of weights I had used for all the swing states,
 I used data from the 1980 - 2020 elections to train the models, the largest range where all data was available. 
 
 
-Model 1:
+**Model 1:**
+
+  $$
+\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) \\
+& + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}
+  $$
 
 The first model uses only fundamental predictors, including lagged Democratic two-party vote shares from 2016 and 2020 and two measures of Real Disposable Personal Income (RDPI). 
 
@@ -845,21 +799,9 @@ The second RDPI measure, "DPI inflation-adjusted," uses state-level disposable i
 
 Both economic variables are modeled as interaction effects, with a binary variable indicating the incumbent party. Including both state and national predictors helps capture voter perceptions of national economic conditions and personal financial situations.
 
-$$
-\begin{aligned}
-D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) \\
-& + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
-\end{aligned}
-$$
 
-Model 2:
 
-The second model relies solely on various polling-based covariates, all sourced from [FiveThirtyEight](https://www.google.com/url?q=https://projects.fivethirtyeight.com/polls/&sa=D&source=docs&ust=1730744938418979&usg=AOvVaw3PPYvini-EY-MVTfSMOHoj) with their poll weighting applied. The data is state-level and grouped by the weeks remaining before the election.
-
-The first three polling variables—Polling Trend 5-1, Polling Trend 6-10, and Current Week—are measured in poll margin (Democratic candidate polling minus Republican candidate polling). Polling Trend 5-1 captures the change in margin from five weeks to one week before the election, indicating whether a candidate is gaining or losing ground close to Election Day. Polling Trend 6-10 reflects changes from six to ten weeks out, while Current Week is the margin from one week before the election.
-
-The last three variables—Support Dem. 1, Support Dem. 2, and Support Dem. 3—represent the average Democratic candidate polling one, two, and three weeks before the election, respectively.
-
+**Model 2:**
 
   $$
 \begin{aligned}
@@ -868,9 +810,16 @@ D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{polling\_trend\_5\
 \end{aligned}
   $$
 
-Model 3:
+The second model relies solely on various polling-based covariates, all sourced from [FiveThirtyEight](https://www.google.com/url?q=https://projects.fivethirtyeight.com/polls/&sa=D&source=docs&ust=1730744938418979&usg=AOvVaw3PPYvini-EY-MVTfSMOHoj) with their poll weighting applied. The data is state-level and grouped by the weeks remaining before the election.
 
-The third model combines Models 1 and 2 covariates with the addition of national-level Q2 unemployment growth from the Fed. in St. Louis, which is included as an interaction effect with the incumbent party. Including this factor reduced the RMSE, which led me to incorporate it in this combined model.
+The first three polling variables—Polling Trend 5-1, Polling Trend 6-10, and Current Week—are measured in poll margin (Democratic candidate polling minus Republican candidate polling). Polling Trend 5-1 captures the change in margin from five weeks to one week before the election, indicating whether a candidate is gaining or losing ground close to Election Day. Polling Trend 6-10 reflects changes from six to ten weeks out, while Current Week is the margin from one week before the election.
+
+The last three variables—Support Dem. 1, Support Dem. 2, and Support Dem. 3—represent the average Democratic candidate polling one, two, and three weeks before the election, respectively.
+
+
+
+
+**Model 3:**
 
   $$
 \begin{aligned}
@@ -879,6 +828,10 @@ D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + 
 & + \beta_8(\text{unemployment\_growth\_quarterly} \times \text{incumbent\_party}) + \beta_9(\text{updated\_rdpi} \times \text{incumbent\_party}) + \epsilon
 \end{aligned}
   $$
+
+The third model combines Models 1 and 2 covariates with the addition of national-level Q2 unemployment growth from the Fed. in St. Louis, which is included as an interaction effect with the incumbent party. Including this factor reduced the RMSE, which led me to incorporate it in this combined model.
+
+
 
 # Weights
 
@@ -899,34 +852,60 @@ The fundamental model is weighted just above 0.1 in four swing states, reaching 
 
 # RMSE (In-sample & Out-of-sample)
 
+To test the predictive accuracy of this model, I calculated both in-sample and out-of-sample root mean square error (RMSE) based on the 2020 election. For the in-sample RMSE, I included 2020 data in the training set while using the same weights derived from all prior elections. For the out-of-sample RMSE, I excluded the 2020 data from the training set, but still applied the same weights. Although this means the out-of-sample RMSE reflects weights partially trained on 2020 data, removing this data would be challenging given the method I used for generating the weights, and the impact of any single election on weight determination is minimal.
+
+The in-sample RMSE results, in Table 2, were encouraging, ranging from a low of 0.04 in Georgia to a high of 2.05 in Wisconsin, indicating that the maximum prediction error was within 2 percentage points—enough to potentially swing a state. Most of the error came from overestimating the Democratic vote share.
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 in_rmse
 ```
 
+The out-of-sample RMSE results, while expectedly higher, remained strong. The highest RMSE was in Pennsylvania at 2.46, due to a significant overestimation of the Democratic vote share. This is likely due to the model’s reliance on polling data for Pennsylvania, as shown in Table 1, where polling errors led to an overestimate.
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 out_rmse
 ```
 
 
+
 # Ensemble Model Predictions
+
+Now, with the preamble complete, we can finally reach the main event: Who will win the 2024 Presidential Election?
+
+Using data from 2024, my model predicts that Harris will narrowly win in Pennsylvania and Wisconsin, with more substantial leads in Michigan and Nevada—enough to reach 270 electoral votes and become **America’s 47th President**. She is projected to lose Arizona by a large margin, with close losses in both North Carolina and Georgia, finishing with 276 electoral votes to Trump’s 262.
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 e_pred
 ```
+You can view the margins in Table 4 above or by hovering over the states in the interactive map below   .
+
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 map_plot
 ```
 
 # Simulations
+
+However, even if my model were 100% accurate, these predictions would only hold if polling error were zero. As we saw in 2016 and 2020, polling errors can be significant, sometimes even reversing expectations entirely, as in 2016.
+
+To account for this, I ran 1,000 simulations of all polling-based covariates, using a normal distribution centered around the mean with a standard deviation of 3. I then predicted Harris’s total electoral vote share in all 1,000 simulations to estimate her likelihood of winning the election.
+
+The plot below represents the distribution of these simulations, with each dot representing five simulations. Harris victories are shown in blue, while losses are shown in red. As you can see, the majority of simulations predict a Harris victory, with the most common outcome being Harris achieving 276 electoral votes, the scenario predicted above. As expected, the most common loss scenario is when Harris earns only 257 electoral votes, primarily from losing Pennsylvania.
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 sim_plot
 ```
+Table 5 below shows that, out of the 1,000 simulations, Harris wins in 589 and loses in 411.
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 sim_table
 ```
 
-# References
+# Conclusion & Acknowledgements
 
+Overall, my model suggests that Harris has a **slightly higher chance of winning the election**, but ultimately, the race is still a toss-up and far too close to call.
 
+In closing, I would like to acknowledge the exceptional faculty and course staff of Gov 1347: Election Analytics, without whose teaching and guidance this project would not have been possible: Professor Ryan Enos, Teaching Fellow Matthew Dardet, and Course Assistants Ethan Jasney and Yusuf Mian.
+
+Thank you for reading, and I hope you enjoyed this analysis! If you have any questions or feedback, please feel free to reach out to me at *aviagarwal@college.harvard.edu*.
