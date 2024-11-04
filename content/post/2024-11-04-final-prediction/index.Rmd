@@ -893,10 +893,12 @@ To account for this, I ran 1,000 simulations of all polling-based covariates, us
 
 The plot below represents the distribution of these simulations, with each dot representing five simulations. Harris victories are shown in blue, while losses are shown in red. As you can see, the majority of simulations predict a Harris victory, with the most common outcome being Harris achieving 276 electoral votes, the scenario predicted above. As expected, the most common loss scenario is when Harris earns only 257 electoral votes, primarily from losing Pennsylvania.
 
+Table 5 below shows that, out of the 1,000 simulations, Harris wins in 589 and loses in 411.
+
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 sim_plot
 ```
-Table 5 below shows that, out of the 1,000 simulations, Harris wins in 589 and loses in 411.
+
 
 ```{r , echo= FALSE, message = FALSE, warning=FALSE}
 sim_table
