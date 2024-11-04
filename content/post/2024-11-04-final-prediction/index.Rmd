@@ -814,7 +814,7 @@ The second model relies solely on various polling-based covariates, all sourced 
 
 The first three polling variables—Polling Trend 5-1, Polling Trend 6-10, and Current Week—are measured in poll margin (Democratic candidate polling minus Republican candidate polling). Polling Trend 5-1 captures the change in margin from five weeks to one week before the election, indicating whether a candidate is gaining or losing ground close to Election Day. Polling Trend 6-10 reflects changes from six to ten weeks out, while Current Week is the margin from one week before the election.
 
-The last three variables—Support Dem. 1, Support Dem. 2, and Support Dem. 3—represent the average Democratic candidate polling one, two, and three weeks before the election, respectively.
+The last three variables—Support Dem. 1, Support Dem. 2, and Support Dem. 3—represent the average Democratic candidate polling one, two, and three weeks before the election, respectively. I chose to include these covariates to capture additional shifts in Democratic candidate support as the election approaches.
 
 
 
