@@ -24,148 +24,16 @@ tags: []
 <link href="{{< blogdown/postref >}}index_files/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
 <script src="{{< blogdown/postref >}}index_files/plotly-main/plotly-latest.min.js"></script>
 <script src="{{< blogdown/postref >}}index_files/kePrint/kePrint.js"></script>
+<link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/kePrint/kePrint.js"></script>
+<link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
+<script src="{{< blogdown/postref >}}index_files/kePrint/kePrint.js"></script>
 
 <link href="{{< blogdown/postref >}}index_files/lightable/lightable.css" rel="stylesheet" />
 
-``` r
-library(tidyverse)
-```
+# Recap of Model
 
-    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-    ## ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
-    ## ✔ lubridate 1.9.3     ✔ tidyr     1.3.0
-    ## ✔ purrr     1.0.2     
-    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter() masks stats::filter()
-    ## ✖ dplyr::lag()    masks stats::lag()
-    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
-
-``` r
-library(knitr)
-library(plotly)
-```
-
-    ## Warning: package 'plotly' was built under R version 4.3.3
-
-    ## 
-    ## Attaching package: 'plotly'
-    ## 
-    ## The following object is masked from 'package:ggplot2':
-    ## 
-    ##     last_plot
-    ## 
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     filter
-    ## 
-    ## The following object is masked from 'package:graphics':
-    ## 
-    ##     layout
-
-``` r
-library(maps)
-```
-
-    ## 
-    ## Attaching package: 'maps'
-    ## 
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     map
-
-``` r
-library(car)
-```
-
-    ## Warning: package 'car' was built under R version 4.3.3
-
-    ## Loading required package: carData
-
-    ## Warning: package 'carData' was built under R version 4.3.3
-
-    ## 
-    ## Attaching package: 'car'
-    ## 
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     recode
-    ## 
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     some
-
-``` r
-library(CVXR)
-```
-
-    ## Warning: package 'CVXR' was built under R version 4.3.3
-
-    ## 
-    ## Attaching package: 'CVXR'
-    ## 
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     id
-    ## 
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     is_vector
-    ## 
-    ## The following object is masked from 'package:stats':
-    ## 
-    ##     power
-
-``` r
-library(stringr)
-library(knitr)
-library(kableExtra)
-```
-
-    ## Warning: package 'kableExtra' was built under R version 4.3.3
-
-    ## 
-    ## Attaching package: 'kableExtra'
-    ## 
-    ## The following object is masked from 'package:dplyr':
-    ## 
-    ##     group_rows
-
-``` r
-library(caret)
-```
-
-    ## Warning: package 'caret' was built under R version 4.3.3
-
-    ## Loading required package: lattice
-    ## 
-    ## Attaching package: 'caret'
-    ## 
-    ## The following object is masked from 'package:purrr':
-    ## 
-    ##     lift
-
-``` r
-library(yardstick)
-```
-
-    ## Warning: package 'yardstick' was built under R version 4.3.3
-
-    ## 
-    ## Attaching package: 'yardstick'
-    ## 
-    ## The following objects are masked from 'package:caret':
-    ## 
-    ##     precision, recall, sensitivity, specificity
-    ## 
-    ## The following object is masked from 'package:readr':
-    ## 
-    ##     spec
-
-``` r
-set.seed(02138)
-```
+My model used an enabling method combining three OLS regressions, which is displayed below. The first model focused on fundamentals, the second on polling, and the third used a combined approach. The exact meaning of each covariate can be found in my final election prediction post
 
 **Model 1:**  
 $$
@@ -190,28 +58,7 @@ D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + 
 \end{aligned}`
   $$
 
-``` r
-weights_df <- read_csv("weights_df.csv") |>
-  kable("html", 
-        col.names = c("State", "Model 1", "Model 2", "Model 3"),
-        caption = "Model Weights by State", digits = 3) %>%
-  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
-  column_spec(1, width = "8em", extra_css = "text-align: center;") %>%
-  column_spec(2:4, width = "6em", extra_css = "text-align: center;")
-```
-
-    ## Rows: 7 Columns: 4
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## chr (1): State
-    ## dbl (3): Weight.Model.1, Weight.Model.2, Weight.Model.3
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-weights_df
-```
+To generate the weights displayed below, I used a Leave-Out-Out scheme that predicted the outcome of each election via each model in the data set (1980 to 2020), excluding that year’s election in the training dataset. Then, I used constrained optimization to create weights.
 
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -335,90 +182,7 @@ Wisconsin
 </tbody>
 </table>
 
-``` r
-swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
-
-avi_preds <- read_csv("avi_2024_preds - Sheet1.csv")
-```
-
-    ## Rows: 7 Columns: 2
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## chr (1): state
-    ## dbl (1): Dv2p
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-state_vote_2024 <- read_csv("state_votes_pres_2024.csv") |>
-  filter(row_number() != 1) |>
-  select(c("Geographic Name", "Total Vote", "Kamala D. Harris", "Donald J. Trump")) |>
-  mutate(
-    state = `Geographic Name`,
-    `Total Vote` = as.numeric(`Total Vote`),
-    `Kamala D. Harris` = as.numeric(`Kamala D. Harris`),
-    `Donald J. Trump` = as.numeric(`Donald J. Trump`)
-  ) |>
-  filter(state %in% swing_states) |>
-  mutate(Dv2p_real = `Kamala D. Harris` / (`Kamala D. Harris` + `Donald J. Trump`)*100)
-```
-
-    ## New names:
-    ## Rows: 52 Columns: 42
-    ## ── Column specification
-    ## ──────────────────────────────────────────────────────── Delimiter: "," chr
-    ## (42): FIPS, Geographic Name, Geographic Subtype, Total Vote, Kamala D. H...
-    ## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
-    ## Specify the column types or set `show_col_types = FALSE` to quiet this message.
-    ## • `0` -> `0...31`
-    ## • `0` -> `0...32`
-    ## • `0` -> `0...33`
-    ## • `0` -> `0...34`
-    ## • `0` -> `0...35`
-    ## • `0` -> `0...36`
-    ## • `0` -> `0...37`
-    ## • `0` -> `0...38`
-    ## • `0` -> `0...39`
-    ## • `0` -> `0...40`
-    ## • `0` -> `0...41`
-    ## • `0` -> `0...42`
-
-``` r
-state_vote_2024 <- state_vote_2024 |>
-  left_join(avi_preds, by = "state")
-```
-
-``` r
-state_vote_2024_table <- state_vote_2024 |>
-  select(c("state", "Dv2p_real", "Dv2p" )) |>
-  mutate(across(where(is.numeric), round, digits = 3)) |>
-  kable(
-    caption = "2024 Presidential Election Results by State",
-    col.names = c("State", "Real Democratic Vote Share (%)", "Predicted Democratic Vote Share (%)"),
-    format = "html"
-  ) |>
-  kable_styling(
-    full_width = FALSE,
-    bootstrap_options = c("striped", "hover", "condensed")
-  )
-```
-
-    ## Warning: There was 1 warning in `mutate()`.
-    ## ℹ In argument: `across(where(is.numeric), round, digits = 3)`.
-    ## Caused by warning:
-    ## ! The `...` argument of `across()` is deprecated as of dplyr 1.1.0.
-    ## Supply arguments directly to `.fns` through an anonymous function instead.
-    ## 
-    ##   # Previously
-    ##   across(a:b, mean, na.rm = TRUE)
-    ## 
-    ##   # Now
-    ##   across(a:b, \(x) mean(x, na.rm = TRUE))
-
-``` r
-state_vote_2024_table  
-```
+Using data from the 2024 election resulted in the following prediction in the table below compared to the estimated actual results of the seven swing states. This prediction forecasted a Harris Victory, with the VP winning Wisconsin, Nevada, Michigan, and Pennsylvania and Trump winning Arizona, Georgia, and North Carolina.
 
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -518,29 +282,7 @@ Wisconsin
 </tbody>
 </table>
 
-``` r
-win_counts <- read_csv("win_counts.csv")
-```
-
-    ## Rows: 1 Columns: 3
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## chr (1): Harris Victory %
-    ## dbl (2): Harris Victory Wins, Trump Victory Wins
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
-``` r
-sim_table <- win_counts %>%
-  kable("html", caption = "Simulation Results: Harris and Trump Victory Counts") %>%
-  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
-  column_spec(1, width = "5em", extra_css = "text-align: center;") %>%
-  column_spec(2, width = "5em", extra_css = "text-align: center;") %>%
-  column_spec(3, width = "5em", extra_css = "text-align: center;")
-
-sim_table
-```
+I simulated the outcomes of the seven swing states 1000 times to account for polling error, in which Harris won 58.9% of the time.
 
 <table class="table table-striped table-hover table-condensed table-responsive" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -574,47 +316,11 @@ Harris Victory %
 </tbody>
 </table>
 
-``` r
-MSE <- state_vote_2024 |>
-  mutate(
-    error_squared = (Dv2p_real - Dv2p)^2,
-    abs_error = abs(Dv2p_real - Dv2p)
-  ) |>
-  group_by(state) |>
-  summarise(
-    Bias = mean(Dv2p_real - Dv2p),
-    MSE = mean(error_squared),
-    RMSE = sqrt(MSE),
-    MAE = mean(abs_error)
-  )
+# Measuring Model Error
 
-average_row <- state_vote_2024 |>
-  summarise(
-    state = "Average",
-    Bias = mean(Dv2p_real - Dv2p),
-    MSE = mean((Dv2p_real - Dv2p)^2),
-    RMSE = mean(sqrt(MSE)),
-    MAE = mean(abs(Dv2p_real - Dv2p))
-  )
+Obviously, my model was very incorrect, estimating only 3/7 swing states correctly and predicting the wrong person as the next President. However, to quantify the error, I calculated the bias, MSE, RMSE, and MAE based on the estimated 2024 election results.
 
-
-MSE <- bind_rows(MSE, average_row) |>
-  rename("State" = state)
-
-MSE_table <- MSE |>
-  mutate(across(where(is.numeric), round, digits = 3)) |>
-  kable(
-    caption = "State-Level MSE Table",
-    col.names = c("State", "Bias", "MSE", "RMSE", "MAE"),
-    format = "html"
-  ) |>
-  kable_styling(
-    full_width = FALSE,
-    bootstrap_options = c("striped", "hover", "condensed")
-  )
-
-MSE_table
-```
+It is very apparent that my model was biased against Donald Trump, overestimating Democratic vote share in every single swing state – including the states I had predicted Trump to win. However, the magnitude of the bias is far from consistent, being less than 0.5 in Arizona and more significant than 3.3 in Nevada. As a side note, the bias, RMSE, and MAE have the same magnitude since only one observation per metric exists. The average RMSE was 1.148, meaning my prediction was, on average, overestimating Democratic vote share by 1.148 points in each swing state – not a massive amount, but enough to flip the election’s outcome entirely
 
 <table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -770,104 +476,38 @@ Average
 2.814
 </td>
 <td style="text-align:right;">
-1.678
+1.387
 </td>
 <td style="text-align:right;">
 1.387
 </td>
 </tr>
+<tr>
+<td style="text-align:left;">
+Median
+</td>
+<td style="text-align:right;">
+-1.148
+</td>
+<td style="text-align:right;">
+1.319
+</td>
+<td style="text-align:right;">
+1.148
+</td>
+<td style="text-align:right;">
+1.148
+</td>
+</tr>
 </tbody>
 </table>
 
-``` r
-map_data <- MSE |>
-  mutate(state = tolower(State)) 
-
-us_states <- map_data("state")
-
-
-swing_map_data <- us_states %>%
-  filter(region %in% map_data$state) %>%
-  left_join(map_data, by = c("region" = "state"))
-
-swing_map_data <- swing_map_data %>%
-  distinct(region, .keep_all = TRUE) %>%
-  mutate(state = tools::toTitleCase(region)) %>%
-  mutate(state_code = state.abb[match(state, state.name)]) |>
-  mutate(region = tools::toTitleCase(region))
-
-map_plot <- plot_ly(
-  data = swing_map_data,
-  type = "choropleth",
-  locations = ~state_code,
-  locationmode = "USA-states",
-  z = ~Bias,
-  text = ~paste("State:", region, "<br>Bias:", round(Bias, 2), "%"),
-  hoverinfo = "text",
-  colorscale = list(c(0, "darkblue"), c(0.5, "white"), c(1, "darkred")),
-  zmin = -4,   
-  zmid = 0,     
-  zmax = 4,    
-  colorbar = list(
-    title = "Model Bias \n(Blue = Overestimated \nDem. Vote %)",
-    y = 0.5,           
-    yanchor = "middle" 
-  )
-) %>%
-  layout(
-    title = list(
-      text = "Swing State Model Bias",
-      y = 0.95,
-      x = 0.5,
-      xanchor = "center",
-      yanchor = "top"
-    ),
-    geo = list(
-      scope = "usa",
-      projection = list(type = "albers usa"),
-      showlakes = FALSE,
-      showcountries = FALSE,
-      showcoastlines = FALSE,
-      coastlinecolor = toRGB("white"),
-      showframe = FALSE
-    )
-  )
-map_plot
-```
+The map below shows how much I overestimated the Democratic vote share in each state, with a darker shade of red equating to a higher overestimation. In states where I predicted Trump to win, there is only a slight bias compared to states where I expected Kamala to win, where the bias is much greater.
 
 <div class="plotly html-widget html-fill-item" id="htmlwidget-1" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"868c35f4512e":["function () ","plotlyVisDat"]},"cur_data":"868c35f4512e","attrs":{"868c35f4512e":{"locations":{},"locationmode":"USA-states","z":{},"text":{},"hoverinfo":"text","colorscale":[["0","darkblue"],["0.5","white"],["1","darkred"]],"zmin":-4,"zmid":0,"zmax":4,"colorbar":{"title":"Model Bias <br />(Blue = Overestimated <br />Dem. Vote %)","y":0.5,"yanchor":"middle"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"choropleth"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"Swing State Model Bias","y":0.94999999999999996,"x":0.5,"xanchor":"center","yanchor":"top"},"geo":{"scope":"usa","projection":{"type":"albers usa"},"showlakes":false,"showcountries":false,"showcoastlines":false,"coastlinecolor":"rgba(255,255,255,1)","showframe":false},"scene":{"zaxis":{"title":"Bias"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Model Bias <br />(Blue = Overestimated <br />Dem. Vote %)","ticklen":2,"y":0.5,"yanchor":"middle","len":0.5,"lenmode":"fraction"},"colorscale":[["0","darkblue"],["0.5","white"],["1","darkred"]],"showscale":true,"locations":["AZ","GA","MI","NV","NC","PA","WI"],"locationmode":"USA-states","z":[-0.53747346355770276,-0.35155030253291386,-2.1084448240057725,-3.3017124462760208,-0.94110553222387239,-1.3176535411938204,-1.148442057732332],"text":["State: Arizona <br>Bias: -0.54 %","State: Georgia <br>Bias: -0.35 %","State: Michigan <br>Bias: -2.11 %","State: Nevada <br>Bias: -3.3 %","State: North Carolina <br>Bias: -0.94 %","State: Pennsylvania <br>Bias: -1.32 %","State: Wisconsin <br>Bias: -1.15 %"],"hoverinfo":["text","text","text","text","text","text","text"],"zmin":-4,"zmid":0,"zmax":4,"type":"choropleth","marker":{"line":{"color":"rgba(31,119,180,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"60205e6f7048":["function () ","plotlyVisDat"]},"cur_data":"60205e6f7048","attrs":{"60205e6f7048":{"locations":{},"locationmode":"USA-states","z":{},"text":{},"hoverinfo":"text","colorscale":[["0","darkred"],["0.5","white"],["1","darkblue"]],"zmin":-4,"zmid":0,"zmax":4,"colorbar":{"title":"Model Bias <br />(Red = Overestimated <br />Dem. Vote %)","y":0.5,"yanchor":"middle"},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"choropleth"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":{"text":"Swing State Model Bias","y":0.94999999999999996,"x":0.5,"xanchor":"center","yanchor":"top"},"geo":{"scope":"usa","projection":{"type":"albers usa"},"showlakes":false,"showcountries":false,"showcoastlines":false,"coastlinecolor":"rgba(255,255,255,1)","showframe":false},"scene":{"zaxis":{"title":"Bias"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"colorbar":{"title":"Model Bias <br />(Red = Overestimated <br />Dem. Vote %)","ticklen":2,"y":0.5,"yanchor":"middle","len":0.5,"lenmode":"fraction"},"colorscale":[["0","darkred"],["0.5","white"],["1","darkblue"]],"showscale":true,"locations":["AZ","GA","MI","NV","NC","PA","WI"],"locationmode":"USA-states","z":[-0.53747346355770276,-0.35155030253291386,-2.1084448240057725,-3.3017124462760208,-0.94110553222387239,-1.3176535411938204,-1.148442057732332],"text":["State: Arizona <br>Bias: -0.54 %","State: Georgia <br>Bias: -0.35 %","State: Michigan <br>Bias: -2.11 %","State: Nevada <br>Bias: -3.3 %","State: North Carolina <br>Bias: -0.94 %","State: Pennsylvania <br>Bias: -1.32 %","State: Wisconsin <br>Bias: -1.15 %"],"hoverinfo":["text","text","text","text","text","text","text"],"zmin":-4,"zmid":0,"zmax":4,"type":"choropleth","marker":{"line":{"color":"rgba(31,119,180,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 
-``` r
-state_vote_2024 <- state_vote_2024 |>
-  mutate(
-    actual = ifelse(Dv2p_real >= 50, 1, 0),
-    predicted = ifelse(Dv2p >= 50, 1, 0),
-    predicted_prob = Dv2p / 100
-  )
-
-actual_factor <- factor(state_vote_2024$actual, levels = c(0, 1))
-predicted_factor <- factor(state_vote_2024$predicted, levels = c(0, 1))
-
-confusion_matrix <- confusionMatrix(predicted_factor, actual_factor)
-
-# Extract relevant metrics from the confusion matrix
-metrics <- data.frame(
-  Metric = c("Accuracy", "Sensitivity (Recall)", "Specificity", "Precision", "F1 Score"),
-  Value = c(
-    round(confusion_matrix$overall['Accuracy'], 3),
-    round(confusion_matrix$byClass['Sensitivity'], 3),
-    round(confusion_matrix$byClass['Specificity'], 3),
-    round(confusion_matrix$byClass['Pos Pred Value'], 3),
-    round(2 * (confusion_matrix$byClass['Pos Pred Value'] * confusion_matrix$byClass['Sensitivity']) /
-          (confusion_matrix$byClass['Pos Pred Value'] + confusion_matrix$byClass['Sensitivity']), 3)
-  )
-)
-
-# Display the table using kable
-kable(metrics, caption = "Confusion Matrix Metrics", format = "html") %>%
-  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
-```
+To further quantify my prediction error, I tried to create a confusion matrix; however, only two types of forecasts were available: true positives and false positives. As a result, only two metrics can be generated: accuracy and sensitivity, which were around 0.43.
 
 <table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -927,14 +567,178 @@ NA
 </tbody>
 </table>
 
-``` r
-pred_chance <- win_counts |> 
-  mutate(pred_chance = `Harris Victory Wins`/ 1000) |>
-  select("pred_chance")
-brier_score <- mean((pred_chance$pred_chance - 0)^2) |>
-  round(3)
+I also calculated the Brier score of my simulation prediction, which was 0.347.
 
-print(brier_score)
-```
+<table class="table table-striped table-hover" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Metric
+</th>
+<th style="text-align:right;">
+Value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Brier Score
+</td>
+<td style="text-align:right;">
+0.347
+</td>
+</tr>
+</tbody>
+</table>
 
-    ## [1] 0.347
+# A Fixed Model
+
+Before exploring the hypotheses explaining why my model was incorrect, I wanted to know if I could adjust the covariates to generate a completely accurate prediction model for the 2024 election.
+
+The adjusted three OLS models listed below, ensembled in the same method as before, correctly predicted that Trump would sweep the swing state. The central adjustment was deleting the measures of Harris’ polling in favor of just using the polling margin (Harris Polling minus Trump Polling), which was measured by current week and polling trend covariates.
+
+**Model 1:**  
+$$
+`\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) \\
+& + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{unemployment\_growth\_quarterly} \times \text{incumbent\_party}) \\
+& + \beta_6(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}`
+$$
+
+**Model 2:**  
+$$
+`\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{polling\_trend\_5\_1}) + \beta_3(\text{polling\_trend\_10\_6}) \\
+& + \beta_4(\text{current\_week}) + \epsilon
+\end{aligned}`
+$$
+
+**Model 3:**  
+$$
+`\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) + \beta_4(\text{current\_week}) \\
+& + \beta_5(\text{polling\_trend\_5\_1}) + \beta_6(\text{polling\_trend\_10\_6}) + \beta_7(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) \\
+& + \beta_8(\text{unemployment\_growth\_quarterly} \times \text{incumbent\_party}) + \beta_9(\text{updated\_rdpi} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}`
+$$
+This model, whose bias is depicted below, not only correctly predicted the election’s outcome but also had a much lower average RMSE at a remarkable 0.858. Furthermore, unlike my model, it overestimated Trump’s vote share in some states like Georgia, North Carolina, and Wisconsin – though not by much.
+
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-11"></span>Table 6: Updated Model
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+State
+</th>
+<th style="text-align:right;">
+Bias
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Arizona
+</td>
+<td style="text-align:right;">
+-0.032
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Georgia
+</td>
+<td style="text-align:right;">
+1.112
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Michigan
+</td>
+<td style="text-align:right;">
+-0.308
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nevada
+</td>
+<td style="text-align:right;">
+-1.579
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+North Carolina
+</td>
+<td style="text-align:right;">
+1.116
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pennsylvania
+</td>
+<td style="text-align:right;">
+-0.033
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Wisconsin
+</td>
+<td style="text-align:right;">
+0.289
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Average RMSE
+</td>
+<td style="text-align:right;">
+0.858
+</td>
+</tr>
+</tbody>
+</table>
+
+# Why My Model Was Wrong
+
+## Hypothesis \#1: Polling
+
+One reason that stands out is the insight gained from the model I created above. I used measures of poll margin and raw Democratic candidate polling because I believed they captured different aspects of an election. Poll margin indicates how one candidate compares to their competitor, showing the gap between them. On the other hand, raw poll support reflects the general electorate’s enthusiasm for a candidate, acting as a pseudo-measure of turnout. For instance, a race polling at 49-48 is expected to have a significantly higher turnout than a race averaging 43-42. Although the poll margins are identical in both cases, higher enthusiasm could lead to different outcomes in state-specific models.
+
+However, this intuition proved incorrect. I now hypothesize that an increasing trend in overall polarization has caused total polling percentages to more frequently sum to 100. This is because fewer voters remain undecided before election day compared to previous years, resulting in raw polling data having an inflationary effect on the projected Democratic vote share versus actual results.
+
+To measure this, one would need access to unadjusted polling data and analyze the percentage of undecided voters at similar time points across multiple elections. If that percentage has decreased over time, it will support this hypothesis.
+
+However, I do want to note that I do not think the polling error was too significant in favor of Democrats and that one would always incorrectly predict a Harris victory. If you use the polling margin and exclude raw polling support, which is the best predictor of polls in elections, the polling reveals a result that is not too far from reality.
+
+## Hypothesis \#2: The Economy
+
+Another potential explanation for my model’s bias toward the Democrats was an incorrect assessment of the economy’s impact on the election. This election presented a highly unusual economic scenario that rendered typical economic measures insufficient. The non-incumbent candidate was a former President under whom the economy thrived, with most Americans experiencing improved financial conditions from the start of his term until the COVID-19 pandemic. As a result, voters evaluating the incumbent party’s economic performance did not assess Joe Biden’s term in isolation. Instead, they compared it directly to Trump’s first term, which featured record GDP and S&P growth, as well as low unemployment. This comparison created a fundamental challenge for the Democrats. With Trump on the ticket, many Americans recalled the economic boom under his administration, leading to a less favorable view of the Biden administration. However, the growth during Trump’s tenure was unsustainable and unlikely to be maintained, even if the pandemic had not triggered a recession. Thus, the Democrats faced an unfair comparison to an idealized memory of Trump’s economic success that was difficult, if not impossible, to match.
+
+To test this hypothesis, one would want to conduct mass surveys and see how much of people’s perception of the economy is colored by comparisons to Trump’s term. Additionally, one could build models that use comparisons in growth from one term to the last term of the opposing party and see if that improved accuracy for this election.
+
+A further factor lies in how economic indicators are measured. Typically, there is minimal difference between economic conditions in the year before an election and the election year itself, so many analysts, myself included, use the most recent data as economic predictors. However, I did not adequately account for the impact of historically high inflation in 2023, which drove up prices to such an extent that it cast a negative shadow on the economy long after inflation was controlled. Unlike unemployment, which can decrease, prices remain elevated after a spike. Thus, even when inflation was managed and real disposable personal income growth was strong in 2024, the high inflation of 2023 continued to negatively affect Americans’ perceptions of the economy on election day. This is why incorporating state-level DPI economic covariates from the year preceding the election improved the model’s accuracy.
+
+To test this, it is prudent to include additional covariates that capture long-term economic data over the full presidential term or from the period following the midterm elections. Incorporating more measures of consumer confidence and sentiment about the economy, rather than relying solely on objective economic indicators, would be beneficial, as public perception can often differ significantly from fiscal realities.
+
+## Hypothesis \#3: Nevada
+
+To be honest, I am confident that the theories discussed above account for most of the errors in my model. However, I must address the biggest miss in my predictions: Nevada. My model predicted a substantial likelihood of Nevada remaining blue, with only 14 out of 1,000 scenarios showing a Republican win. While most swing states had biases of less than 2 points, Nevada’s was significantly higher at 3.3. Even the adjusted model I created above still overestimated the Democratic vote share by 1.5 points, so my model is clearly consistently missing Nevada. So, why was Nevada so much more inaccurate than the others?
+
+First, polling errors must be considered. Most polls showed Nevada as the only state where Harris had more than a 1-point lead, which proved incorrect. However, I believe the unique inaccuracy in Nevada’s prediction stems from the reliance on lagged vote share. Nevada and North Carolina were the only states that voted for the same party in 2016 and 2020. Unlike North Carolina, Nevada favored the Democrats. Clinton and Biden won the state by over 2 points, making 2024’s result a notable departure from this trend.
+
+Additionally, the Nevada model weighted fundamentals heavily, around 0.15, which caused the high-lagged vote share from 2020 and 2016 to inflate the predicted outcome. However, those past vote shares did not accurately reflect recent demographic shifts within the state. Finally, Nevada’s significant Hispanic population, which saw record shifts toward Trump, further disrupted my prediction.
+
+To test this hypothesis, I could create a model for Nevada excluding lagged vote share and see if it is more representative of the state. This would confirm whether lagged vote share is not a good covariate in some states due to demographic shifts between elections.
+
+# What I Would Change
+
+If I could go back and try again, I would start with the model I developed earlier that showed greater predictive accuracy for the election. I would then allow each state model to use different covariates instead of applying the same ones uniformly, as certain predictors might perform better in specific states. Lastly, I would refine my measurement of economic fundamentals by emphasizing long-term data and consumer sentiment. These combined adjustments would likely result in a more accurate prediction for the 2024 election.

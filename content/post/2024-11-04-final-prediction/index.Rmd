@@ -255,10 +255,9 @@ for (state_name in swing_states) {
   
  
   mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party,  data = train_data)
-      
   mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1 + support_DEM_2 + support_DEM_3, data = train_data)
-    
-  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1  + D_pv2p_lag2 + support_DEM_1 +  polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
+  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + support_DEM_1 + polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
+  
     
     
     individual_predictions[i, 1] <- predict(mod_1, newdata = test_data)[2]
@@ -277,10 +276,9 @@ for (state_name in swing_states) {
     filter(year != 2024)
   
   mod_1 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + updated_rdpi*incumbent_party + dpi_inflation_adjusted*incumbent_party,  data = train_data)
-      
   mod_2 <- lm(D_pv2p ~ state + polling_trend_5_1 + polling_trend_10_6 + current_week + support_DEM_1 + support_DEM_2 + support_DEM_3, data = train_data)
-    
-  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1  + D_pv2p_lag2 + support_DEM_1 +  polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
+  mod_3 <- lm(D_pv2p ~ state + D_pv2p_lag1 + D_pv2p_lag2 + support_DEM_1 + polling_trend_5_1 + polling_trend_10_6 + dpi_inflation_adjusted*incumbent_party + unemployment_growth_quarterly*incumbent_party + updated_rdpi*incumbent_party, data = train_data)
+  
     
   
   
@@ -322,7 +320,7 @@ for (state_name in swing_states) {
 }
 
 predictions_2024_df <- do.call(rbind, predictions_2024)
-#predictions_2024_df
+
 
 ```
 
@@ -335,6 +333,8 @@ weights_df <- do.call(rbind, lapply(swing_states, function(state_name) {
     `Weight Model 3` = state_weights[[state_name]][3]
   )
 }))
+
+write.csv(weights_df, "weights_df.csv", row.names = FALSE)
 
 # Display the table using kable for nicely formatted output
 weights <- weights_df %>%
@@ -752,6 +752,8 @@ win_counts <- electoral_vote_df %>%
     `Trump Victory Wins` = total_simulations - sum(count),
     `Harris Victory %` = paste0(round((sum(count) / total_simulations) * 100, 2), "%")
   )
+
+write.csv(win_counts, "win_counts.csv", row.names = FALSE)
 
 sim_table <- win_counts %>%
   kable("html", caption = "Simulation Results: Harris and Trump Victory Counts") %>%
