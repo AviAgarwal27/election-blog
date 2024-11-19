@@ -1,0 +1,255 @@
+---
+title: Post-Election Reflection
+author: Avi Agarwal
+date: '2024-11-18'
+slug: post-election-reflection
+categories: []
+tags: []
+---
+```{r}
+library(tidyverse)
+library(knitr)
+library(plotly)
+library(maps)
+library(car)
+library(CVXR)
+library(stringr)
+library(knitr)
+library(kableExtra)
+library(caret)
+library(yardstick)
+set.seed(02138)
+```
+**Model 1:**  
+  $$
+\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) \\
+& + \beta_4(\text{updated\_rdpi} \times \text{incumbent\_party}) + \beta_5(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}
+  $$
+**Model 2:**   
+  $$
+\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{polling\_trend\_5\_1}) + \beta_3(\text{polling\_trend\_10\_6}) \\
+& + \beta_4(\text{current\_week}) + \beta_5(\text{support\_DEM\_1}) + \beta_6(\text{support\_DEM\_2}) + \beta_7(\text{support\_DEM\_3}) + \epsilon
+\end{aligned}
+  $$
+**Model 3:**  
+  $$
+\begin{aligned}
+D\_pv2p = & \, \alpha + \beta_1(\text{state}) + \beta_2(\text{D\_pv2p\_lag1}) + \beta_3(\text{D\_pv2p\_lag2}) + \beta_4(\text{support\_DEM\_1}) \\
+& + \beta_5(\text{polling\_trend\_5\_1}) + \beta_6(\text{polling\_trend\_10\_6}) + \beta_7(\text{dpi\_inflation\_adjusted} \times \text{incumbent\_party}) \\
+& + \beta_8(\text{unemployment\_growth\_quarterly} \times \text{incumbent\_party}) + \beta_9(\text{updated\_rdpi} \times \text{incumbent\_party}) + \epsilon
+\end{aligned}
+  $$
+
+```{r}
+weights_df <- read_csv("weights_df.csv") |>
+  kable("html", 
+        col.names = c("State", "Model 1", "Model 2", "Model 3"),
+        caption = "Model Weights by State", digits = 3) %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive")) %>%
+  column_spec(1, width = "8em", extra_css = "text-align: center;") %>%
+  column_spec(2:4, width = "6em", extra_css = "text-align: center;")
+weights_df
+  
+```
+
+
+```{r}
+swing_states <- c("Arizona", "Georgia", "Michigan", "Nevada", "North Carolina", "Pennsylvania", "Wisconsin")
+
+avi_preds <- read_csv("avi_2024_preds - Sheet1.csv")
+state_vote_2024 <- read_csv("state_votes_pres_2024.csv") |>
+  filter(row_number() != 1) |>
+  select(c("Geographic Name", "Total Vote", "Kamala D. Harris", "Donald J. Trump")) |>
+  mutate(
+    state = `Geographic Name`,
+    `Total Vote` = as.numeric(`Total Vote`),
+    `Kamala D. Harris` = as.numeric(`Kamala D. Harris`),
+    `Donald J. Trump` = as.numeric(`Donald J. Trump`)
+  ) |>
+  filter(state %in% swing_states) |>
+  mutate(Dv2p_real = `Kamala D. Harris` / (`Kamala D. Harris` + `Donald J. Trump`)*100)
+```
+
+
+```{r}
+state_vote_2024 <- state_vote_2024 |>
+  left_join(avi_preds, by = "state")
+```
+
+```{r}
+state_vote_2024_table <- state_vote_2024 |>
+  select(c("state", "Dv2p_real", "Dv2p" )) |>
+  mutate(across(where(is.numeric), round, digits = 3)) |>
+  kable(
+    caption = "2024 Presidential Election Results by State",
+    col.names = c("State", "Real Democratic Vote Share (%)", "Predicted Democratic Vote Share (%)"),
+    format = "html"
+  ) |>
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover", "condensed")
+  )
+state_vote_2024_table  
+  
+```
+
+```{r}
+win_counts <- read_csv("win_counts.csv")
+
+sim_table <- win_counts %>%
+  kable("html", caption = "Simulation Results: Harris and Trump Victory Counts") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover", "condensed", "responsive"), position = "center") %>%
+  column_spec(1, width = "5em", extra_css = "text-align: center;") %>%
+  column_spec(2, width = "5em", extra_css = "text-align: center;") %>%
+  column_spec(3, width = "5em", extra_css = "text-align: center;")
+
+sim_table
+```
+
+
+```{r}
+MSE <- state_vote_2024 |>
+  mutate(
+    error_squared = (Dv2p_real - Dv2p)^2,
+    abs_error = abs(Dv2p_real - Dv2p)
+  ) |>
+  group_by(state) |>
+  summarise(
+    Bias = mean(Dv2p_real - Dv2p),
+    MSE = mean(error_squared),
+    RMSE = sqrt(MSE),
+    MAE = mean(abs_error)
+  )
+
+average_row <- state_vote_2024 |>
+  summarise(
+    state = "Average",
+    Bias = mean(Dv2p_real - Dv2p),
+    MSE = mean((Dv2p_real - Dv2p)^2),
+    RMSE = mean(sqrt(MSE)),
+    MAE = mean(abs(Dv2p_real - Dv2p))
+  )
+
+
+MSE <- bind_rows(MSE, average_row) |>
+  rename("State" = state)
+
+MSE_table <- MSE |>
+  mutate(across(where(is.numeric), round, digits = 3)) |>
+  kable(
+    caption = "State-Level MSE Table",
+    col.names = c("State", "Bias", "MSE", "RMSE", "MAE"),
+    format = "html"
+  ) |>
+  kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("striped", "hover", "condensed")
+  )
+
+MSE_table
+
+```
+
+```{r}
+map_data <- MSE |>
+  mutate(state = tolower(State)) 
+
+us_states <- map_data("state")
+
+
+swing_map_data <- us_states %>%
+  filter(region %in% map_data$state) %>%
+  left_join(map_data, by = c("region" = "state"))
+
+swing_map_data <- swing_map_data %>%
+  distinct(region, .keep_all = TRUE) %>%
+  mutate(state = tools::toTitleCase(region)) %>%
+  mutate(state_code = state.abb[match(state, state.name)]) |>
+  mutate(region = tools::toTitleCase(region))
+
+map_plot <- plot_ly(
+  data = swing_map_data,
+  type = "choropleth",
+  locations = ~state_code,
+  locationmode = "USA-states",
+  z = ~Bias,
+  text = ~paste("State:", region, "<br>Bias:", round(Bias, 2), "%"),
+  hoverinfo = "text",
+  colorscale = list(c(0, "darkblue"), c(0.5, "white"), c(1, "darkred")),
+  zmin = -4,   
+  zmid = 0,     
+  zmax = 4,    
+  colorbar = list(
+    title = "Model Bias \n(Blue = Overestimated \nDem. Vote %)",
+    y = 0.5,           
+    yanchor = "middle" 
+  )
+) %>%
+  layout(
+    title = list(
+      text = "Swing State Model Bias",
+      y = 0.95,
+      x = 0.5,
+      xanchor = "center",
+      yanchor = "top"
+    ),
+    geo = list(
+      scope = "usa",
+      projection = list(type = "albers usa"),
+      showlakes = FALSE,
+      showcountries = FALSE,
+      showcoastlines = FALSE,
+      coastlinecolor = toRGB("white"),
+      showframe = FALSE
+    )
+  )
+map_plot
+```
+
+```{r}
+state_vote_2024 <- state_vote_2024 |>
+  mutate(
+    actual = ifelse(Dv2p_real >= 50, 1, 0),
+    predicted = ifelse(Dv2p >= 50, 1, 0),
+    predicted_prob = Dv2p / 100
+  )
+
+actual_factor <- factor(state_vote_2024$actual, levels = c(0, 1))
+predicted_factor <- factor(state_vote_2024$predicted, levels = c(0, 1))
+
+confusion_matrix <- confusionMatrix(predicted_factor, actual_factor)
+
+# Extract relevant metrics from the confusion matrix
+metrics <- data.frame(
+  Metric = c("Accuracy", "Sensitivity (Recall)", "Specificity", "Precision", "F1 Score"),
+  Value = c(
+    round(confusion_matrix$overall['Accuracy'], 3),
+    round(confusion_matrix$byClass['Sensitivity'], 3),
+    round(confusion_matrix$byClass['Specificity'], 3),
+    round(confusion_matrix$byClass['Pos Pred Value'], 3),
+    round(2 * (confusion_matrix$byClass['Pos Pred Value'] * confusion_matrix$byClass['Sensitivity']) /
+          (confusion_matrix$byClass['Pos Pred Value'] + confusion_matrix$byClass['Sensitivity']), 3)
+  )
+)
+
+# Display the table using kable
+kable(metrics, caption = "Confusion Matrix Metrics", format = "html") %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+
+
+```
+
+```{r}
+pred_chance <- win_counts |> 
+  mutate(pred_chance = `Harris Victory Wins`/ 1000) |>
+  select("pred_chance")
+brier_score <- mean((pred_chance$pred_chance - 0)^2) |>
+  round(3)
+
+print(brier_score)
+
+```
+
