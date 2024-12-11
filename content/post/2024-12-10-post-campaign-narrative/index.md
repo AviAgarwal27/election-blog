@@ -115,6 +115,7 @@ Similarly, Lake and Gallego’s speeches exhibited an almost identical distribut
   </tr>
 </tbody>
 </table>
+
 # Deviations from the Forecasted Outcome
 
 While the analysis above has several flaws, such as limitations in YouTube’s transcription algorithm or potentially insufficiently comprehensive dictionaries, it raises an interesting theory about why the results turned out as they did. According to [Professor Vavreck’s theories on campaign types](https://academic.oup.com/poq/article-abstract/74/3/585/1913810), Trump should have been running a clarifying campaign that highlighted flaws in the economy, while Harris should have focused more on a singular divergent issue. The basic analysis suggests that Harris ended up speaking about economic issues just as much as Trump.
