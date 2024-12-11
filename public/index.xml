@@ -6,8 +6,15 @@
     <description>Recent content in Home on A minimal Hugo website</description>
     <generator>Hugo</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 18 Nov 2024 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 10 Dec 2024 00:00:00 +0000</lastBuildDate>
     <atom:link href="https://example.org/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Post-Campaign Narrative</title>
+      <link>https://example.org/post/2024/12/10/post-campaign-narrative/</link>
+      <pubDate>Tue, 10 Dec 2024 00:00:00 +0000</pubDate>
+      <guid>https://example.org/post/2024/12/10/post-campaign-narrative/</guid>
+      <description>&lt;script src=&#34;https://example.org/post/2024/12/10/post-campaign-narrative/index_files/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;&#xD;&#xA;&lt;link href=&#34;https://example.org/post/2024/12/10/post-campaign-narrative/index_files/lightable/lightable.css&#34; rel=&#34;stylesheet&#34; /&gt;&#xD;&#xA;&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(dplyr)&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code&gt;## &#xD;&#xA;## Attaching package: &#39;dplyr&#39;&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code&gt;## The following objects are masked from &#39;package:stats&#39;:&#xD;&#xA;## &#xD;&#xA;##     filter, lag&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code&gt;## The following objects are masked from &#39;package:base&#39;:&#xD;&#xA;## &#xD;&#xA;##     intersect, setdiff, setequal, union&#xD;&#xA;&lt;/code&gt;&lt;/pre&gt;&#xA;&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(tidytext)&#xD;&#xA;&lt;/code&gt;&lt;/pr</description>
+    </item>
     <item>
       <title>Post-Election Reflection</title>
       <link>https://example.org/post/2024/11/18/post-election-reflection/</link>
