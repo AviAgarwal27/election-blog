@@ -6,7 +6,7 @@ slug: post-campaign-narrative
 categories: []
 tags: []
 ---
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 library(dplyr)
 library(tidytext)
 library(ggplot2)
@@ -18,7 +18,7 @@ library(tidyverse)
 ```
 
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE} 
 categories <- list(
   #used ai to help generate this
   Economy = c(
@@ -69,7 +69,7 @@ categories <- list(
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 
 harris <- readLines("New folder (4)/Harris-10-31.txt")
 gallego <- readLines("New folder (4)/Gallego-10-31.txt")
@@ -90,7 +90,7 @@ speeches <- data.frame(
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 tokenized_speeches <- speeches %>%
   unnest_tokens(word, text) %>%                   
   filter(nchar(word) >= 3) %>%                
@@ -98,7 +98,7 @@ tokenized_speeches <- speeches %>%
   filter(!word %in% stopwords("en"))           
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 
 categorize_word <- function(word, categories) {
   for (category in names(categories)) {
@@ -114,7 +114,7 @@ categorized_words <- tokenized_speeches %>%
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 summary_by_category <- categorized_words %>%
   group_by(speaker, category) %>%
   summarise(word_count = n(), .groups = "drop") %>%
@@ -122,7 +122,7 @@ summary_by_category <- categorized_words %>%
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 categorized_filtered <- categorized_words %>%
   filter(category != "Other")
 
@@ -135,13 +135,13 @@ proportions_by_category <- categorized_filtered %>%
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 ggplot(proportions_by_category, aes(x = speaker, y = proportion, fill = category)) +
   geom_bar(stat = "identity", position = "stack") +
   scale_y_continuous(labels = scales::percent_format()) + 
   theme_minimal() +
   labs(
-    title = "Proportion of Words by Category ",
+    title = "Proportion of Words by Topic Area",
     x = "Speaker",
     y = "Proportion of Words",
     fill = "Category"
@@ -155,7 +155,7 @@ ggplot(proportions_by_category, aes(x = speaker, y = proportion, fill = category
 
 ```
 
-```{r}
+```{r , echo= FALSE, message = FALSE, warning=FALSE}
 pivoted_table <- proportions_by_category %>%
   select(speaker, category, proportion) %>%  
   pivot_wider(
@@ -168,7 +168,7 @@ kable(
   pivoted_table, 
   format = "html", 
   col.names = c("Speaker", "Economy", "Domestic Policy", "Foreign Policy", "Character"), 
-  caption = "Proportion of Words by Speaker and Category (Excluding 'Other')",
+  caption = "Proportion of Words by Topic Area",
   digits = 3  
 ) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
